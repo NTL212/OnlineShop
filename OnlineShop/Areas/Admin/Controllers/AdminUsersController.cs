@@ -88,7 +88,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                //user.Password = encryptPassword(user.Password);
+                user.Password = encryptPassword(user.Password);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -138,7 +138,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 try
                 {
-                    //user.Password = encryptPassword(user.Password);
+                    user.Password = encryptPassword(user.Password);
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
