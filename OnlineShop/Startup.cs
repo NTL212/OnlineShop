@@ -31,10 +31,17 @@ namespace OnlineShop
             services.AddDbContext<OnlineShopContext>(options => options.UseSqlServer(stringConn));
 
             services.AddSingleton<HtmlEncoder>(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.All }));
-            
+
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             services.AddSession();
+
+            services.AddAuthentication().AddGoogle(googleOptions =>
+            {
+                IConfigurationSection googleAuthNSention = Configuration.GetSection("Authentication:Google");
+                googleOptions.ClientId = googleAuthNSention["ClientId"];
+                googleOptions.ClientSecret = googleAuthNSention["ClientSecret"];
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +63,8 @@ namespace OnlineShop
             app.UseSession();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

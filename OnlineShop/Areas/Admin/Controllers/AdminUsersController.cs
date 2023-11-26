@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using OnlineShop.Models;
 using X.PagedList;
+using System.Text;
 
 namespace OnlineShop.Areas.Admin.Controllers
 {
@@ -87,6 +88,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                //user.Password = encryptPassword(user.Password);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -136,6 +138,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 try
                 {
+                    //user.Password = encryptPassword(user.Password);
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
@@ -205,6 +208,17 @@ namespace OnlineShop.Areas.Admin.Controllers
         private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.UserId == id);
+        }
+        public string encryptPassword(string password)
+        {
+            if (password == null)
+            {
+                return "";
+            }
+            string key = "@a1235&%%@Dacxs";
+            password += key;
+            var passwordBytes = Encoding.UTF8.GetBytes(password);
+            return Convert.ToBase64String(passwordBytes);
         }
     }
 }
