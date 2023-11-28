@@ -210,6 +210,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\assets\media\" />
+    <Folder Include="wwwroot\upload\images\product\" />
   </ItemGroup>
 
 </Project>

@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Http;
 using OnlineShop.Models;
 using X.PagedList;
 using System.Text;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace OnlineShop.Areas.Admin.Controllers
 {
@@ -16,10 +18,12 @@ namespace OnlineShop.Areas.Admin.Controllers
     public class AdminUsersController : Controller
     {
         private readonly OnlineShopContext _context;
+        private readonly IHostingEnvironment _environment;
 
-        public AdminUsersController(OnlineShopContext context)
+        public AdminUsersController(OnlineShopContext context, IHostingEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         // GET: Admin/AdminUsers
@@ -84,11 +88,27 @@ namespace OnlineShop.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,UserName,IdCard,Email,Phone,IsEmailActive,Password,RoleId,Address,Avatar,Date,IsDeleted")] User user)
+        public async Task<IActionResult> Create(IFormFile Avatar, [Bind("UserId,UserName,IdCard,Email,Phone,IsEmailActive,Password,RoleId,Address,Avatar,Date,IsDeleted")] User user)
         {
             if (ModelState.IsValid)
             {
                 user.Password = encryptPassword(user.Password);
+                if (Avatar != null)
+                {
+                    user.Avatar = Avatar.FileName;
+                    var uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "avatars", "customer");
+                    if (user.RoleId == 1)
+                    {
+                        uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "avatars", "admin");
+                    }
+                    if (!Directory.Exists(uploadDirectory))
+                    {
+                        Directory.CreateDirectory(uploadDirectory);
+                    }
+                    var path = Path.Combine(uploadDirectory, Avatar.FileName);
+                    using var fileStream = new FileStream(path, FileMode.Create);
+                    await Avatar.CopyToAsync(fileStream);
+                }
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -127,7 +147,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,UserName,IdCard,Email,Phone,IsEmailActive,Password,RoleId,Address,Avatar,Date,IsDeleted")] User user)
+        public async Task<IActionResult> Edit(int id, IFormFile Avatar, [Bind("UserId,UserName,IdCard,Email,Phone,IsEmailActive,Password,RoleId,Address,Avatar,Date,IsDeleted")] User user)
         {
             if (id != user.UserId)
             {
@@ -139,6 +159,26 @@ namespace OnlineShop.Areas.Admin.Controllers
                 try
                 {
                     user.Password = encryptPassword(user.Password);
+                    if (Avatar != null)
+                    {
+                        user.Avatar = Avatar.FileName;
+                        var uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "avatars", "customer");
+                        if (user.RoleId == 1)
+                        {
+                            uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "avatars", "admin");
+                        }
+                        if (!Directory.Exists(uploadDirectory))
+                        {
+                            Directory.CreateDirectory(uploadDirectory);
+                        }
+                        var path = Path.Combine(uploadDirectory, Avatar.FileName);
+                        using var fileStream = new FileStream(path, FileMode.Create);
+                        await Avatar.CopyToAsync(fileStream);
+                        if (id.ToString() == HttpContext.Session.GetString("userId"))
+                        {
+                            HttpContext.Session.SetString("avatar", Avatar.FileName);
+                        }
+                    }
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }

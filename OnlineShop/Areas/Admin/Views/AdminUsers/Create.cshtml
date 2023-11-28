@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label">Họ tên</label>
@@ -56,7 +56,8 @@
             </div><br />
             <div class="form-group">
                 <label class="control-label">Ảnh đại diện</label>
-                <input asp-for="Avatar" class="form-control" type="file" />
+                <input asp-for="Avatar" class="form-control" value="Unavailable" type="hidden" />
+                <input id="Avatar" name="Avatar" class="form-control" type="file" />
                 <span asp-validation-for="Avatar" class="text-danger"></span>
             </div><br />
             <div class="form-group">

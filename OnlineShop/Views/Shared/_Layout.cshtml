@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="zxx">
-
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 <head>
 
     <meta charset="UTF-8">
@@ -62,7 +63,15 @@
                                             @if (ViewBag.username != null)
                                             {
                                                 <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
-								                    <img src="~/AdminAssets/img/avatars/avatar.jpg" style="border-radius:5px; max-height:50px; max-width: 50px;" /> 
+                                                    @if (HttpContextAccessor.HttpContext.Session.GetString("avatar") == null)
+                                                    {
+								                        <img src="~/AdminAssets/img/avatars/avatar.jpg" style="border-radius:5px; max-height:50px; max-width: 50px;" /> 
+                                                    }
+                                                    @if (HttpContextAccessor.HttpContext.Session.GetString("avatar") != null)
+                                                    {
+								                        <img src="~/upload/images/avatars/customer/@HttpContextAccessor.HttpContext.Session.GetString("avatar")" 
+                                                        style="border-radius:5px; max-height:50px; max-width: 50px;" /> 
+                                                    }
                                                     <span class="text-dark">@ViewBag.username</span>
 							                    </a>
                                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingButton">

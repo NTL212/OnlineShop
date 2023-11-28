@@ -37,6 +37,7 @@ namespace OnlineShop.Controllers
                 if (lst.Count() > 0)
                 {
                     HttpContext.Session.SetString("userId", lst[0].UserId.ToString());
+                    HttpContext.Session.SetString("avatar", lst[0].Avatar);
                     if (lst[0].RoleId == 1)
                     {
                         HttpContext.Session.SetString("roleName", "Admin");
@@ -209,6 +210,7 @@ namespace OnlineShop.Controllers
                         customer = _context.Users.FirstOrDefault(x => x.Email == customer.Email);
                         HttpContext.Session.SetString("userId", customer.UserId.ToString());
                         HttpContext.Session.SetString("roleName", "Customer");
+                        HttpContext.Session.SetString("avatar", customer.Avatar);
                         return RedirectToAction("Index", "Home");
                     }
                     else if (HttpContext.Session.GetString("username") == null)
@@ -226,6 +228,7 @@ namespace OnlineShop.Controllers
                         customer = _context.Users.FirstOrDefault(x => x.Email == customer.Email);
                         HttpContext.Session.SetString("userId", customer.UserId.ToString());
                         HttpContext.Session.SetString("roleName", "Customer");
+                        HttpContext.Session.SetString("avatar", customer.Avatar);
                         return RedirectToAction("Index", "Home");
                     }
                 }
