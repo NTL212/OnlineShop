@@ -147,7 +147,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, IFormFile Avatar, [Bind("UserId,UserName,IdCard,Email,Phone,IsEmailActive,Password,RoleId,Address,Avatar,Date,IsDeleted")] User user)
+        public async Task<IActionResult> Edit(int id, string Password, IFormFile Avatar, [Bind("UserId,UserName,IdCard,Email,Phone,IsEmailActive,Password,RoleId,Address,Avatar,Date,IsDeleted")] User user)
         {
             if (id != user.UserId)
             {
@@ -158,7 +158,11 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 try
                 {
-                    user.Password = encryptPassword(user.Password);
+                    user.Password = _context.Users.AsNoTracking().FirstOrDefault(n => n.UserId == id).Password;
+                    if (Password != null)
+                    {
+                        user.Password = encryptPassword(Password);
+                    }
                     if (Avatar != null)
                     {
                         user.Avatar = Avatar.FileName;
