@@ -22,9 +22,6 @@
                 Email
             </th>
             <th>
-                SĐT
-            </th>
-            <th>
                 Trạng thái
             </th>
             <th>
@@ -41,9 +38,6 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Email)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Phone)
-            </td>
                 @if (item.IsDeleted == 0)
                 {
                     <td>Hoạt động</td>
@@ -52,7 +46,7 @@
                 {
                     <td>Bị khóa</td>
                 }
-                <td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Role.RoleName)
             </td>
             <td>

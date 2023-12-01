@@ -1,28 +1,24 @@
 ﻿@model OnlineShop.Models.User
 @{
-    ViewData["Title"] = "ForgotPassword";
+    ViewData["Title"] = "Auth";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<main class="main-content" style="padding-bottom:90px;">
+ <main class="main-content" style="padding-bottom:30px;">
             <div class="breadcrumb-area breadcrumb-height" data-bg-image="assets/images/breadcrumb/bg/1-1-1920x373.jpg">
                 <div class="container h-100">
                     <div class="row h-100" style="padding-left:400px;">
                         <div class="col-lg-6">
                             <br />
-                            <form asp-action="ForgotPassword">
+                            <form asp-action="Auth">
                                 <div class="login-form">
-                                    <h4 class="login-title">Reset Password</h4>
+                                    <h4 class="login-title">Nhập mã OTP</h4>
                                     <div class="row">
-                                        <div class="col-md-12">
+                                        <div class="col-lg-12">
                                             <label>Email</label>
-                                            <input asp-for="Email" type="email" placeholder="Nhập email">
+                                            <input asp-for="UserId" placeholder="Nhập mã OTP">
                                         </div>
-                                        <div class="col-md-12">
-                                            <label>Mật khẩu mới</label>
-                                            <input asp-for="Password" type="password" placeholder="Nhập mật khẩu mới">
-                                        </div>
-                                        <div class="col-12"  style="padding-left: 80px;">
+                                        <div class="col-lg-12 pt-5" style="padding-left: 80px;">
                                             <button class="btn btn-custom-size lg-size btn-secondary btn-primary-hover rounded-0">Xác nhận</button>
                                         </div>
                                     </div>

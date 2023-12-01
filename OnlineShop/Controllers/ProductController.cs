@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OnlineShop.Models;
@@ -26,6 +26,12 @@ namespace OnlineShop.Controllers
 
         public IActionResult Index(int? page)
         {
+            int userId;
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (isNum)
+            {
+                ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+            }
             var productList = _context.Products.Include(p => p.Category).Include(p => p.Style).ToPagedList(page ?? 1, 5);
             //var categoryList = _context.Categories.ToList();
             //ViewData["Categories"] = categoryList;
@@ -42,6 +48,12 @@ namespace OnlineShop.Controllers
         }
         public IActionResult Detail(int id)
         {
+            int userId;
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (isNum)
+            {
+                ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+            }
             var product = _context.Products.Include(p => p.Category).Include(p => p.Style).FirstOrDefault(p=>p.ProductId.Equals(id));
 
             if (product == null)

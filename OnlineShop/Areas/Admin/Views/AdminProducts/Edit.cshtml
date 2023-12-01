@@ -9,7 +9,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ProductId" />
             <div class="form-group">
@@ -59,7 +59,8 @@
             <br />
             <div class="form-group">
                 <label class="control-label">Ảnh sản phẩm</label>
-                <input asp-for="Image" class="form-control" type="file"/>
+                <input asp-for="Image" class="form-control" value="Unavailable" type="hidden"/>
+                <input class="form-control" id="Image" name="Image" type="file"/>
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
             <br />
@@ -77,7 +78,7 @@
             <br />
             <div class="form-group">
                 <label class="control-label">Đánh giá</label>
-                <select asp-for="IsDeleted" class="form-control">
+                <select asp-for="Rating" class="form-control">
                     <option value = "1">1 sao</option>
                     <option value = "2">2 sao</option>
                     <option value = "3">3 sao</option>

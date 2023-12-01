@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Models;
 using X.PagedList;
@@ -23,12 +23,28 @@ namespace OnlineShop.Areas.Admin.Controllers
         // GET: Admin/AdminCategories
         public async Task<IActionResult> Index(int ?page)
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             return View(_context.Categories.ToPagedList(page ?? 1, 5));
         }
 
         // GET: Admin/AdminCategories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
             {
                 return NotFound();
@@ -47,6 +63,14 @@ namespace OnlineShop.Areas.Admin.Controllers
         // GET: Admin/AdminCategories/Create
         public IActionResult Create()
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             return View();
         }
 
@@ -69,6 +93,14 @@ namespace OnlineShop.Areas.Admin.Controllers
         // GET: Admin/AdminCategories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
             {
                 return NotFound();
@@ -120,6 +152,14 @@ namespace OnlineShop.Areas.Admin.Controllers
         // GET: Admin/AdminCategories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
             {
                 return NotFound();

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using X.PagedList;
 
 namespace OnlineShop.Controllers
@@ -25,11 +26,17 @@ namespace OnlineShop.Controllers
 
         public IActionResult Index(int? page)
         {
-			var productList = _context.Products.Include(p => p.Category).Include(p => p.Style).ToPagedList(page ?? 1, 5);
+            int userId;
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (isNum)
+            {
+                ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+            }
+            var productList = _context.Products.Include(p => p.Category).Include(p => p.Style).ToPagedList(page ?? 1, 5);
             var categoryList = _context.Categories.ToList();
             var homeViewModel = new HomeViewModel();
             homeViewModel.productList = productList;
-            homeViewModel.categotyList = categoryList;
+            homeViewModel.categoryList = categoryList;
             //ViewData["Categories"] = categoryList;
             return View(homeViewModel);
 		}

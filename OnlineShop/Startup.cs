@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using OnlineShop.Models;
 using System;
@@ -31,10 +33,19 @@ namespace OnlineShop
             services.AddDbContext<OnlineShopContext>(options => options.UseSqlServer(stringConn));
 
             services.AddSingleton<HtmlEncoder>(HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.All }));
-            
+
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             services.AddSession();
+
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddAuthentication().AddGoogle(googleOptions =>
+            {
+                IConfigurationSection googleAuthNSention = Configuration.GetSection("Authentication:Google");
+                googleOptions.ClientId = googleAuthNSention["ClientId"];
+                googleOptions.ClientSecret = googleAuthNSention["ClientSecret"];
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +67,8 @@ namespace OnlineShop
             app.UseSession();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

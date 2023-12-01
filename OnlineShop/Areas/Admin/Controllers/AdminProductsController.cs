@@ -4,9 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Models;
 using X.PagedList;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace OnlineShop.Areas.Admin.Controllers
 {
@@ -14,15 +17,25 @@ namespace OnlineShop.Areas.Admin.Controllers
     public class AdminProductsController : Controller
     {
         private readonly OnlineShopContext _context;
+        private readonly IHostingEnvironment _environment;
 
-        public AdminProductsController(OnlineShopContext context)
+        public AdminProductsController(OnlineShopContext context, IHostingEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         // GET: Admin/AdminProducts
         public async Task<IActionResult> Index(int ?page)
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             var onlineShopContext = _context.Products.Include(p => p.Category).Include(p => p.Style);
             return View(onlineShopContext.ToPagedList(page ?? 1, 5));
         }
@@ -30,6 +43,14 @@ namespace OnlineShop.Areas.Admin.Controllers
         // GET: Admin/AdminProducts/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
             {
                 return NotFound();
@@ -50,6 +71,14 @@ namespace OnlineShop.Areas.Admin.Controllers
         // GET: Admin/AdminProducts/Create
         public IActionResult Create()
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
             ViewData["StyleId"] = new SelectList(_context.Styles, "StyleId", "StyleName");
             return View();
@@ -60,10 +89,22 @@ namespace OnlineShop.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,ProductName,Decription,Price,PromotionalPrice,Quantity,Sold,IsActive,Image,CategoryId,StyleId,Rating,Date,IsDeleted")] Product product)
+        public async Task<IActionResult> Create(IFormFile Image, [Bind("ProductId,ProductName,Decription,Price,PromotionalPrice,Quantity,Sold,IsActive,Image,CategoryId,StyleId,Rating,Date,IsDeleted")] Product product)
         {
             if (ModelState.IsValid)
             {
+                if (Image != null)
+                {
+                    product.Image = Image.FileName;
+                    var uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "product");
+                    if (!Directory.Exists(uploadDirectory))
+                    {
+                        Directory.CreateDirectory(uploadDirectory);
+                    }
+                    var path = Path.Combine(uploadDirectory, Image.FileName);
+                    using var fileStream = new FileStream(path, FileMode.Create);
+                    await Image.CopyToAsync(fileStream);
+                }
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -76,6 +117,14 @@ namespace OnlineShop.Areas.Admin.Controllers
         // GET: Admin/AdminProducts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
             {
                 return NotFound();
@@ -96,7 +145,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,Decription,Price,PromotionalPrice,Quantity,Sold,IsActive,Image,CategoryId,StyleId,Rating,Date,IsDeleted")] Product product)
+        public async Task<IActionResult> Edit(int id, IFormFile Image, [Bind("ProductId,ProductName,Decription,Price,PromotionalPrice,Quantity,Sold,IsActive,Image,CategoryId,StyleId,Rating,Date,IsDeleted")] Product product)
         {
             if (id != product.ProductId)
             {
@@ -107,6 +156,18 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 try
                 {
+                    if(Image != null)
+                    {
+                        product.Image = Image.FileName;
+                        var uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "product");
+                        if (!Directory.Exists(uploadDirectory))
+                        {
+                            Directory.CreateDirectory(uploadDirectory);
+                        }
+                        var path = Path.Combine(uploadDirectory, Image.FileName);
+                        using var fileStream = new FileStream(path, FileMode.Create);
+                        await Image.CopyToAsync(fileStream);
+                    }
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
@@ -131,6 +192,14 @@ namespace OnlineShop.Areas.Admin.Controllers
         // GET: Admin/AdminProducts/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
             {
                 return NotFound();

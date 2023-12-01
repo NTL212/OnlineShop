@@ -5,8 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using OnlineShop.Models;
 using X.PagedList;
+using System.Text;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace OnlineShop.Areas.Admin.Controllers
 {
@@ -14,15 +18,25 @@ namespace OnlineShop.Areas.Admin.Controllers
     public class AdminUsersController : Controller
     {
         private readonly OnlineShopContext _context;
+        private readonly IHostingEnvironment _environment;
 
-        public AdminUsersController(OnlineShopContext context)
+        public AdminUsersController(OnlineShopContext context, IHostingEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         // GET: Admin/AdminUsers
         public async Task<IActionResult> Index(int? page)
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             var onlineShopContext = _context.Users.Include(u => u.Role);
             return View(onlineShopContext.ToPagedList(page ?? 1, 5));
         }
@@ -30,6 +44,14 @@ namespace OnlineShop.Areas.Admin.Controllers
         // GET: Admin/AdminUsers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
             {
                 return NotFound();
@@ -49,6 +71,14 @@ namespace OnlineShop.Areas.Admin.Controllers
         // GET: Admin/AdminUsers/Create
         public IActionResult Create()
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleName");
             return View();
         }
@@ -58,10 +88,27 @@ namespace OnlineShop.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,UserName,IdCard,Email,Phone,IsEmailActive,Password,RoleId,Address,Avatar,Date,IsDeleted")] User user)
+        public async Task<IActionResult> Create(IFormFile Avatar, [Bind("UserId,UserName,IdCard,Email,Phone,IsEmailActive,Password,RoleId,Address,Avatar,Date,IsDeleted")] User user)
         {
             if (ModelState.IsValid)
             {
+                user.Password = encryptPassword(user.Password);
+                if (Avatar != null)
+                {
+                    user.Avatar = Avatar.FileName;
+                    var uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "avatars", "customer");
+                    if (user.RoleId == 1)
+                    {
+                        uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "avatars", "admin");
+                    }
+                    if (!Directory.Exists(uploadDirectory))
+                    {
+                        Directory.CreateDirectory(uploadDirectory);
+                    }
+                    var path = Path.Combine(uploadDirectory, Avatar.FileName);
+                    using var fileStream = new FileStream(path, FileMode.Create);
+                    await Avatar.CopyToAsync(fileStream);
+                }
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -73,6 +120,14 @@ namespace OnlineShop.Areas.Admin.Controllers
         // GET: Admin/AdminUsers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
             {
                 return NotFound();
@@ -92,7 +147,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,UserName,IdCard,Email,Phone,IsEmailActive,Password,RoleId,Address,Avatar,Date,IsDeleted")] User user)
+        public async Task<IActionResult> Edit(int id, string Password, IFormFile Avatar, [Bind("UserId,UserName,IdCard,Email,Phone,IsEmailActive,Password,RoleId,Address,Avatar,Date,IsDeleted")] User user)
         {
             if (id != user.UserId)
             {
@@ -103,6 +158,31 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 try
                 {
+                    user.Password = _context.Users.AsNoTracking().FirstOrDefault(n => n.UserId == id).Password;
+                    if (Password != null)
+                    {
+                        user.Password = encryptPassword(Password);
+                    }
+                    if (Avatar != null)
+                    {
+                        user.Avatar = Avatar.FileName;
+                        var uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "avatars", "customer");
+                        if (user.RoleId == 1)
+                        {
+                            uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "avatars", "admin");
+                        }
+                        if (!Directory.Exists(uploadDirectory))
+                        {
+                            Directory.CreateDirectory(uploadDirectory);
+                        }
+                        var path = Path.Combine(uploadDirectory, Avatar.FileName);
+                        using var fileStream = new FileStream(path, FileMode.Create);
+                        await Avatar.CopyToAsync(fileStream);
+                        if (id.ToString() == HttpContext.Session.GetString("userId"))
+                        {
+                            HttpContext.Session.SetString("avatar", Avatar.FileName);
+                        }
+                    }
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
@@ -126,6 +206,14 @@ namespace OnlineShop.Areas.Admin.Controllers
         // GET: Admin/AdminUsers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
             {
                 return NotFound();
@@ -164,6 +252,17 @@ namespace OnlineShop.Areas.Admin.Controllers
         private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.UserId == id);
+        }
+        public string encryptPassword(string password)
+        {
+            if (password == null)
+            {
+                return "";
+            }
+            string key = "@a1235&%%@Dacxs";
+            password += key;
+            var passwordBytes = Encoding.UTF8.GetBytes(password);
+            return Convert.ToBase64String(passwordBytes);
         }
     }
 }

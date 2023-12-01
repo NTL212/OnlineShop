@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,14 @@ namespace OnlineShop.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum || roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             int year = DateTime.Now.Year;
             int month = DateTime.Now.Month;
             if(totalRevenue(year) != 0)

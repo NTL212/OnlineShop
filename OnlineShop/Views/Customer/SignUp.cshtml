@@ -1,38 +1,46 @@
-﻿
+﻿@model OnlineShop.Models.User
 @{
     ViewData["Title"] = "SignIn";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-        <main class="main-content" style="padding-bottom:300px;">
+        <main class="main-content" style="padding-bottom:575px;">
             <div class="breadcrumb-area breadcrumb-height" data-bg-image="assets/images/breadcrumb/bg/1-1-1920x373.jpg">
                 <div class="container h-100">
                     <div class="row h-100" style="padding-left:400px;">
                         <div class="col-lg-6">
                             <br />
-                            <form action="#">
+                            <form asp-action="SignUp">
                                 <div class="login-form">
                                     <h4 class="login-title">Đăng ký</h4>
                                     <div class="row">
                                         <div class="col-md-12 col-12">
                                             <label>Tên người dùng</label>
-                                            <input type="text" placeholder="Nhập tên người dùng">
+                                            <input asp-for="UserName" type="text" placeholder="Nhập tên người dùng">
                                         </div>
                                         <div class="col-md-12 col-12">
                                             <label>Số ID</label>
-                                            <input type="text" placeholder="Nhập số ID">
+                                            <input asp-for="IdCard" type="text" placeholder="Nhập số ID">
                                         </div>
                                         <div class="col-md-12">
                                             <label>Email</label>
-                                            <input type="email" placeholder="Nhập email">
+                                            <input asp-for="Email" type="email" placeholder="Nhập email">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label>SĐT</label>
+                                            <input asp-for="Phone" type="text" placeholder="Nhập SĐT">
                                         </div>
                                         <div class="col-md-12">
                                             <label>Mật khẩu</label>
-                                            <input type="password" placeholder="Nhập mật khẩu">
+                                            <input asp-for="Password" type="password" placeholder="Nhập mật khẩu">
                                         </div>
                                         <div class="col-md-12">
-                                            <label>Xác nhận mật khẩu</label>
-                                            <input type="password" placeholder="Confirm Password">
+                                            <label>Địa chỉ</label>
+                                            <input asp-for="Address" type="text" placeholder="Nhập địa chỉ">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label>Ảnh đại diện</label>
+                                            <input asp-for="Avatar" type="file" placeholder="Ảnh đại diện">
                                         </div>
                                         <div class="col-12 pt-2"  style="padding-left: 80px;">
                                             <button class="btn btn-custom-size lg-size btn-secondary btn-primary-hover rounded-0">Đăng ký</button>
@@ -40,6 +48,13 @@
                                     </div>
                                 </div>
                             </form>
+                            <br />
+                            @if(ViewBag.mess != null)
+                            {
+                                <div class="alert alert-danger" role="alert" style="font-size:13px; text-align: center; vertical-align: middle;">
+                                    @ViewBag.mess
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
