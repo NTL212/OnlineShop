@@ -75,7 +75,7 @@
                                                     <span class="text-dark">@ViewBag.username</span>
 							                    </a>
                                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingButton">
-                                                    <li><a class="dropdown-item" href="my-account.html">Tài khoản của tôi</a></li>
+                                                    <li><a class="dropdown-item" href="@Url.Action("Profile", "Customer")">Tài khoản của tôi</a></li>
                                                     <li><a class="dropdown-item" asp-controller="Customer" asp-action="SignOut">Đăng xuất</a></li>
                                                 </ul>
                                             }
