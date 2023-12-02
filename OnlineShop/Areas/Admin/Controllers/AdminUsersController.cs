@@ -32,9 +32,13 @@ namespace OnlineShop.Areas.Admin.Controllers
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
-            if (!isNum || roleName != "Admin")
+            if (!isNum)
             {
-                return RedirectToAction("Index", "Home", new { area = "Default" });
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Product", new { area = "Default" });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             var onlineShopContext = _context.Users.Include(u => u.Role);
@@ -47,9 +51,13 @@ namespace OnlineShop.Areas.Admin.Controllers
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
-            if (!isNum || roleName != "Admin")
+            if (!isNum)
             {
-                return RedirectToAction("Index", "Home", new { area = "Default" });
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Product", new { area = "Default" });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -74,9 +82,13 @@ namespace OnlineShop.Areas.Admin.Controllers
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
-            if (!isNum || roleName != "Admin")
+            if (!isNum)
             {
-                return RedirectToAction("Index", "Home", new { area = "Default" });
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Product", new { area = "Default" });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleName");
@@ -123,9 +135,13 @@ namespace OnlineShop.Areas.Admin.Controllers
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
-            if (!isNum || roleName != "Admin")
+            if (!isNum)
             {
-                return RedirectToAction("Index", "Home", new { area = "Default" });
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Product", new { area = "Default" });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -209,9 +225,13 @@ namespace OnlineShop.Areas.Admin.Controllers
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
-            if (!isNum || roleName != "Admin")
+            if (!isNum)
             {
-                return RedirectToAction("Index", "Home", new { area = "Default" });
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Product", new { area = "Default" });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)

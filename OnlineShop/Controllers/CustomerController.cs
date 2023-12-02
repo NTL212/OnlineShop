@@ -45,7 +45,7 @@ namespace OnlineShop.Controllers
                     }
                     else if (lst[0].RoleId == 2) {
                         HttpContext.Session.SetString("roleName", "Customer");
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "Product");
                     }
                 }
                 ViewBag.mess = "Email hoặc mật khẩu không chính xác";
@@ -211,7 +211,7 @@ namespace OnlineShop.Controllers
                         HttpContext.Session.SetString("userId", customer.UserId.ToString());
                         HttpContext.Session.SetString("roleName", "Customer");
                         HttpContext.Session.SetString("avatar", customer.Avatar);
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "Product");
                     }
                     else if (HttpContext.Session.GetString("username") == null)
                     {
@@ -229,7 +229,7 @@ namespace OnlineShop.Controllers
                         HttpContext.Session.SetString("userId", customer.UserId.ToString());
                         HttpContext.Session.SetString("roleName", "Customer");
                         HttpContext.Session.SetString("avatar", customer.Avatar);
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "Product");
                     }
                 }
                 else
@@ -256,7 +256,7 @@ namespace OnlineShop.Controllers
             HttpContext.Session.Clear();
             HttpContext.Session.Remove("userId");
             HttpContext.Session.Remove("roleName");
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Product");
         }
     }
 }

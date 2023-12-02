@@ -13,7 +13,7 @@
                 <div class="breadcrumb-item">
                     <ul>
                         <li>
-                            <a href="@Url.Action("Index", "Home")">Trang chủ <i class="pe-7s-angle-right"></i></a>
+                            <a href="@Url.Action("Index", "Product")">Trang chủ <i class="pe-7s-angle-right"></i></a>
                         </li>
                         @{
                             var url = Context.Request.Path + Context.Request.QueryString;
@@ -61,7 +61,7 @@
                                     <div class="product-item">
                                         <div class="product-img img-zoom-effect">
                                             <a asp-controller="Product" asp-action="Detail" asp-route-id="@item.ProductId">
-                                                <img class="img-full" src="~/assets/images/product/medium-size/1-2-270x300.jpg" alt="Product Images">
+                                                <img class="img-full" src="~/upload/images/product/@item.Image" alt="Product Images">
                                             </a>
                                             <div class="product-add-action">
                                                 <ul>
@@ -84,9 +84,9 @@
                                             </div>
                                         </div>
                                         <div class="product-content">
-                                            <a class="product-name" href="single-product.html">@item.ProductName</a>
+                                            <a class="product-name" asp-controller="Product" asp-action="Detail" asp-route-id="@item.ProductId">@item.ProductName</a>
                                             <div class="price-box pb-1">
-                                                <span class="new-price">@item.Price</span>
+                                                <span class="new-price">@item.PromotionalPrice.ToString("#,##0") VNĐ</span>
                                             </div>
                                             <div class="rating-box">
                                                 <ul>
