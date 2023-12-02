@@ -10,16 +10,20 @@ using Microsoft.EntityFrameworkCore;
 using OnlineShop.Models;
 using MimeKit;
 using MailKit.Net.Smtp;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace OnlineShop.Controllers
 {
     public class CustomerController : Controller
     {
         private readonly OnlineShopContext _context;
+        private readonly IHostingEnvironment _environment;
 
-        public CustomerController(OnlineShopContext context)
+        public CustomerController(OnlineShopContext context, IHostingEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
         public IActionResult SignIn()
         {
@@ -240,6 +244,80 @@ namespace OnlineShop.Controllers
             }
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            int userId;
+            User user;
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (isNum)
+            {
+                user = await _context.Users
+               .Include(u => u.Role)
+               .FirstOrDefaultAsync(m => m.UserId == userId);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                return View(user);
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Profile(IFormFile Avatar, [Bind("UserId,UserName,IdCard,Email,Phone,IsEmailActive,Password,RoleId,Address,Avatar,Date,IsDeleted")] User user)
+        {
+            int userId;
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            var av = Avatar;
+            if (ModelState.IsValid)
+            {
+  
+                try
+                {
+                    user.Password = _context.Users.AsNoTracking().FirstOrDefault(n => n.UserId == userId).Password;
+                    if (Avatar != null)
+                    {
+                        user.Avatar = Avatar.FileName;
+                        var uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "avatars", "customer");
+                        if (!Directory.Exists(uploadDirectory))
+                        {
+                            Directory.CreateDirectory(uploadDirectory);
+                        }
+                        var path = Path.Combine(uploadDirectory, Avatar.FileName);
+                        using var fileStream = new FileStream(path, FileMode.Create);
+                        await Avatar.CopyToAsync(fileStream);
+                        if (userId.ToString() == HttpContext.Session.GetString("userId"))
+                        {
+                            HttpContext.Session.SetString("avatar", Avatar.FileName);
+                        }
+                    }
+                    else
+                    {
+                        user.Avatar = _context.Users.AsNoTracking().FirstOrDefault(n => n.UserId == userId).Avatar;
+                    }
+                    _context.Update(user);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserExists(user.UserId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Profile));
+            }
+            return View(user);
+        }
+
         public string encryptPassword(string password)
         {
             if(password == null)
@@ -257,6 +335,10 @@ namespace OnlineShop.Controllers
             HttpContext.Session.Remove("userId");
             HttpContext.Session.Remove("roleName");
             return RedirectToAction("Index", "Product");
+        }
+        private bool UserExists(int id)
+        {
+            return _context.Users.Any(e => e.UserId == id);
         }
     }
 }
