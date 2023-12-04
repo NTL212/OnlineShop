@@ -35,7 +35,7 @@
                             <div class="product-thumb-with-content row">
                                 <div class="col-12 order-lg-1 order-2 pt-10 pt-lg-0">
                                     <div class="single-product-content">
-                                        <h2 class="title">Black Pepper Grains</h2>
+                                        <h2 class="title">@Model.ProductName</h2>
                                         <div class="price-box pb-1">
                                             <span class="new-price text-primary">Giá: @Model.PromotionalPrice.ToString("#,##0") VNĐ</span>
                                             <span class="old-price text-danger">@Model.Price.ToString("#,##0") VNĐ</span>
@@ -68,18 +68,22 @@
                                         <h6>
                                             Mô tả: @Model.Decription
                                         </h6>
-                                        <ul class="quantity-with-btn pb-7">
-                                            <li class="quantity">
-                                                <div class="cart-plus-minus" style="width: 170px; text-align:center;">
-                                                    <input name="quantity" id="quantity" class="cart-plus-minus-box" value="1" type="text">
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <ul class="quantity-with-btn pb-7">
-                                            <li class="add-to-cart">
-                                                <a class="btn btn-custom-size lg-size btn-danger btn-secondary-hover rounded-0" href="#">Mua</a>
-                                            </li>
-                                        </ul>
+                                        <br />
+                                        <form asp-action="OrderProduct" method="get">
+                                            <ul class="quantity-with-btn pb-7">
+                                                <li class="quantity">
+                                                    <input name="productId" id="productId" type="hidden" value="@Model.ProductId">
+                                                    <div class="cart-plus-minus" style="width: 170px; text-align:center;">
+                                                        <input name="quantity" id="quantity" class="cart-plus-minus-box" value="1" type="text">
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                            <ul class="quantity-with-btn pb-7">
+                                                <li class="add-to-cart">
+                                                    <button class="btn btn-custom-size lg-size btn-danger btn-secondary-hover rounded-0" type="submit">Mua</button>
+                                                </li>
+                                            </ul>
+                                        </form>
                                         <ul class="quantity-with-btn pb-7">
                                             <li class="add-to-cart">
                                                 <form asp-controller="ShoppingCart" asp-action="AddToCart" id="addToCart" method="post">

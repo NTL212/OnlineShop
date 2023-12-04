@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using OnlineShop.ViewModels;
 
 namespace OnlineShop.Controllers
 {
@@ -97,10 +98,68 @@ namespace OnlineShop.Controllers
 			await _context.SaveChangesAsync();
 			return RedirectToAction("Index");
 		}
-		public IActionResult Payment()
+		public IActionResult OrderCart()
 		{
-			return View();
+			int userId;
+			string roleName = HttpContext.Session.GetString("roleName");
+			bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+			if (!isNum)
+			{
+				return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+			}
+			if (roleName != "Customer")
+			{
+				return RedirectToAction("Index", "Home", new { area = "Admin" });
+			}
+			var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
+					  join s2 in _context.CartItems on s1.CartId equals s2.CartId
+					  select new OrderCartViewModel
+					  {
+						  ProductName = s2.Product.ProductName,
+						  Count = s2.Count,
+						  Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+					  };
+			List<OrderCartViewModel> lst = query.ToList();
+			User user = _context.Users.Where(n => n.UserId == userId).FirstOrDefault();
+			ViewBag.username = user.UserName;
+			ViewBag.lst = lst;
+			ViewBag.total = lst.Sum(n => n.Total);
+			return View(user);
 		}
-
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> OrderCart(string receiver, string email, string phone, string address)
+        {
+			int userId = int.Parse(HttpContext.Session.GetString("userId"));
+			Order order = new Order
+			{
+				UserId = userId,
+				Receiver = receiver,
+				Email = email,
+				Phone = phone,
+				Address = address,
+				StatusId = 1,
+				IsPay = 0,
+				Date = DateTime.Now,
+				IsDeleted = 0
+			};
+			_context.Orders.Add(order);
+			await _context.SaveChangesAsync();
+			int newOrderId = order.OrderId;
+			var lst = _context.CartItems.Where(n => n.Cart.UserId == userId && n.IsDeleted == 0).ToList();
+			foreach(CartItem item in lst)
+            {
+				OrderItem orderItem = new OrderItem
+				{
+					OrderId = newOrderId,
+					ProductId = item.ProductId,
+					Count = item.Count,
+				};
+				_context.OrderItems.Add(orderItem);
+				_context.CartItems.Remove(item);
+				await _context.SaveChangesAsync();
+			}
+			return RedirectToAction("Index", "Product");
+		}
 	}
 }

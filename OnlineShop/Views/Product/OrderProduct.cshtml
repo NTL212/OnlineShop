@@ -1,0 +1,91 @@
+﻿
+@{
+    ViewData["Title"] = "OrderProduct";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Begin Main Content Area -->
+        <main class="main-content">
+            <div class="checkout-area section-space-y-axis-100">
+                <div class="container">
+                    <form asp-action="OrderProduct" method="post">
+                        <div class="row">
+                            <div class="col-lg-4 col-12">
+                                    <div class="checkbox-form">
+                                        <h3>Đặt hàng</h3>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="checkout-form-list">
+                                                    <label>Người nhận <span class="required"></span></label>
+                                                    <input id="receiver" name="receiver" placeholder="Nhập tên người nhận" type="text" value="@Model.UserName">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="checkout-form-list">
+                                                    <label>Email <span class="required"></span></label>
+                                                    <input id="email" name="email" placeholder="Nhập email người nhận" type="text" value="@Model.Email">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="checkout-form-list">
+                                                    <label>Số điện thoại<span class="required"></span></label>
+                                                    <input id="phone" name="phone" placeholder="Nhập số điện thoại người nhận" type="text" value="@Model.Phone">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="checkout-form-list">
+                                                    <label>Địa chỉ <span class="required"></span></label>
+                                                    <input id="address" name="address" placeholder="Nhập địa chỉ nhận hàng" type="text" value="@Model.Address">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                            <div class="col-lg-8 col-12" style="padding-top:40px;">
+                                <div class="your-order">
+                                    <h3>Đơn hàng của bạn</h3>
+                                    <div class="your-order-table table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="cart-product-name" style="padding-right:30px;">Sản phẩm</th>
+                                                    <th class="cart-product-name" style="padding-right:160px;">Số lượng</th>
+                                                    <th class="cart-product-total" style="padding-right:80px;">Thành tiền</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="cart_item">
+                                                    <td class="cart-product-name"><p style="display: block; 
+                                                                                            width: 202px; height: auto;
+                                                                                            word-break: break-all; word-wrap: break-word;
+                                                                                            white-space: normal;">@ViewBag.ProductName</p></td>
+                                                    <td class="cart-product-total"><span class="amount" style="padding-left:5px; font-weight:bold;">x @ViewBag.Count</span></td>
+                                                    <td class="cart-product-total"><span class="amount"  style="padding-left:10px;">@ViewBag.Total.ToString("#,##0") VNĐ</span></td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="order-total">
+                                                    <th>Tổng đơn hàng</th>
+                                                    <td><strong><span class="amount">@ViewBag.Total.ToString("#,##0") VNĐ</span></strong></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div class="payment-method">
+                                        <div class="payment-accordion">
+                                            <input id="productId" name="productId" type="hidden" value="@ViewBag.ProductId">
+                                            <input id="count" name="count" type="hidden" value="@ViewBag.Count">
+                                            <div class="order-button-payment">
+                                                <input class="btn btn-primary-hover" value="Đặt hàng" type="submit">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+        <!-- Main Content Area End Here -->
+

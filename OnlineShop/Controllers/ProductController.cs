@@ -73,5 +73,57 @@ namespace OnlineShop.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-    }
+		public IActionResult OrderProduct(int productId, int quantity)
+		{
+			int userId;
+			string roleName = HttpContext.Session.GetString("roleName");
+			bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+			if (!isNum)
+			{
+				return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+			}
+			if (roleName != "Customer")
+			{
+				return RedirectToAction("Index", "Home", new { area = "Admin" });
+			}
+            User user = _context.Users.Where(n => n.UserId == userId).FirstOrDefault();
+            Product product = _context.Products.FirstOrDefault(p => p.ProductId == productId);
+            ViewBag.username = user.UserName;
+            ViewBag.ProductId = productId;
+            ViewBag.ProductName = product.ProductName;
+            ViewBag.Count = quantity;
+            ViewBag.Total = product.PromotionalPrice * quantity;
+            return View(user);
+		}
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> OrderProduct(string receiver, string email, string phone, string address, int productId, int count)
+		{
+			int userId = int.Parse(HttpContext.Session.GetString("userId"));
+			Order order = new Order
+			{
+				UserId = userId,
+				Receiver = receiver,
+				Email = email,
+				Phone = phone,
+				Address = address,
+				StatusId = 1,
+				IsPay = 0,
+				Date = DateTime.Now,
+				IsDeleted = 0
+			};
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+            int newOrderId = order.OrderId;
+            OrderItem orderItem = new OrderItem
+            {
+                OrderId = newOrderId,
+                ProductId = productId,
+                Count = count
+            };
+            _context.OrderItems.Add(orderItem);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", "Product");
+        }
+	}
 }

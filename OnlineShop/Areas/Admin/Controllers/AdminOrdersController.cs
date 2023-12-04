@@ -36,7 +36,7 @@ namespace OnlineShop.Areas.Admin.Controllers
                 return RedirectToAction("Index", "Product", new { area = "Default" });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            var onlineShopContext = _context.Orders.Include(o => o.Status).Include(o => o.User);
+            var onlineShopContext = _context.Orders.Include(o => o.Status).Include(o => o.User).OrderByDescending(o => o.Date);
             return View(onlineShopContext.ToPagedList(page ?? 1, 5));
         }
 
