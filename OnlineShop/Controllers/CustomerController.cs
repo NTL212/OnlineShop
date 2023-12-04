@@ -249,21 +249,23 @@ namespace OnlineShop.Controllers
         public async Task<IActionResult> Profile()
         {
             int userId;
-            User user;
+            string roleName = HttpContext.Session.GetString("roleName");
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
-            if (isNum)
+            if (!isNum)
             {
-                user = await _context.Users
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Customer")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Admin" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+            int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
+            ViewBag.quantity = _context.CartItems.Where(n => n.CartId == cartId).Count();
+            User user = await _context.Users
                .Include(u => u.Role)
                .FirstOrDefaultAsync(m => m.UserId == userId);
-                if (user == null)
-                {
-                    return NotFound();
-                }
-                return View(user);
-            }
-
-            return View();
+            return View(user);
         }
 
         [HttpPost]
@@ -275,10 +277,8 @@ namespace OnlineShop.Controllers
             var av = Avatar;
             if (ModelState.IsValid)
             {
-  
                 try
                 {
-                    user.Password = _context.Users.AsNoTracking().FirstOrDefault(n => n.UserId == userId).Password;
                     if (Avatar != null)
                     {
                         user.Avatar = Avatar.FileName;
@@ -318,7 +318,12 @@ namespace OnlineShop.Controllers
             return View(user);
         }
 
-        public string encryptPassword(string password)
+        public async Task<IActionResult> Orders()
+        {
+            return View();
+        }
+
+            public string encryptPassword(string password)
         {
             if(password == null)
             {

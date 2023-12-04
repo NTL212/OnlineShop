@@ -19,11 +19,11 @@
                             var url = Context.Request.Path + Context.Request.QueryString;
                             if (url.Contains("Search"))
                             {
-                                <li>Tìm kiếm sản phẩm</li>
+                                        <li>Tìm kiếm sản phẩm</li>
                             }
                             else
                             {
-                                <li>Tất cả sản phẩm</li>
+                                        <li>Tất cả sản phẩm</li>
                             }
                         }
                     </ul>
@@ -66,18 +66,13 @@
                                             <div class="product-add-action">
                                                 <ul>
                                                     <li>
-                                                        <a href="cart.html">
+                                                        <a asp-controller="Product" asp-action="Detail" asp-route-id="@item.ProductId">
+                                                            <i class="pe-7s-wallet"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a asp-controller="Product" asp-action="Detail" asp-route-id="@item.ProductId">
                                                             <i class="pe-7s-cart"></i>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="compare.html">
-                                                            <i class="pe-7s-shuffle"></i>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="wishlist.html">
-                                                            <i class="pe-7s-like"></i>
                                                         </a>
                                                     </li>
                                                 </ul>
@@ -92,9 +87,9 @@
                                                 <ul>
                                                     @{
                                                         var i = item.Rating;
-                                                        @while(i>0)
+                                                                @while(i>0)
                                                         {
-                                                            <li><i class="pe-7s-star"></i></li>
+                                                                    <li><i class="pe-7s-star"></i></li>
                                                             i--;
                                                         }
                                                     }

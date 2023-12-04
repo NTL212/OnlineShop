@@ -13,7 +13,6 @@
 				<div class="col-12">
 					@if (Model != null && Model.Count() > 0)
 					{
-						<form asp-action="OrderCart" method="get">
 							<div class="table-content table-responsive">
 								<table class="table">
 									<thead>
@@ -62,16 +61,17 @@
 											<li>Tổng: <span>@Model.Sum(x => x.TotalMoney).ToString("#,##0") VNĐ</span></li>
 										</ul>
 										<br />
-										<button class="btn btn-primary" type="submit" style="font:bold;">Đặt hàng</button>
+										<form asp-action="OrderCart" method="get">
+											<button class="btn btn-primary" type="submit" style="font:bold;">Đặt hàng</button>
+										</form>
 									</div>
 								</div>
 							</div>
-						</form>
 					}
 					else
 					{
 						<div class="row" style="padding-left: 450px;">
-							<p>Chưa có hàng hoá trong giỏ hàng.</p>
+							<p>Chưa có sản phẩm trong giỏ hàng</p>
 						</div>
 					}
 				</div>

@@ -73,6 +73,28 @@
         <dd>
             @Html.DisplayFor(model => model.Status.StatusName)
         </dd>
+        <dt>
+            Sản phẩm
+        </dt>
+        <dd>
+            @foreach(var item in ViewBag.lst)
+            {
+                <div style="display:flex;"> 
+                    <div><p style="display: block; 
+                                    width: 202px; height: auto;
+                                    word-break: break-all; word-wrap: break-word;
+                                    white-space: normal;">@item.ProductName</p></div>
+                    <div><span class="amount" style="padding-left:10px; font-weight:bold;">x @item.Count: </span></div>
+                    <div><span class="amount"  style="padding-left:10px;">@item.Total.ToString("#,##0") VNĐ</span></div>
+                </div>
+            }
+        </dd>
+        <dt>
+            Tổng đơn hàng
+        </dt>
+        <dd>
+            @ViewBag.total.ToString("#,##0") VNĐ
+        </dd>
     </dl>
     
     <form asp-action="Edit">

@@ -76,6 +76,7 @@
 							                    </a>
                                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingButton">
                                                     <li><a class="dropdown-item" href="@Url.Action("Profile", "Customer")">Tài khoản của tôi</a></li>
+                                                    <li><a class="dropdown-item" href="@Url.Action("Orders", "Customer")">Đơn hàng của tôi</a></li>
                                                     <li><a class="dropdown-item" asp-controller="Customer" asp-action="SignOut">Đăng xuất</a></li>
                                                 </ul>
                                             }
@@ -100,7 +101,7 @@
                                             <li class="minicart-wrap me-3 me-lg-0">
                                                 <a href="#miniCart" class="minicart-btn toolbar-btn">
                                                     <i class="pe-7s-shopbag"></i>
-                                                    <span class="quantity">3</span>
+                                                    <span class="quantity">@ViewBag.quantity</span>
                                                 </a>
                                             </li>
                                         }
@@ -453,55 +454,45 @@
             </div>
             <div class="offcanvas-minicart_wrapper" id="miniCart">
                 <div class="offcanvas-body">
+                    @if(ViewBag.cartItems != null)
+                    {
                     <div class="minicart-content">
                         <div class="minicart-heading">
-                            <h4 class="mb-0">Shopping Cart</h4>
+                            <h4 class="mb-0">Giỏ hàng</h4>
                             <a href="#" class="button-close"><i class="pe-7s-close"></i></a>
                         </div>
-                        <ul class="minicart-list">
-                            <li class="minicart-product">
-                                <a class="product-item_remove" href="#"><i
-                                    class="pe-7s-close"></i></a>
-                                <a href="shop.html" class="product-item_img">
-                                    <img class="img-full" src="~/assets/images/product/small-size/1-1-112x124.jpg" alt="Product Image">
-                                </a>
-                                <div class="product-item_content">
-                                    <a class="product-item_title" href="shop.html">Black Pepper Grains</a>
-                                    <span class="product-item_quantity">1 x $80.00</span>
-                                </div>
-                            </li>
-                            <li class="minicart-product">
-                                <a class="product-item_remove" href="#"><i
-                                    class="pe-7s-close"></i></a>
-                                <a href="shop.html" class="product-item_img">
-                                    <img class="img-full" src="~/assets/images/product/small-size/1-2-112x124.jpg" alt="Product Image">
-                                </a>
-                                <div class="product-item_content">
-                                    <a class="product-item_title" href="shop.html">Peanut Big Bean</a>
-                                    <span class="product-item_quantity">1 x $80.00</span>
-                                </div>
-                            </li>
-                            <li class="minicart-product">
-                                <a class="product-item_remove" href="#">
-                                    <i class="pe-7s-close"></i>
-                                </a>
-                                <a href="shop.html" class="product-item_img">
-                                    <img class="img-full" src="~/assets/images/product/small-size/1-3-112x124.jpg" alt="Product Image">
-                                </a>
-                                <div class="product-item_content">
-                                    <a class="product-item_title" href="shop.html">Dried Lemon Green</a>
-                                    <span class="product-item_quantity">1 x $80.00</span>
-                                </div>
-                            </li>
-                        </ul>
+                            <ul class="minicart-list">
+                                @foreach (var item in ViewBag.cartItems)
+                                {
+                                    <li class="minicart-product">
+                                        <div class="product-item_img">
+                                            <img class="img-full" src="~/upload/images/product/@item.Image" alt="Product Image">
+                                        </div>
+                                        <div class="product-item_content">
+                                            <a class="product-item_title" href="shop.html">@item.ProductName</a>
+                                            <span class="product-item_quantity"><h7 style="font-weight:bold;">x @item.Count:</h7> @item.Total.ToString("#,##0") VNĐ</span>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
                     </div>
                     <div class="minicart-item_total">
-                        <span>Subtotal</span>
-                        <span class="ammount">$240.00</span>
+                        <span>Tổng đơn hàng:</span>
+                        <span class="ammount">@ViewBag.totalCartItems.ToString("#,##0") VNĐ</span>
                     </div>
+                    }
+                    @if(ViewBag.cartItems == null)
+                    {
+                        <div class="minicart-content">
+                            <div class="minicart-heading">
+                                <h4 class="mb-0">Giỏ hàng</h4>
+                                <a href="#" class="button-close"><i class="pe-7s-close"></i></a>
+                            </div>
+                            <p style="padding-top:170px; padding-left:35px;">Chưa có sản phẩm trong giỏ hàng</p>
+                        </div>
+                    }
                     <div class="group-btn_wrap d-grid gap-2">
-                        <a href="cart.html" class="btn btn-secondary btn-primary-hover">View Cart</a>
-                        <a href="checkout.html" class="btn btn-secondary btn-primary-hover">Checkout</a>
+                        <a asp-controller="Shoppingcart" asp-action="Index" class="btn btn-secondary btn-primary-hover">Xem giỏ hàng</a>
                     </div>
                 </div>
             </div>

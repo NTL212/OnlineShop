@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using OnlineShop.Models;
 using X.PagedList;
+using OnlineShop.ViewModels;
 
 namespace OnlineShop.Areas.Admin.Controllers
 {
@@ -68,7 +69,16 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
+            var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id)
+                        select new OrderCartViewModel
+                        {
+                            ProductName = s1.Product.ProductName,
+                            Count = s1.Count,
+                            Total = (decimal)s1.Product.PromotionalPrice * s1.Count
+                        };
+            List<OrderCartViewModel> lst = query.ToList();
+            ViewBag.total = lst.Sum(n => n.Total);
+            ViewBag.lst = lst;
             return View(order);
         }
 
@@ -137,6 +147,16 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             ViewData["StatusId"] = new SelectList(_context.StatusOrders, "StatusId", "StatusName", order.StatusId);
             ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Address", order.UserId);
+            var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id)
+                        select new OrderCartViewModel
+                        {
+                            ProductName = s1.Product.ProductName,
+                            Count = s1.Count,
+                            Total = (decimal)s1.Product.PromotionalPrice * s1.Count
+                        };
+            List<OrderCartViewModel> lst = query.ToList();
+            ViewBag.total = lst.Sum(n => n.Total);
+            ViewBag.lst = lst;
             return View(order);
         }
 
@@ -182,7 +202,16 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
+            var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id)
+                        select new OrderCartViewModel
+                        {
+                            ProductName = s1.Product.ProductName,
+                            Count = s1.Count,
+                            Total = (decimal)s1.Product.PromotionalPrice * s1.Count
+                        };
+            List<OrderCartViewModel> lst = query.ToList();
+            ViewBag.total = lst.Sum(n => n.Total);
+            ViewBag.lst = lst;
             return View(order);
         }
 
@@ -195,6 +224,66 @@ namespace OnlineShop.Areas.Admin.Controllers
             order.StatusId = 4;
             _context.Update(order);
             await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Update(int? id)
+        {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum)
+            {
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Admin")
+            {
+                return RedirectToAction("Index", "Product", new { area = "Default" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var order = await _context.Orders
+                .Include(o => o.Status)
+                .Include(o => o.User)
+                .FirstOrDefaultAsync(m => m.OrderId == id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id)
+                        select new OrderCartViewModel
+                        {
+                            ProductName = s1.Product.ProductName,
+                            Count = s1.Count,
+                            Total = (decimal)s1.Product.PromotionalPrice * s1.Count
+                        };
+            List<OrderCartViewModel> lst = query.ToList();
+            ViewBag.total = lst.Sum(n => n.Total);
+            ViewBag.lst = lst;
+            return View(order);
+        }
+
+        [HttpPost, ActionName("Update")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            order.StatusId = 3;
+            order.IsPay = 1;
+            _context.Update(order);
+            await _context.SaveChangesAsync();
+            var orderItem = _context.OrderItems.Where(o => o.OrderId == id);
+            foreach(var item in orderItem)
+            {
+                Product product = _context.Products.Find(item.ProductId);
+                product.Sold += item.Count;
+                _context.Update(product);
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Index));
         }
 

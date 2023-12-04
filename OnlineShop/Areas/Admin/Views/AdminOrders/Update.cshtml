@@ -1,11 +1,11 @@
 ﻿@model OnlineShop.Models.Order
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Update";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Từ chối đơn hàng</h2>
+<h2>Xác nhận đã giao đơn hàng</h2>
 <div>
     <hr />
     <dl class="dl-horizontal">
@@ -97,9 +97,9 @@
         </dd>
     </dl>
     
-    <form asp-action="Delete">
+    <form asp-action="Update">
         <input type="hidden" asp-for="OrderId" />
-        <input type="submit" value="Từ chối" class="btn btn-danger" /> |
+        <input type="submit" value="Đã giao" class="btn btn-primary" /> |
         <a asp-action="Index">Trở về danh sách</a>
     </form>
 </div>

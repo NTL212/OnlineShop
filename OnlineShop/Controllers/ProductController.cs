@@ -31,6 +31,22 @@ namespace OnlineShop.Controllers
             if (isNum)
             {
                 ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+                int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
+                var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
+                            join s2 in _context.CartItems on s1.CartId equals s2.CartId
+                            select new OrderCartViewModel
+                            {
+                                CartItemId = s2.CartItemId,
+                                Image = s2.Product.Image,
+                                PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
+                                ProductName = s2.Product.ProductName,
+                                Count = s2.Count,
+                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+                            };
+                List<OrderCartViewModel> lst = query.ToList();
+                ViewBag.quantity = lst.Count;
+                ViewBag.cartItems = lst;
+                ViewBag.totalCartItems = lst.Sum(n => n.Total);
             }
             var productList = _context.Products.Include(p => p.Category).Include(p => p.Style).ToPagedList(page ?? 1, 5);
             //var categoryList = _context.Categories.ToList();
@@ -53,6 +69,22 @@ namespace OnlineShop.Controllers
             if (isNum)
             {
                 ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+                int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
+                var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
+                            join s2 in _context.CartItems on s1.CartId equals s2.CartId
+                            select new OrderCartViewModel
+                            {
+                                CartItemId = s2.CartItemId,
+                                Image = s2.Product.Image,
+                                PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
+                                ProductName = s2.Product.ProductName,
+                                Count = s2.Count,
+                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+                            };
+                List<OrderCartViewModel> lst = query.ToList();
+                ViewBag.quantity = lst.Count;
+                ViewBag.cartItems = lst;
+                ViewBag.totalCartItems = lst.Sum(n => n.Total);
             }
             var product = _context.Products.Include(p => p.Category).Include(p => p.Style).FirstOrDefault(p=>p.ProductId.Equals(id));
 
@@ -89,6 +121,8 @@ namespace OnlineShop.Controllers
             User user = _context.Users.Where(n => n.UserId == userId).FirstOrDefault();
             Product product = _context.Products.FirstOrDefault(p => p.ProductId == productId);
             ViewBag.username = user.UserName;
+            int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
+            ViewBag.quantity = _context.CartItems.Where(n => n.CartId == cartId).Count();
             ViewBag.ProductId = productId;
             ViewBag.ProductName = product.ProductName;
             ViewBag.Count = quantity;

@@ -80,6 +80,8 @@ namespace OnlineShop.Controllers
 				return RedirectToAction("Index", "Home", new { area = "Admin" });
 			}
 			ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+			int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
+			ViewBag.quantity = _context.CartItems.Where(n => n.CartId == cartId).Count();
 			// Retrieve non-deleted cart items from the database
 			List<CartItem> cartItems = _context.CartItems
 				.Include(n => n.Product)
@@ -122,6 +124,8 @@ namespace OnlineShop.Controllers
 			List<OrderCartViewModel> lst = query.ToList();
 			User user = _context.Users.Where(n => n.UserId == userId).FirstOrDefault();
 			ViewBag.username = user.UserName;
+			int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
+			ViewBag.quantity = _context.CartItems.Where(n => n.CartId == cartId).Count();
 			ViewBag.lst = lst;
 			ViewBag.total = lst.Sum(n => n.Total);
 			return View(user);

@@ -36,13 +36,13 @@ namespace OnlineShop.Areas.Admin.Controllers
             int month = DateTime.Now.Month;
             if(totalRevenue(year) != 0)
             {
-                ViewBag.totalRevenue = string.Format("{0:0,0} VND", totalRevenue(year));
-                ViewBag.averageRevenue = string.Format("{0:0,0} VND", (totalRevenue(year) / 12));
+                ViewBag.totalRevenue = string.Format("{0:0,0} VNĐ", totalRevenue(year));
+                ViewBag.averageRevenue = string.Format("{0:0,0} VNĐ", (totalRevenue(year) / 12));
             }
             else
             {
-                ViewBag.totalRevenue = "0 VND";
-                ViewBag.averageRevenue = "0 VND";
+                ViewBag.totalRevenue = "0 VNĐ";
+                ViewBag.averageRevenue = "0 VNĐ";
             }
             if(growth(year) == 0)
             {
@@ -59,7 +59,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 if(monthlyRevenue(i, year) == 0 && i <= month)
                 {
-                    monthlyRevenueLst.Add("0 VND");
+                    monthlyRevenueLst.Add("0 VNĐ");
                 }   
                 else if(monthlyRevenue(i, year) == 0 && i > month)
                 {
@@ -67,7 +67,7 @@ namespace OnlineShop.Areas.Admin.Controllers
                 }
                 else
                 {
-                    monthlyRevenueLst.Add(string.Format("{0:0,0} VND", monthlyRevenue(i, year)));
+                    monthlyRevenueLst.Add(string.Format("{0:0,0} VNĐ", monthlyRevenue(i, year)));
                 }
             }
             ViewBag.monthlyRevenue = monthlyRevenueLst;

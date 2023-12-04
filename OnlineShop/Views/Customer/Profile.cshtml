@@ -6,85 +6,39 @@
 
         <!-- Begin Main Content Area -->
         <main class="main-content">
-        <div class="breadcrumb-item">
-            <ul>
-                <li>
-                    <a href="@Url.Action("Index", "Home")">Trang chủ <i class="pe-7s-angle-right"></i></a>
-                </li>
-                <li>My Account</li>
-            </ul>
-        </div>
             <div class="account-page-area section-space-y-axis-100">
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-3">
-                            <ul class="nav myaccount-tab-trigger" id="account-page-tab" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="account-details-tab" data-bs-toggle="tab" href="#account-details" role="tab" aria-controls="account-details" aria-selected="true">Thông tin tài khoản</a>
-                            </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="account-orders-tab" data-bs-toggle="tab" href="#account-orders" role="tab" aria-controls="account-orders" aria-selected="false">Đơn hàng</a>
-                                </li>
-                            </ul>
-                        </div>
                         <div class="col-lg-9">
-                            <div class="tab-content myaccount-tab-content" id="account-page-tab-content">
-                                <div class="tab-pane fade " id="account-orders" role="tabpanel" aria-labelledby="account-orders-tab">
-                                    <div class="myaccount-orders">
-                                        <h4 class="small-title">MY ORDERS</h4>
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered table-hover">
-                                                <tbody>
-                                                    <tr>
-                                                        <th>ORDER</th>
-                                                        <th>DATE</th>
-                                                        <th>STATUS</th>
-                                                        <th>TOTAL</th>
-                                                        <th></th>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><a class="account-order-id" href="javascript:void(0)">#5364</a></td>
-                                                        <td>Mar 27, 2019</td>
-                                                        <td>On Hold</td>
-                                                        <td>$162.00 for 2 items</td>
-                                                        <td>
-                                                            <a href="javascript:void(0)" class="btn btn-secondary btn-primary-hover"><span>View</span></a>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><a class="account-order-id" href="javascript:void(0)">#5356</a></td>
-                                                        <td>Mar 27, 2019</td>
-                                                        <td>On Hold</td>
-                                                        <td>$162.00 for 2 items</td>
-                                                        <td>
-                                                            <a href="javascript:void(0)" class="btn btn-secondary btn-primary-hover"><span>View</span></a>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
                             <div class="tab-pane fade show active" id="account-details" role="tabpanel" aria-labelledby="account-details-tab">
-                                    <div class="myaccount-details" >
+                                    <div class="myaccount-details" style="padding-left:300px;">
                                     <form asp-action="Profile" asp-controller="Customer" class="myaccount-form" enctype="multipart/form-data" method="post">
                                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                         <input type="hidden" asp-for="UserId" />
-                                        <input type="hidden" asp-for="UserName" />
-                                        <input type="hidden" asp-for="IdCard" />
+                                        <input type="hidden" asp-for="Email" />
                                         <input type="hidden" asp-for="IsEmailActive" />
                                         <input type="hidden" asp-for="Password" />
+                                        <input type="hidden" asp-for="RoleId" />
                                         <input type="hidden" asp-for="Date" />
                                         <input type="hidden" asp-for="IsDeleted" />
                                             <div class="myaccount-form-inner">
                                                 <div class="single-input">
-                                                    <label>Ảnh đại diện</label>
-                                                <img src="~/upload/images/avatars/customer/@Model.Avatar" alt="User @Model.UserName Image" style="border-radius:5px; max-height:100px; max-width: 100px;" />
-                                                <input id="Avatar" name="Avatar" class="form-control" type="file"/>
+                                                    <label>
+                                                       Họ tên
+                                                    </label>
+                                                    <input type="text" asp-for="UserName">
                                                 </div>
                                                 <div class="single-input">
-                                                    <label>Email*</label>
-                                                    <input type="email" asp-for="Email">
+                                                    <label>
+                                                       ID
+                                                    </label>
+                                                    <input type="text" asp-for="IdCard">
+                                                </div>
+                                                <div class="single-input">
+                                                    <label>
+                                                       Số điện thoại
+                                                    </label>
+                                                <input type="tel" asp-for="Phone">
                                                 </div>
                                                 <div class="single-input">
                                                     <label>
@@ -93,11 +47,10 @@
                                                     <input type="text" asp-for="Address">
                                                 </div>
                                                 <div class="single-input">
-                                                    <label>
-                                                       Số điện thoại
-                                                    </label>
-                                                <input type="tel" asp-for="Phone">
+                                                    <label class="control-label">Ảnh đại diện</label>
+                                                    <input asp-for="Avatar" class="form-control" type="hidden"/>
                                                 </div>
+                                                <input id="Avatar" name="Avatar" class="form-control" type="file" />
                                                 <div class="single-input">
                                                     <button class="btn btn-custom-size lg-size btn-secondary btn-primary-hover rounded-0" type="submit">
                                                         <span>Lưu thay đổi</span>
