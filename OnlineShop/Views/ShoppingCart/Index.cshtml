@@ -11,7 +11,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-12">
-					@if (Model != null && Model.Count() > 0)
+					@if (ViewBag.cartItems != null && ViewBag.quantity > 0)
 					{
 							<div class="table-content table-responsive">
 								<table class="table">
@@ -26,22 +26,22 @@
 										</tr>
 									</thead>
 									<tbody>
-										@if (Model != null && Model.Count() > 0)
+										@if (ViewBag.cartItems != null && ViewBag.quantity > 0)
 										{
-											foreach (var item in Model)
+											foreach (var item in ViewBag.cartItems)
 											{
 												<tr>
 													<td class="product-thumbnail">
 														<a href="#">
-															<img src="~/upload/images/product/@item.Product.Image" alt="@item.Product.ProductName" style="border-radius:5px; max-height:100px; max-width: 100px;">
+															<img src="~/upload/images/product/@item.Image" alt="@item.ProductName" style="border-radius:5px; max-height:100px; max-width: 100px;">
 														</a>
 													</td>
-													<td class="product-name"><a href="#">@item.Product.ProductName</a></td>
-													<td class="product-price"><span class="amount">@item.Product.PromotionalPrice.ToString("#,##0") VNĐ</span></td>
+													<td class="product-name"><a href="#">@item.ProductName</a></td>
+													<td class="product-price"><span class="amount">@item.PromotionalPrice.ToString("#,##0") VNĐ</span></td>
 													<td class="product-price">
 															<span class="amount">@item.Count</span>
 													</td>
-													<td class="product-subtotal"><span class="amount">@item.TotalMoney.ToString("#,##0") VNĐ</span></td>
+													<td class="product-subtotal"><span class="amount">@item.Total.ToString("#,##0") VNĐ</span></td>
 													<td class="product_remove">
 														<form asp-controller="ShoppingCart" asp-action="Remove" method="post">
 															<input name="id" value="@item.CartItemId" type="hidden"/>
@@ -58,7 +58,7 @@
 								<div class="col-md-5 ml-auto">
 									<div class="cart-page-total">
 										<ul>
-											<li>Tổng: <span>@Model.Sum(x => x.TotalMoney).ToString("#,##0") VNĐ</span></li>
+											<li>Tổng: <span>@ViewBag.totalCartItems.ToString("#,##0") VNĐ</span></li>
 										</ul>
 										<br />
 										<form asp-action="OrderCart" method="get">

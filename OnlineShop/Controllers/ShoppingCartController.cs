@@ -81,14 +81,22 @@ namespace OnlineShop.Controllers
 			}
 			ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
 			int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
-			ViewBag.quantity = _context.CartItems.Where(n => n.CartId == cartId).Count();
-			// Retrieve non-deleted cart items from the database
-			List<CartItem> cartItems = _context.CartItems
-				.Include(n => n.Product)
-				.Where(n => n.IsDeleted == 0 && n.Cart.UserId == userId)
-				.ToList();
-
-			return View(cartItems);
+			var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
+						join s2 in _context.CartItems on s1.CartId equals s2.CartId
+						select new OrderCartViewModel
+						{
+							CartItemId = s2.CartItemId,
+							Image = s2.Product.Image,
+							PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
+							ProductName = s2.Product.ProductName,
+							Count = s2.Count,
+							Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+						};
+			List<OrderCartViewModel> cartItems = query.ToList();
+			ViewBag.quantity = cartItems.Count;
+			ViewBag.cartItems = cartItems;
+			ViewBag.totalCartItems = cartItems.Sum(n => n.Total);
+			return View();
 		}
 
 		[HttpPost, ActionName("Remove")]
@@ -114,20 +122,23 @@ namespace OnlineShop.Controllers
 				return RedirectToAction("Index", "Home", new { area = "Admin" });
 			}
 			var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
-					  join s2 in _context.CartItems on s1.CartId equals s2.CartId
-					  select new OrderCartViewModel
-					  {
-						  ProductName = s2.Product.ProductName,
-						  Count = s2.Count,
-						  Total = (decimal)s2.Product.PromotionalPrice * s2.Count
-					  };
-			List<OrderCartViewModel> lst = query.ToList();
+						join s2 in _context.CartItems on s1.CartId equals s2.CartId
+						select new OrderCartViewModel
+						{
+							CartItemId = s2.CartItemId,
+							Image = s2.Product.Image,
+							PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
+							ProductName = s2.Product.ProductName,
+							Count = s2.Count,
+							Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+						};
+			List<OrderCartViewModel> cartItems = query.ToList();
 			User user = _context.Users.Where(n => n.UserId == userId).FirstOrDefault();
 			ViewBag.username = user.UserName;
 			int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
 			ViewBag.quantity = _context.CartItems.Where(n => n.CartId == cartId).Count();
-			ViewBag.lst = lst;
-			ViewBag.total = lst.Sum(n => n.Total);
+			ViewBag.cartItems = cartItems;
+			ViewBag.totalCartItems = cartItems.Sum(n => n.Total);
 			return View(user);
 		}
 		[HttpPost]

@@ -54,7 +54,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                            @foreach(var item in ViewBag.lst)
+                                            @foreach(var item in ViewBag.cartItems)
                                             {
                                                 <tr class="cart_item">
                                                     <td class="cart-product-name"><p style="display: block; 
@@ -69,7 +69,7 @@
                                             <tfoot>
                                                 <tr class="order-total">
                                                     <th>Tổng đơn hàng</th>
-                                                    <td><strong><span class="amount">@ViewBag.total.ToString("#,##0") VNĐ</span></strong></td>
+                                                    <td><strong><span class="amount">@ViewBag.totalCartItems.ToString("#,##0") VNĐ</span></strong></td>
                                                 </tr>
                                             </tfoot>
                                         </table>
