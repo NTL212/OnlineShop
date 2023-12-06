@@ -1,8 +1,46 @@
-﻿
+﻿@model IEnumerable<OnlineShop.Models.Order>
 @{
     ViewData["Title"] = "Orders";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div class="main-wrapper">
 
-<h1>Orders</h1>
+    <!-- Begin Main Content Area -->
+    <main class="main-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-9">
+        <div class="myaccount-orders">
+            <h4 class="small-title">Đơn hàng của tôi</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <tbody>
+                        <tr>
+                            <th>Mã đơn hàng</th>
+                            <th>Ngày đặt hàng</th>
+                            <th>Trạng thái</th>
+                            <th>Tỏng tiền</th>
+                            <th></th>
+                        </tr>
+                       @foreach(var item in Model)
+                                    {
+                                        <tr>
+                                            <td><a class="account-order-id" href="javascript:void(0)">#@item.OrderId</a></td>
+                                            <td>@item.Date</td>
+                                            <td>@item.Status.StatusName</td>
+                                            <td>@item.IsPay</td>
+                                            <td>
+                                                <a asp-action="OrderDetail" asp-controller="Customer" asp-route-id="@item.OrderId" class="btn btn-secondary btn-primary-hover"><span>Xem chi  tiết</span></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </main>
+        </div>
 
