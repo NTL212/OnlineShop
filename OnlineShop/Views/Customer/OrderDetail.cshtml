@@ -3,6 +3,8 @@
     ViewData["Title"] = "Orders";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<h1>@ViewBag.id</h1>
+<br/>
 <div class="main-wrapper">
 
     <!-- Begin Main Content Area -->
@@ -11,16 +13,10 @@
             <div class="row">
                 <div class="col-lg-9">
                     <div class="myaccount-orders">
-                        <h4 class="small-title">Đơn hàng của tôi</h4>
+                        <h4 class="small-title">Chi tiết đơn hàng</h4>
                         <div>
                             <hr />
                             <dl class="dl-horizontal">
-                                <dt>
-                                    Người đặt
-                                </dt>
-                                <dd>
-                                    @Html.DisplayFor(model => model.User.UserName)
-                                </dd>
                                 <dt>
                                     Người nhận
                                 </dt>
@@ -63,17 +59,6 @@
                                     @Html.DisplayFor(model => model.Date)
                                 </dd>
                                 <dt>
-                                    Khả dụng
-                                </dt>
-                                @if (Model.IsDeleted == 0)
-                                {
-                                    <dd>Khả dụng</dd>
-                                }
-                                @if (Model.IsDeleted == 1)
-                                {
-                                    <dd>Không khả dụng</dd>
-                                }
-                                <dt>
                                     Tình trạng đơn hàng
                                 </dt>
                                 <dd>
@@ -107,27 +92,7 @@
                             </dl>
                         </div>
                         <div>
-                            @if (Model.Status.StatusName == "Đang xử lý")
-                            {
-                                <a asp-action="Edit" asp-route-id="@Model.OrderId" class="btn btn-success">Xác nhận</a>
-                                <a asp-action="Delete" asp-route-id="@Model.OrderId" class="btn btn-danger">Từ chối</a>
-                                <br />
-
-                                <br />
-                                <a asp-action="Index">Trở về danh sách</a>
-                            }
-                            @if (Model.Status.StatusName == "Đang giao")
-                            {
-                                <a asp-action="Update" asp-route-id="@Model.OrderId" class="btn btn-primary">Đã giao</a>
-                                <br />
-
-                                <br />
-                                <a asp-action="Index">Trở về danh sách</a>
-                            }
-                            @if (Model.Status.StatusName == "Đã nhận" || Model.Status.StatusName == "Từ chối")
-                            {
-                                <a asp-action="Index">Trở về danh sách</a>
-                            }
+                            <a class="btn btn-primary" asp-action="Orders">Trở về danh sách</a>
                         </div>
                     </div>
                 </div>
@@ -135,4 +100,6 @@
         </div>
     </main>
 </div>
+<br/>
+<br/>
 

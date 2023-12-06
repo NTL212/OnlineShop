@@ -3,6 +3,7 @@
     ViewData["Title"] = "Orders";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<br />
 <div class="main-wrapper">
 
     <!-- Begin Main Content Area -->
@@ -18,8 +19,8 @@
                         <tr>
                             <th>Mã đơn hàng</th>
                             <th>Ngày đặt hàng</th>
-                            <th>Trạng thái</th>
-                            <th>Tỏng tiền</th>
+                            <th>Tình trạng đơn hàng</th>
+                            <th>Tình trạng thanh toán</th>
                             <th></th>
                         </tr>
                        @foreach(var item in Model)
@@ -28,7 +29,14 @@
                                             <td><a class="account-order-id" href="javascript:void(0)">#@item.OrderId</a></td>
                                             <td>@item.Date</td>
                                             <td>@item.Status.StatusName</td>
-                                            <td>@item.IsPay</td>
+                                            @if(item.IsPay == 0)
+                                            {
+                                                <td>Chưa thanh toán</td>
+                                            }    
+                                            @if(item.IsPay == 1)
+                                            {
+                                                <td>Đã thanh toán</td>
+                                            }
                                             <td>
                                                 <a asp-action="OrderDetail" asp-controller="Customer" asp-route-id="@item.OrderId" class="btn btn-secondary btn-primary-hover"><span>Xem chi  tiết</span></a>
                                             </td>
@@ -43,4 +51,6 @@
         </div>
         </main>
         </div>
+        <br />
+        <br />
 

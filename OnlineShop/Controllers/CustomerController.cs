@@ -379,36 +379,29 @@ namespace OnlineShop.Controllers
                 return RedirectToAction("Index", "Home", new { area = "Admin" });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
-            var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
-                        join s2 in _context.CartItems on s1.CartId equals s2.CartId
-                        select new OrderCartViewModel
-                        {
-                            CartItemId = s2.CartItemId,
-                            Image = s2.Product.Image,
-                            PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
-                            ProductName = s2.Product.ProductName,
-                            Count = s2.Count,
-                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count
-                        };
-            List<OrderCartViewModel> lst = query.ToList();
-            ViewBag.quantity = lst.Count;
-            ViewBag.cartItems = lst;
-            ViewBag.totalCartItems = lst.Sum(n => n.Total);
-
-
-            var query2 = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id)
-                        select new OrderCartViewModel
-                        {
-                            ProductName = s1.Product.ProductName,
-                            Count = s1.Count,
-                            Total = (decimal)s1.Product.PromotionalPrice * s1.Count
-                        };
-            List<OrderCartViewModel> lst2 = query2.ToList();
-            ViewBag.total = lst2.Sum(n => n.Total);
-            ViewBag.lst = lst2;
-            Order order = _context.Orders.Include(o => o.Status).Where(o => o.OrderId == id).FirstOrDefault();
-            return View(order);
+            try
+            {
+                Order order = _context.Orders.Include(o => o.Status).Where(o => o.OrderId == id).FirstOrDefault();
+                if (order.UserId != userId || order == null)
+                {
+                    return RedirectToAction("Orders", "Customer");
+                }
+                var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id)
+                            select new OrderCartViewModel
+                            {
+                                ProductName = s1.Product.ProductName,
+                                Count = s1.Count,
+                                Total = (decimal)s1.Product.PromotionalPrice * s1.Count
+                            };
+                List<OrderCartViewModel> lst = query.ToList();
+                ViewBag.total = lst.Sum(n => n.Total);
+                ViewBag.lst = lst;
+                return View(order);
+            }
+            catch
+            {
+                return RedirectToAction("Orders", "Customer");
+            }
         }
 
         public string encryptPassword(string password)
