@@ -10,6 +10,7 @@ using OnlineShop.Models;
 using X.PagedList;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using System.Reflection;
 
 namespace OnlineShop.Areas.Admin.Controllers
 {
@@ -103,6 +104,18 @@ namespace OnlineShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(IFormFile Image, [Bind("ProductId,ProductName,Decription,Price,PromotionalPrice,Quantity,Sold,IsActive,Image,CategoryId,StyleId,Rating,Date,IsDeleted")] Product product)
         {
+            foreach(PropertyInfo pi in product.GetType().GetProperties())
+            {
+                if (pi.PropertyType == typeof(string))
+                {
+                    string value = (string)pi.GetValue(product);
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        ViewBag.mess = "Vui lòng điển đẩy đủ thông tin";
+                        return View();
+                    }
+                }
+            }
             if (ModelState.IsValid)
             {
                 if (Image != null)
@@ -163,6 +176,18 @@ namespace OnlineShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, IFormFile Image, [Bind("ProductId,ProductName,Decription,Price,PromotionalPrice,Quantity,Sold,IsActive,Image,CategoryId,StyleId,Rating,Date,IsDeleted")] Product product)
         {
+            foreach (PropertyInfo pi in product.GetType().GetProperties())
+            {
+                if (pi.PropertyType == typeof(string))
+                {
+                    string value = (string)pi.GetValue(product);
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        ViewBag.mess = "Vui lòng điển đẩy đủ thông tin";
+                        return View();
+                    }
+                }
+            }
             if (id != product.ProductId)
             {
                 return NotFound();

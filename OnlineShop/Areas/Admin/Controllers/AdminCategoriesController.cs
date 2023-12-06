@@ -93,6 +93,11 @@ namespace OnlineShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CategoryId,CategoryName,IsDeleted")] Category category)
         {
+            if(category.CategoryName == null)
+            {
+                ViewBag.mess = "Vui lòng nhập tên danh mục";
+                return View();
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(category);
@@ -137,6 +142,11 @@ namespace OnlineShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CategoryId,CategoryName,IsDeleted")] Category category)
         {
+            if (category.CategoryName == null)
+            {
+                ViewBag.mess = "Vui lòng nhập tên danh mục";
+                return View();
+            }
             if (id != category.CategoryId)
             {
                 return NotFound();

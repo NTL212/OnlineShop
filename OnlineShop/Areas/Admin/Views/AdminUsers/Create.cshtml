@@ -4,7 +4,12 @@
     ViewData["Title"] = "Create";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
-
+@if (ViewBag.mess != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert">
+        <strong>Tạo tài khoản thất bại!</strong> @ViewBag.mess
+    </div>
+}
 <h2>Tạo tài khoản</h2>
 
 <hr />

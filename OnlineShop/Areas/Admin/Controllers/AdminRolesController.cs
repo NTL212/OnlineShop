@@ -93,6 +93,11 @@ namespace OnlineShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("RoleId,RoleName,IsDeleted")] Role role)
         {
+            if(role.RoleName == null)
+            {
+                ViewBag.mess = "Vui lòng nhập tên vai trò";
+                return View();
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(role);
@@ -137,6 +142,11 @@ namespace OnlineShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("RoleId,RoleName,IsDeleted")] Role role)
         {
+            if (role.RoleName == null)
+            {
+                ViewBag.mess = "Vui lòng nhập tên vai trò";
+                return View();
+            }
             if (id != role.RoleId)
             {
                 return NotFound();

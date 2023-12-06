@@ -11,6 +11,7 @@ using X.PagedList;
 using System.Text;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using System.Reflection;
 
 namespace OnlineShop.Areas.Admin.Controllers
 {
@@ -121,6 +122,18 @@ namespace OnlineShop.Areas.Admin.Controllers
                     using var fileStream = new FileStream(path, FileMode.Create);
                     await Avatar.CopyToAsync(fileStream);
                 }
+                foreach (PropertyInfo pi in user.GetType().GetProperties())
+                {
+                    if (pi.PropertyType == typeof(string))
+                    {
+                        string value = (string)pi.GetValue(user);
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            ViewBag.mess = "Vui lòng điển đẩy đủ thông tin";
+                            return View();
+                        }
+                    }
+                }
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -197,6 +210,18 @@ namespace OnlineShop.Areas.Admin.Controllers
                         if (id.ToString() == HttpContext.Session.GetString("userId"))
                         {
                             HttpContext.Session.SetString("avatar", Avatar.FileName);
+                        }
+                    }
+                    foreach (PropertyInfo pi in user.GetType().GetProperties())
+                    {
+                        if (pi.PropertyType == typeof(string))
+                        {
+                            string value = (string)pi.GetValue(user);
+                            if (string.IsNullOrEmpty(value))
+                            {
+                                ViewBag.mess = "Vui lòng điển đẩy đủ thông tin";
+                                return View();
+                            }
                         }
                     }
                     _context.Update(user);

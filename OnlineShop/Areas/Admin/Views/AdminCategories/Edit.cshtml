@@ -4,7 +4,12 @@
     ViewData["Title"] = "Edit";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
-
+@if (ViewBag.mess != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert">
+        <strong>Chỉnh sửa danh mục thất bại!</strong> @ViewBag.mess
+    </div>
+}
 <h2>Chỉnh sửa danh mục</h2>
 <hr />
 <div class="row">
