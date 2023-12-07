@@ -35,7 +35,7 @@ namespace OnlineShop.Controllers
 			ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
 			try
 			{
-				CartItem cartItem = _context.CartItems.FirstOrDefault(n => n.ProductId == productId && n.IsDeleted == 0);
+				CartItem cartItem = _context.CartItems.FirstOrDefault(n => n.ProductId == productId && n.IsDeleted == 0 && n.Cart.UserId == userId);
 
 				if (cartItem != null)
 				{

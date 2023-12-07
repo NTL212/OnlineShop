@@ -81,7 +81,7 @@ namespace OnlineShop.Controllers
                 HttpContext.Session.SetString("password", encryptPassword(user.Password));
                 //HttpContext.Session.SetString("password", user.Password);
                 HttpContext.Session.SetString("address", user.Address);
-                HttpContext.Session.SetString("avatar", user.Avatar);
+                HttpContext.Session.SetString("avatar", "default.jpg");
                 var lst = _context.Users.ToList();
                 foreach(var item in lst)
                 {
