@@ -134,8 +134,16 @@ namespace OnlineShop.Areas.Admin.Controllers
                         }
                     }
                 }
-                _context.Add(user);
+                _context.Users.Add(user);
                 await _context.SaveChangesAsync();
+                User customer = _context.Users.FirstOrDefault(x => x.Email == user.Email);
+                if (customer.RoleId == 2)
+                {
+                    Cart cart = new Cart();
+                    cart.UserId = customer.UserId;
+                    _context.Add(cart);
+                    await _context.SaveChangesAsync();
+                }
                 return RedirectToAction(nameof(Index));
             }
             ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleName", user.RoleId);
