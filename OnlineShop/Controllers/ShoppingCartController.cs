@@ -55,7 +55,7 @@ namespace OnlineShop.Controllers
 					};
 					_context.CartItems.Add(cartItem);
 				}
-				_context.SaveChanges();
+				_context.SaveChangesAsync();
 				return RedirectToAction("Index", "Product");
 			}
 			catch (Exception ex)

@@ -40,9 +40,9 @@ namespace OnlineShop.Controllers
             //ViewData["Categories"] = categoryList;
             return View(homeViewModel);
 		}
-        public IActionResult Privacy(string test)
+        public IActionResult Privacy(int productId, int count)
         {
-            ViewBag.Test = test;
+            ViewBag.Test = "productId: " + productId + "\nCount: " + count;
             return View();
         }
 
