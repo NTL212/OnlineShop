@@ -44,6 +44,11 @@ namespace OnlineShop.Controllers
                 {
                     HttpContext.Session.SetString("userId", lst[0].UserId.ToString());
                     HttpContext.Session.SetString("avatar", lst[0].Avatar);
+                    if (lst[0].IsDeleted == 1)
+                    {
+                        ViewBag.mess = "Tài khoản hiện đang bị khóa";
+                        return View();
+                    }
                     if (lst[0].RoleId == 1)
                     {
                         HttpContext.Session.SetString("roleName", "Admin");
