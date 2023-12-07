@@ -48,7 +48,7 @@ namespace OnlineShop.Controllers
                 ViewBag.cartItems = lst;
                 ViewBag.totalCartItems = lst.Sum(n => n.Total);
             }
-            var productList = _context.Products.Include(p => p.Category).Include(p => p.Style).ToPagedList(page ?? 1, 5);
+            var productList = _context.Products.Include(p => p.Category).Include(p => p.Style).ToPagedList(page ?? 1, 6);
             //var categoryList = _context.Categories.ToList();
             //ViewData["Categories"] = categoryList;
             return View(productList);
