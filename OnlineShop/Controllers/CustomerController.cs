@@ -13,6 +13,7 @@ using MailKit.Net.Smtp;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using OnlineShop.ViewModels;
+using System.Reflection;
 
 namespace OnlineShop.Controllers
 {
@@ -312,6 +313,45 @@ namespace OnlineShop.Controllers
                     else
                     {
                         user.Avatar = _context.Users.AsNoTracking().FirstOrDefault(n => n.UserId == userId).Avatar;
+                    }
+                    foreach (PropertyInfo pi in user.GetType().GetProperties())
+                    {
+                        if (pi.PropertyType == typeof(string))
+                        {
+                            string value = (string)pi.GetValue(user);
+                            if (string.IsNullOrEmpty(value))
+                            {
+                                string roleName = HttpContext.Session.GetString("roleName");
+                                if (!isNum)
+                                {
+                                    return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+                                }
+                                if (roleName != "Customer")
+                                {
+                                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+                                }
+                                ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+                                int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
+                                var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
+                                            join s2 in _context.CartItems on s1.CartId equals s2.CartId
+                                            select new OrderCartViewModel
+                                            {
+                                                CartItemId = s2.CartItemId,
+                                                Image = s2.Product.Image,
+                                                PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
+                                                ProductName = s2.Product.ProductName,
+                                                Count = s2.Count,
+                                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+                                            };
+                                List<OrderCartViewModel> lst = query.ToList();
+                                ViewBag.quantity = lst.Count;
+                                ViewBag.cartItems = lst;
+                                ViewBag.totalCartItems = lst.Sum(n => n.Total);
+                                user = _context.Users.AsNoTracking().FirstOrDefault(m => m.UserId == userId);
+                                ViewBag.mess = "Vui lòng điển đẩy đủ thông tin";
+                                return View(user);
+                            }
+                        }
                     }
                     _context.Update(user);
                     await _context.SaveChangesAsync();

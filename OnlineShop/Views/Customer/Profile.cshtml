@@ -2,6 +2,13 @@
 @{
     ViewData["Title"] = "Thông tin tài khoản";
 }
+<br/>
+@if (ViewBag.mess != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert" style="text-align:center;">
+        <strong>Chỉnh sửa thông tin tài khoản thất bại!</strong> @ViewBag.mess
+    </div>
+}
     <div class="main-wrapper">
 
         <!-- Begin Main Content Area -->
@@ -26,25 +33,25 @@
                                                     <label>
                                                        Họ tên
                                                     </label>
-                                                    <input type="text" asp-for="UserName">
+                                                    <input type="text" asp-for="UserName" value="@Model.UserName">
                                                 </div>
                                                 <div class="single-input">
                                                     <label>
                                                        ID
                                                     </label>
-                                                    <input type="text" asp-for="IdCard">
+                                                    <input type="text" asp-for="IdCard" value="@Model.IdCard">
                                                 </div>
                                                 <div class="single-input">
                                                     <label>
                                                        Số điện thoại
                                                     </label>
-                                                <input type="tel" asp-for="Phone">
+                                                <input type="tel" asp-for="Phone" value="@Model.Phone">
                                                 </div>
                                                 <div class="single-input">
                                                     <label>
                                                         Địa chỉ
                                                     </label>
-                                                    <input type="text" asp-for="Address">
+                                                    <input type="text" asp-for="Address" value="@Model.Address">
                                                 </div>
                                                 <div class="single-input">
                                                     <label class="control-label">Ảnh đại diện</label>
