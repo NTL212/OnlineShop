@@ -197,7 +197,8 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 try
                 {
-                    if(Image != null)
+                    product.Image = _context.Products.AsNoTracking().FirstOrDefault(n => n.ProductId == id).Image;
+                    if (Image != null)
                     {
                         product.Image = Image.FileName;
                         var uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "product");

@@ -148,8 +148,37 @@ namespace OnlineShop.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> OrderProduct(string receiver, string email, string phone, string address, int productId, int count)
 		{
-			int userId = int.Parse(HttpContext.Session.GetString("userId"));
-			Order order = new Order
+            int userId = int.Parse(HttpContext.Session.GetString("userId"));
+            if (receiver == null || email == null | phone == null || address == null)
+            {
+                ViewBag.mess = "Vui lòng điền đầy đủ thông tin trước khi đặt hàng";
+                User user = _context.Users.Where(n => n.UserId == userId).FirstOrDefault();
+                Product product = _context.Products.FirstOrDefault(p => p.ProductId == productId);
+                ViewBag.username = user.UserName;
+                int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
+                var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
+                            join s2 in _context.CartItems on s1.CartId equals s2.CartId
+                            select new OrderCartViewModel
+                            {
+                                CartItemId = s2.CartItemId,
+                                Image = s2.Product.Image,
+                                PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
+                                ProductName = s2.Product.ProductName,
+                                Count = s2.Count,
+                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+                            };
+                List<OrderCartViewModel> cartItems = query.ToList();
+                ViewBag.quantity = cartItems.Count;
+                ViewBag.cartItems = cartItems;
+                ViewBag.totalCartItems = cartItems.Sum(n => n.Total);
+                ViewBag.quantity = _context.CartItems.Where(n => n.CartId == cartId).Count();
+                ViewBag.ProductId = productId;
+                ViewBag.ProductName = product.ProductName;
+                ViewBag.Count = count;
+                ViewBag.Total = product.PromotionalPrice * count;
+                return View(user);
+            }
+            Order order = new Order
 			{
 				UserId = userId,
 				Receiver = receiver,

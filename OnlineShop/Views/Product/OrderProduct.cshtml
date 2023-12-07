@@ -3,7 +3,13 @@
     ViewData["Title"] = "OrderProduct";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+<br />
+@if (ViewBag.mess != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert" style="text-align:center;">
+        <strong>Đặt hàng thất bại!</strong> @ViewBag.mess
+    </div>
+}
 <!-- Begin Main Content Area -->
         <main class="main-content">
             <div class="checkout-area section-space-y-axis-100">
