@@ -134,6 +134,25 @@ namespace OnlineShop.Areas.Admin.Controllers
                         }
                     }
                 }
+                var lst = _context.Users.ToList();
+                foreach (var item in lst)
+                {
+                    if (item.IdCard == user.IdCard)
+                    {
+                        ViewBag.mess = "ID đã tồn tại";
+                        return View();
+                    }
+                    if (item.Email == user.Email)
+                    {
+                        ViewBag.mess = "Email đã tồn tại";
+                        return View();
+                    }
+                    if (user.Phone == item.Phone)
+                    {
+                        ViewBag.mess = "SĐT đã tồn tại";
+                        return View();
+                    }
+                }
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
                 User customer = _context.Users.FirstOrDefault(x => x.Email == user.Email);
@@ -230,6 +249,25 @@ namespace OnlineShop.Areas.Admin.Controllers
                                 ViewBag.mess = "Vui lòng điển đẩy đủ thông tin";
                                 return View();
                             }
+                        }
+                    }
+                    var lst = _context.Users.ToList();
+                    foreach (var item in lst)
+                    {
+                        if (item.IdCard == user.IdCard)
+                        {
+                            ViewBag.mess = "ID đã tồn tại";
+                            return View();
+                        }
+                        if (item.Email == user.Email)
+                        {
+                            ViewBag.mess = "Email đã tồn tại";
+                            return View();
+                        }
+                        if (user.Phone == item.Phone)
+                        {
+                            ViewBag.mess = "SĐT đã tồn tại";
+                            return View();
                         }
                     }
                     _context.Update(user);
