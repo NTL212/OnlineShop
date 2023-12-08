@@ -414,6 +414,7 @@ namespace OnlineShop.Controllers
             ViewBag.cartItems = lst;
             ViewBag.totalCartItems = lst.Sum(n => n.Total);
             List<Order> orders = _context.Orders.Include(o=>o.Status).Where(o=>o.UserId== userId).ToList();
+            ViewBag.numOfOrders = orders.Count;
             return View(orders);
         }
         public async Task<IActionResult> OrderDetail(int id)
