@@ -74,6 +74,12 @@ namespace OnlineShop.Controllers
         {
             if (ModelState.IsValid)
             {
+                if(user.UserName == null || user.IdCard == null || user.Email == null || 
+                    user.Phone == null || user.Password == null || user.Address == null)
+                {
+                    ViewBag.mess = "Vui lòng điền đẩy đủ thông tin";
+                    return View();
+                }
                 HttpContext.Session.SetString("username", user.UserName);
                 HttpContext.Session.SetString("idCard", user.IdCard);
                 HttpContext.Session.SetString("email", user.Email);
