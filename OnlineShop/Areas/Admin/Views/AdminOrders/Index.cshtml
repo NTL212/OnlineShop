@@ -53,10 +53,10 @@
                 <td>
                     <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a> |
                     <a class="btn btn-success" asp-action="Edit" asp-route-id="@item.OrderId">Xác nhận</a> |
-                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.OrderId">Từ chối</a>
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.OrderId">Hủy</a>
                 </td>
             }
-            @if(item.Status.StatusName == "Đã nhận" || item.Status.StatusName == "Từ chối"){
+            @if(item.Status.StatusName == "Đã nhận" || item.Status.StatusName == "Đã hủy"){
                 <td>
                     <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a>
                 </td>

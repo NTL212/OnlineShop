@@ -16,7 +16,7 @@
             @Html.DisplayFor(model => model.User.UserName)
         </dd>
         <dt>
-            Người đặt
+            Người nhận
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Receiver)
@@ -99,7 +99,7 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="OrderId" />
-        <input type="submit" value="Từ chối" class="btn btn-danger" /> |
+        <input type="submit" value="Hủy" class="btn btn-danger" /> |
         <a asp-action="Index">Trở về danh sách</a>
     </form>
 </div>

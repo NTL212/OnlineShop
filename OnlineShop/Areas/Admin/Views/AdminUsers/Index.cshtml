@@ -49,17 +49,29 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Role.RoleName)
             </td>
-            <td>
-                <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminUsers" asp-action="Edit" asp-route-id="@item.UserId">Chỉnh sửa</a> |
-                <a class="btn btn-warning" asp-area="Admin" asp-controller="AdminUsers" asp-action="Details" asp-route-id="@item.UserId">Chi tiết</a> |
-                @if (item.IsDeleted == 0)    {
-                    <a class="btn btn-danger" asp-area="Admin" asp-controller="AdminUsers" asp-action="Delete" asp-route-id="@item.UserId">Khóa</a>
-                }
-                 @if (item.IsDeleted == 1)    {
-                    <a class="btn btn-success" asp-area="Admin" asp-controller="AdminUsers" asp-action="Delete" asp-route-id="@item.UserId">Mở khóa</a>
-                }
+            @if (item.RoleId == 2)
+            {
+                <td>
+                    <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminUsers" asp-action="Edit" asp-route-id="@item.UserId">Chỉnh sửa</a> |
+                    <a class="btn btn-warning" asp-area="Admin" asp-controller="AdminUsers" asp-action="Details" asp-route-id="@item.UserId">Chi tiết</a> |
+                    @if (item.IsDeleted == 0)
+                    {
+                        <a class="btn btn-danger" asp-area="Admin" asp-controller="AdminUsers" asp-action="Delete" asp-route-id="@item.UserId">Khóa</a>
+                    }
+                    @if (item.IsDeleted == 1)
+                    {
+                        <a class="btn btn-success" asp-area="Admin" asp-controller="AdminUsers" asp-action="Delete" asp-route-id="@item.UserId">Mở khóa</a>
+                    }
             </td>
-        </tr>
+            }
+                @if(item.RoleId == 1)
+                {
+                    <td>
+                        <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminUsers" asp-action="Edit" asp-route-id="@item.UserId">Chỉnh sửa</a> |
+                        <a class="btn btn-warning" asp-area="Admin" asp-controller="AdminUsers" asp-action="Details" asp-route-id="@item.UserId">Chi tiết</a>
+                    </td>
+                }
+            </tr>
 }
     </tbody>
 </table>

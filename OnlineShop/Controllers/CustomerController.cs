@@ -413,7 +413,7 @@ namespace OnlineShop.Controllers
             ViewBag.quantity = lst.Count;
             ViewBag.cartItems = lst;
             ViewBag.totalCartItems = lst.Sum(n => n.Total);
-            List<Order> orders = _context.Orders.Include(o=>o.Status).Where(o=>o.UserId== userId).ToList();
+            List<Order> orders = _context.Orders.Include(o=>o.Status).Where(o=>o.UserId== userId).OrderByDescending(o => o.Date).ToList();
             ViewBag.numOfOrders = orders.Count;
             return View(orders);
         }
@@ -454,6 +454,63 @@ namespace OnlineShop.Controllers
             {
                 return RedirectToAction("Orders", "Customer");
             }
+        }
+        public async Task<IActionResult> CancelOrder(int id)
+        {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum)
+            {
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Customer")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Admin" });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+            try
+            {
+                Order order = _context.Orders.Include(o => o.Status).Where(o => o.OrderId == id).FirstOrDefault();
+                if (order.UserId != userId || order == null)
+                {
+                    return RedirectToAction("Orders", "Customer");
+                }
+                var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id)
+                            select new OrderCartViewModel
+                            {
+                                ProductName = s1.Product.ProductName,
+                                Count = s1.Count,
+                                Total = (decimal)s1.Product.PromotionalPrice * s1.Count
+                            };
+                List<OrderCartViewModel> lst = query.ToList();
+                ViewBag.total = lst.Sum(n => n.Total);
+                ViewBag.lst = lst;
+                return View(order);
+            }
+            catch
+            {
+                return RedirectToAction("Orders", "Customer");
+            }
+        }
+
+        [HttpPost, ActionName("CancelOrder")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelOrderConfirmed(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            order.StatusId = 4;
+            _context.Update(order);
+            await _context.SaveChangesAsync();
+            List<OrderItem> orderItems = _context.OrderItems.Where(n => n.OrderId == id).ToList();
+            foreach (OrderItem orderItem in orderItems)
+            {
+                Product product = _context.Products.FirstOrDefault(n => n.ProductId == orderItem.ProductId);
+                product.Quantity += orderItem.Count;
+                _context.Products.Update(product);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Orders));
         }
 
         public string encryptPassword(string password)

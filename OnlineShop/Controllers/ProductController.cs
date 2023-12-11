@@ -30,6 +30,10 @@ namespace OnlineShop.Controllers
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
             if (isNum)
             {
+                if(_context.Users.FirstOrDefault(n => n.UserId == userId).RoleId == 1)
+                {
+                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+                }
                 ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
                 int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
                 var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
@@ -62,8 +66,12 @@ namespace OnlineShop.Controllers
             //ViewData["Categories"] = categoryList;
             return View("Index", results);
         }
-        public IActionResult Detail(int id)
+        public IActionResult Detail(int id, string mess)
         {
+            if(mess != null)
+            {
+                ViewBag.mess = mess;
+            }
             int userId;
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
             if (isNum)
@@ -107,7 +115,16 @@ namespace OnlineShop.Controllers
         }
 		public IActionResult OrderProduct(int productId, int quantity)
 		{
-			int userId;
+            if (quantity <= 0)
+            {
+                quantity = 1;
+            }
+            if (quantity > _context.Products.FirstOrDefault(n => n.ProductId == productId).Quantity)
+            {
+                string mess = "Mua thất bại";
+                return RedirectToAction("Detail", "Product", new { id = productId, mess = mess });
+            }
+            int userId;
 			string roleName = HttpContext.Session.GetString("roleName");
 			bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
 			if (!isNum)
@@ -199,6 +216,8 @@ namespace OnlineShop.Controllers
                 ProductId = productId,
                 Count = count
             };
+            Product product1 = _context.Products.FirstOrDefault(n => n.ProductId == productId);
+            product1.Quantity -= count;
             _context.OrderItems.Add(orderItem);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", "Product");

@@ -10,7 +10,7 @@
     <main class="main-content">
         <div class="container">
             <div class="row">
-                <div class="col-lg-9">
+                <div class="col-lg-10">
         <div class="myaccount-orders">
             <h4 class="small-title">Đơn hàng của tôi</h4>
             <div class="table-responsive">
@@ -40,9 +40,16 @@
                                         <td>Đã thanh toán</td>
                                     }
                                     <td>
+                                        
                                         <a asp-action="OrderDetail" asp-controller="Customer" asp-route-id="@item.OrderId" class="btn btn-secondary btn-primary-hover"><span>Xem chi  tiết</span></a>
                                     </td>
-                                </tr>
+                                @if (item.StatusId == 1 || item.StatusId == 2)
+                                {
+                                    <td>
+                                        <a asp-action="CancelOrder" asp-controller="Customer" asp-route-id="@item.OrderId" class="btn btn-danger btn-primary-hover"><span>Hủy</span></a>
+                                    </td>
+                                }
+                            </tr>
                             }
                         </tbody>
                     </table>
