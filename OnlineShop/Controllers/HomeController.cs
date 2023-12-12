@@ -25,15 +25,22 @@ namespace OnlineShop.Controllers
         }
 
         public IActionResult Index(int? page)
-        {
+        {   
             int userId;
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
             if (isNum)
             {
                 ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             }
-            var productList = _context.Products.Include(p => p.Category).Include(p => p.Style).ToPagedList(page ?? 1, 5);
+        
+            var productList = _context.Products.Include(p => p.Category).Include(p => p.Style).OrderByDescending(p=>p.Date).Take(8).ToList();
             var categoryList = _context.Categories.ToList();
+            var categories = HttpContext.Session.Get("categories");
+            if (categories == null)
+            {   var new_categories = categoryList.AsQueryable().Select(x=>x.CategoryName).ToList();
+                string result = string.Join(",", new_categories);
+                HttpContext.Session.SetString("categories", result);
+            }
             var homeViewModel = new HomeViewModel();
             homeViewModel.productList = productList;
             homeViewModel.categoryList = categoryList;

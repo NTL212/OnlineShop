@@ -1,4 +1,4 @@
-﻿@model IEnumerable<OnlineShop.Models.Product>
+﻿@model OnlineShop.ViewModels.ProductViewModel
 @{
     ViewData["Title"] = "Sản phẩm";
 }
@@ -10,10 +10,11 @@
     <div class="container h-100">
         <div class="row h-100">
             <div class="col-lg-12">
+
                 <div class="breadcrumb-item">
                     <ul>
                         <li>
-                            <a href="@Url.Action("Index", "Product")">Trang chủ <i class="pe-7s-angle-right"></i></a>
+                            <a href="@Url.Action("Index", "Home")">Trang chủ <i class="pe-7s-angle-right"></i></a>
                         </li>
                         @{
                             var url = Context.Request.Path + Context.Request.QueryString;
@@ -36,26 +37,37 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
-                @*<div class="product-topbar">
+                <div class="product-topbar">
                     <ul>
                         <li class="short">
-                            <select class="nice-select wide">
-                                <option value="1">sắp xếp theo</option>
-                                <option value="2">mới nhât</option>
-                                <option value="3">giá cao</option>
-                                <option value="4">giá thấp</option>
-                            </select>
+                           <div style="display:inline-flex">
+                                <form asp-action="Index" asp-controller="Product" method="get" id="sortForm">
+                                    @{
+                                        // Lấy tham số categoryName từ URL
+                                        string categoryName = Context.Request.Query["categoryName"];
+                                        if (categoryName!=null)
+                                        {
+                                            <input type="hidden" name="categoryName" value="@categoryName" />
+                                        }
+                                    }
+                                    <select class="nice-select wide" asp-for="Sort" asp-items="@(new SelectList(ViewBag.Sort))">
+                                        <option>Sắp xếp theo</option>
+                                    </select>
+                                </form>
+                                <button class="btn btn-outline btn-primary-hover" type="submit" form="sortForm">Xếp</button>
+                           </div>
                         </li>
                     </ul>
-                </div>*@
+
+                </div>
                 <div class="tab-content text-charcoal pt-8">
                     <div class="tab-pane fade show active" id="grid-view" role="tabpanel" aria-labelledby="grid-view-tab">
                         <div class="product-grid-view row">
-                            @if(Model.ToList().Count < 1)
+                            @if (Model.productList.Count < 1)
                             {
                                 <p>Không tìm thấy sản phẩm</p>
                             }
-                            @foreach (var item in Model)
+                            @foreach (var item in Model.productList)
                             {   
                                 <div class="col-lg-4 col-sm-6 pt-6 pt-sm-0">
                                     <div class="product-item">
@@ -104,7 +116,7 @@
                         <div class="pagination-area pt-10">
                             <nav aria-label="Page navigation example">
                                 <ul class="pagination justify-content-center">
-                                    @Html.PagedListPager((IPagedList) Model, page => Url.Action("Index", new {page = page }),
+                                    @Html.PagedListPager((IPagedList) Model.productList, page => Url.Action("Index", new {page = page }),
                                     new PagedListRenderOptions {
                                     LiElementClasses = new string[] {"page-item"},
                                     PageClasses = new string[] {"page-link"}
