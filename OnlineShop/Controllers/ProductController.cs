@@ -24,7 +24,7 @@ namespace OnlineShop.Controllers
             _context = context;
         }
 
-        public IActionResult Index(int? page)
+        public IActionResult Index(int? page, string? categoryName, string? Sort)
         {
             int userId;
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
@@ -52,10 +52,31 @@ namespace OnlineShop.Controllers
                 ViewBag.cartItems = lst;
                 ViewBag.totalCartItems = lst.Sum(n => n.Total);
             }
-            var productList = _context.Products.Include(p => p.Category).Include(p => p.Style).ToPagedList(page ?? 1, 6);
+            var productList = _context.Products.AsQueryable();
+            if (categoryName != null)
+            {
+                productList = productList.Where(p => p.Category.CategoryName.Contains(categoryName));
+
+            }
+            
+            if (Sort != null && Sort.Contains("Mới nhất"))
+            {
+                productList = productList.OrderByDescending(p => p.Date);
+            }
+            else if (Sort != null && Sort.Contains("Giá lớn nhất"))
+            {
+                productList = productList.OrderByDescending(p => p.Price);
+            }
+            else if (Sort != null && Sort.Contains("Giá thấp nhất"))
+            {
+                productList = productList.OrderBy(p => p.Price);
+            }
             //var categoryList = _context.Categories.ToList();
             //ViewData["Categories"] = categoryList;
-            return View(productList);
+            var productVM = new ProductViewModel();
+            productVM.productList = productList.ToPagedList(page ?? 1, 6);
+            ViewBag.Sort = new List<String> { "Mới nhất", "Giá lớn nhất", "Giá thấp nhất" };
+            return View(productVM);
         }
         [HttpPost]
         public IActionResult Search(int? page, string keyword)

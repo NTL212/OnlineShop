@@ -56,7 +56,7 @@ namespace OnlineShop.Controllers
                     }
                     else if (lst[0].RoleId == 2) {
                         HttpContext.Session.SetString("roleName", "Customer");
-                        return RedirectToAction("Index", "Product");
+                        return RedirectToAction("Index", "Home");
                     }
                 }
                 ViewBag.mess = "Email hoặc mật khẩu không chính xác";

@@ -15,7 +15,7 @@
                     <div class="breadcrumb-item">
                         <ul>
                             <li>
-                                <a href="@Url.Action("Index", "Product")">Trang chủ <i class="pe-7s-angle-right"></i></a>
+                                <a href="@Url.Action("Index", "Home")">Trang chủ <i class="pe-7s-angle-right"></i></a>
                             </li>
                             <li>Chi tiết sản phẩm</li>
                         </ul>
@@ -46,7 +46,7 @@
                                                     <span class="title">Danh mục :</span>
                                                     <ul>
                                                         <li>
-                                                            <h6>@Model.Category.CategoryName</h6>
+                                                        <h6><a asp-controller="Product" asp-action="Index" asp-route-categoryName="@Model.Category.CategoryName">@Model.Category.CategoryName</a></h6>
                                                         </li>
                                                     </ul>
                                                 </div>
