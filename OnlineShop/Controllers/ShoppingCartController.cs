@@ -26,6 +26,18 @@ namespace OnlineShop.Controllers
 		[ValidateAntiForgeryToken]
 		public IActionResult AddToCart(int productId, int count)
 		{
+			if(count <= 0)
+            {
+				count = 1;
+            }
+			if(count > _context.Products.FirstOrDefault(n => n.ProductId == productId).Quantity)
+            {
+				string mess = "Thêm vào giỏ hàng thất bại";
+				return RedirectToAction("Detail", "Product", new { id = productId, mess = mess });
+            }
+			Product product = _context.Products.FirstOrDefault(n => n.ProductId == productId);
+			product.Quantity -= count;
+			_context.Update(product);
 			int userId;
 			bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
 			if (!isNum)
@@ -104,6 +116,9 @@ namespace OnlineShop.Controllers
 		public async Task<IActionResult> Remove(int id)
 		{
 			CartItem cartItems = _context.CartItems.FirstOrDefault(n => n.CartItemId == id);
+			Product product = _context.Products.FirstOrDefault(n => n.ProductId == cartItems.ProductId);
+			product.Quantity += cartItems.Count;
+			_context.Products.Update(product);
 			_context.CartItems.Remove(cartItems);
 			await _context.SaveChangesAsync();
 			return RedirectToAction("Index");

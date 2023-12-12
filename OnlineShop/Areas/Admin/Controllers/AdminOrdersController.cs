@@ -224,6 +224,14 @@ namespace OnlineShop.Areas.Admin.Controllers
             order.StatusId = 4;
             _context.Update(order);
             await _context.SaveChangesAsync();
+            List<OrderItem> orderItems = _context.OrderItems.Where(n => n.OrderId == id).ToList();
+            foreach(OrderItem orderItem in orderItems)
+            {
+                Product product = _context.Products.FirstOrDefault(n => n.ProductId == orderItem.ProductId);
+                product.Quantity += orderItem.Count;
+                _context.Products.Update(product);
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Index));
         }
 

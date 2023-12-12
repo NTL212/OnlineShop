@@ -52,13 +52,18 @@
                                                 </div>
                                                 <ul>
                                                     <li>
+                                                        <p style="padding-right:17px;">Số lượng trong kho: @Model.Quantity</p>
+                                                    </li>
+                                                </ul>
+                                                <ul>
+                                                    <li>
                                                         <p style="padding-right:17px;">Đánh giá:</p>
                                                     </li>
                                                 @{
                                                     var i = Model.Rating;
-                                                                        @while (i > 0)
+                                                                            @while (i > 0)
                                                     {
-                                                                            <li><i class="pe-7s-star"></i></li>
+                                                                                <li><i class="pe-7s-star"></i></li>
                                                         i--;
                                                     }
                                                 }
@@ -110,6 +115,12 @@
                                 </div>
                             </div>
                         </div>
+                        @if(ViewBag.mess != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert" style="text-align:center;">
+                                <strong>@ViewBag.mess!</strong> Số lượng sản phẩm đã chọn vượt quá số lượng còn lại trong kho
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

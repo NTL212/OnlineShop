@@ -116,8 +116,21 @@ namespace OnlineShop.Areas.Admin.Controllers
                     }
                 }
             }
+            if(product.PromotionalPrice >= product.Price)
+            {
+                ViewBag.mess = "Giá khuyến mãi phải thấp hơn giá gốc";
+                return View();
+            }
             if (ModelState.IsValid)
             {
+                if(product.Quantity <= 0)
+                {
+                    product.Quantity = 1;
+                }
+                if(product.Sold < 0)
+                {
+                    product.Sold = 0;
+                }
                 if (Image != null)
                 {
                     product.Image = Image.FileName;
