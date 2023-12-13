@@ -38,9 +38,14 @@
 													</td>
 													<td class="product-name"><a href="#">@item.ProductName</a></td>
 													<td class="product-price"><span class="amount">@item.PromotionalPrice.ToString("#,##0") VNĐ</span></td>
-													<td class="product-price">
-															<span class="amount">@item.Count</span>
-													</td>
+												<td class="quantity">
+														<div class="cart-plus-minus">
+															<input class="cart-plus-minus-box" value="@item.Count" min="0" type="text" id="quantityInput">
+															<input  value="@item.CartItemId" type="hidden" id="cartItemId">
+														</div>
+
+												</td>
+
 													<td class="product-subtotal"><span class="amount">@item.Total.ToString("#,##0") VNĐ</span></td>
 													<td class="product_remove">
 														<form asp-controller="ShoppingCart" asp-action="Remove" method="post">
@@ -52,6 +57,58 @@
 											}
 										}
 									</tbody>
+								@section Scripts {
+								<script>
+									document.addEventListener('DOMContentLoaded', function () {
+										// Lấy phần tử input và form theo ID
+										var quantityInput = document.getElementById("quantityInput");
+										var cartItemId = document.getElementById("cartItemId");
+										console.log(quantityInput.value)
+										var myForm = document.getElementById("myForm");
+										// Bắt sự kiện khi giá trị thay đổi
+										quantityInput.addEventListener("change", () => {
+											updateCart(quantityInput.value, cartItemId.value);
+
+										});
+										$('.cart-plus-minus').append(
+											'<div class="dec qtybutton"><i class="fa fa-minus"></i></div><div class="inc qtybutton"><i class="fa fa-plus"></i></div>'
+										);
+										$('.qtybutton').on('click', function () {
+											var myForm = document.getElementById("myForm");
+											var quantityInput = document.getElementById("quantityInput");
+											var cartItemId = document.getElementById("cartItemId");
+											var $button = $(this);
+											var oldValue = $button.parent().find('input').val();
+
+											if ($button.hasClass('inc')) {
+												var newVal = parseFloat(oldValue) + 1;
+												quantityInput.value = newVal;
+											} else {
+													var newVal = parseFloat(oldValue) - 1;
+													quantityInput.value = newVal;
+											}
+
+											updateCart(quantityInput.value, cartItemId.value);
+											$button.parent().find('input').val(newVal);
+										});
+										function updateCart(newQuantity, cartItemId) {
+											var url = '@Url.Action("UpdateCart", "ShoppingCart")' + '?cartItemId=' + cartItemId + '&count=' + newQuantity;
+											$.ajax({
+												url: url,
+												type: 'GET',
+												success: function (data) {
+													console.log('Cart updated successfully:', data);
+													location.reload(true);
+												},
+												error: function (error) {
+													console.error('Error updating cart:', error);
+												}
+											});
+
+										}
+									});
+								</script>
+							}
 								</table>
 							</div>
 							<div class="row">
