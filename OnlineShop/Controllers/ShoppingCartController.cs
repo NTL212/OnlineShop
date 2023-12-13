@@ -8,6 +8,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using OnlineShop.ViewModels;
+using Microsoft.CodeAnalysis;
 
 namespace OnlineShop.Controllers
 {
@@ -75,6 +76,45 @@ namespace OnlineShop.Controllers
 				_logger.LogError(ex, "Error adding product to cart.");
 				TempData["ErrorMessage"] = "Error adding the product to the cart.";
 				return RedirectToAction("Index");
+			}
+		}
+
+		[HttpGet]
+		public IActionResult UpdateCart(int cartItemId, int count)
+		{
+			int userId;
+			bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+			if (!isNum)
+			{
+				return BadRequest("Ko co user");
+			}
+			CartItem cartItem = _context.CartItems.FirstOrDefault(n => n.CartItemId == cartItemId && n.IsDeleted == 0 && n.Cart.UserId == userId);
+			if (count < 1)
+			{
+				_context.CartItems.Remove(cartItem);
+				_context.SaveChangesAsync();
+				return Ok();
+			}
+			Product product = _context.Products.FirstOrDefault(n => n.ProductId == cartItem.ProductId);
+			ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+			try
+			{
+				if (cartItem != null)
+				{
+					product.Quantity -= count;
+					_context.Update(product);
+					cartItem.Count = count;
+					_context.Update(cartItem);
+				}
+
+				_context.SaveChangesAsync();
+				return Ok();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error adding product to cart.");
+				TempData["ErrorMessage"] = "Error adding the product to the cart.";
+				return BadRequest("Lỗi");
 			}
 		}
 
