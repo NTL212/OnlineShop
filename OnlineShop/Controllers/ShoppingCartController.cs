@@ -86,7 +86,7 @@ namespace OnlineShop.Controllers
 			bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
 			if (!isNum)
 			{
-				return BadRequest("Ko co user");
+				return BadRequest();
 			}
 			CartItem cartItem = _context.CartItems.FirstOrDefault(n => n.CartItemId == cartItemId && n.IsDeleted == 0 && n.Cart.UserId == userId);
 			if (count < 1)
@@ -96,6 +96,10 @@ namespace OnlineShop.Controllers
 				return Ok();
 			}
 			Product product = _context.Products.FirstOrDefault(n => n.ProductId == cartItem.ProductId);
+			if (count > product.Quantity)
+			{
+				return BadRequest();
+			}
 			ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
 			try
 			{
@@ -114,7 +118,7 @@ namespace OnlineShop.Controllers
 			{
 				_logger.LogError(ex, "Error adding product to cart.");
 				TempData["ErrorMessage"] = "Error adding the product to the cart.";
-				return BadRequest("Lỗi");
+				return BadRequest();
 			}
 		}
 
@@ -141,6 +145,7 @@ namespace OnlineShop.Controllers
 							Image = s2.Product.Image,
 							PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
 							ProductName = s2.Product.ProductName,
+							ProductId = s2.Product.ProductId,
 							Count = s2.Count,
 							Total = (decimal)s2.Product.PromotionalPrice * s2.Count
 						};
