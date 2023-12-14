@@ -145,6 +145,7 @@ namespace OnlineShop.Controllers
 							Image = s2.Product.Image,
 							PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
 							ProductName = s2.Product.ProductName,
+							ProductId = s2.Product.ProductId,
 							Count = s2.Count,
 							Total = (decimal)s2.Product.PromotionalPrice * s2.Count
 						};

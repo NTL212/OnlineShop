@@ -11,5 +11,7 @@ namespace OnlineShop.ViewModels
         public decimal PromotionalPrice { get; set; }
         public int Count { get; set; }
         public decimal Total { get; set; }
+
+        public int ProductId { get; set; }
     }
 }

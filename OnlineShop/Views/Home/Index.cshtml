@@ -54,38 +54,55 @@
                     <span class="sub-title text-primary">Sản phẩm mới nhất</span>
                 </div>
                 <div class="row">
-               @foreach(var item in Model.productList)
-                {
-                    <div class="col-xl-3 col-lg-4 col-sm-6 pt-6">
-                        <div class="product-item">
-                            <div class="product-img img-zoom-effect">
-                                <a href="single-product.html">
-                                    <img class="img-full" src="~/upload/images/product/@item.Image" alt="Product Images">
-                                </a>
-                                <div class="product-add-action">
-                                    <ul>
-                                        <li>
-                                            <a asp-controller="Product" asp-action="Detail" asp-route-id="@item.ProductId">
-                                                <i class="pe-7s-wallet"></i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a asp-controller="Product" asp-action="Detail" asp-route-id="@item.ProductId">
-                                                <i class="pe-7s-cart"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
+                @{
+                    String class_name = "col-xl-3 col-lg-4 col-sm-6 pt-6";
+                }
+                @{
+                    for (var i = 0; i < Model.productList.Count; i++)
+                    {
+
+                        
+                        <div class="@class_name">
+                            <div class="product-item">
+                                <div class="product-img img-zoom-effect">
+                                    <a href="single-product.html">
+                                        <img class="img-full" src="~/upload/images/product/@Model.productList[i].Image" alt="Product Images">
+                                    </a>
+                                    <div class="product-add-action">
+                                        <ul>
+                                            <li>
+                                                <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
+                                                    <i class="pe-7s-wallet"></i>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
+                                                    <i class="pe-7s-cart"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="product-content">
-                                <a class="product-name" href="single-product.html">@item.ProductName</a>
-                                <div class="price-box pb-1">
-                                    <span class="new-price">@item.Price</span>
+                                <div class="product-content">
+                                   
+                                    @if(Model.productList[i].ProductName.Length < 20)
+                                    {
+                                        <a class="product-name" asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">@Model.productList[i].ProductName </a>
+                                        <br />
+                                    }
+                                    else
+                                    {
+                                        <a class="product-name" asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">@Model.productList[i].ProductName</a>
+                                    }
+
+                                    <div class="price-box pb-1">
+                                        <span class="new-price">@Model.productList[i].PromotionalPrice.ToString("#,##0") VNĐ</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                }
+                    }
+               }
 
             </div>
         </div>
