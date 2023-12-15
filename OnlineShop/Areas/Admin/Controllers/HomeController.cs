@@ -18,7 +18,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public IActionResult Index(string selectedYear)
         {
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
@@ -33,6 +33,10 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             int year = DateTime.Now.Year;
+            if(selectedYear != null)
+            {
+                year = int.Parse(selectedYear);
+            }
             int month = DateTime.Now.Month;
             if(totalRevenue(year) != 0)
             {
@@ -44,33 +48,40 @@ namespace OnlineShop.Areas.Admin.Controllers
                 ViewBag.totalRevenue = "0 VNĐ";
                 ViewBag.averageRevenue = "0 VNĐ";
             }
-            if(growth(year) == 0)
+            if(growth(year) == -1)
             {
-                ViewBag.growth = "0";
+                ViewBag.growth = "Chưa có dữ liệu";
             }
             else 
             {
-                ViewBag.growth = string.Format("{0:0.00}", growth(year));
+                ViewBag.growth = string.Format("{0:0.00}", growth(year)) + "%";
             }
-            ViewBag.totalUsers = totalUsers();
-            ViewBag.totalOrders = totalOrders();
-            List<string> monthlyRevenueLst = new List<string>();
-            for (int i = 1; i <=12; i++)
+            ViewBag.totalUsers = totalUsers(year);
+            ViewBag.totalOrders = totalOrders(year);
+            List<decimal> monthlyRevenueLst = new List<decimal>();
+            for (int i = 1; i <= 12; i++)
             {
-                if(monthlyRevenue(i, year) == 0 && i <= month)
+                if (monthlyRevenue(i, year) == 0 && i <= month)
                 {
-                    monthlyRevenueLst.Add("0 VNĐ");
-                }   
-                else if(monthlyRevenue(i, year) == 0 && i > month)
+                    monthlyRevenueLst.Add(0);
+                }
+                else if (monthlyRevenue(i, year) == 0 && i > month)
                 {
-                    monthlyRevenueLst.Add("Chưa có số liệu");
+                    monthlyRevenueLst.Add(0);
                 }
                 else
                 {
-                    monthlyRevenueLst.Add(string.Format("{0:0,0} VNĐ", monthlyRevenue(i, year)));
+                    monthlyRevenueLst.Add(monthlyRevenue(i, year));
                 }
             }
+            List<int> years = _context.Orders
+                            .OrderByDescending(n => n.Date.HasValue ? n.Date.Value.Year : 0)
+                            .Select(n => n.Date.HasValue ? n.Date.Value.Year : 0)
+                            .Distinct()
+                            .ToList();
+            ViewBag.Years = years;
             ViewBag.monthlyRevenue = monthlyRevenueLst;
+            ViewBag.selectedYear = year;
             return View();
         }
         public decimal totalRevenue(int year)
@@ -136,22 +147,29 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             return 0;
         }
-        public int totalUsers()
+        public int totalUsers(int year)
         {
-            int totalUser = _context.Users.Count();
+            int totalUser = _context.Users.Where(n => n.Date.Value.Year == year).Count();
             return totalUser;
         }
-        public int totalOrders()
+        public int totalOrders(int year)
         {
-            int totalOrders = _context.Orders.Count();
+            int totalOrders = _context.Orders.Where(n => n.Date.Value.Year == year).Count();
             return totalOrders;
         }
         public decimal growth(int year)
         {
-            decimal lastYear = totalRevenue(year - 1);
-            decimal theYearBeforeLast = totalRevenue(year - 2);
-            decimal growth = (lastYear - theYearBeforeLast) / theYearBeforeLast * 100;
-            return growth;
+            try
+            {
+                decimal lastYear = totalRevenue(year - 1);
+                decimal theYearBeforeLast = totalRevenue(year - 2);
+                decimal growth = (lastYear - theYearBeforeLast) / theYearBeforeLast * 100;
+                return growth;
+            }
+            catch
+            {
+                return -1;
+            }
         }
     }
 }

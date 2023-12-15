@@ -30,6 +30,10 @@ namespace OnlineShop.Controllers
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
             if (isNum)
             {
+                if (_context.Users.FirstOrDefault(n => n.UserId == userId).RoleId == 1)
+                {
+                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+                }
                 ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
                 var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
                             join s2 in _context.CartItems on s1.CartId equals s2.CartId

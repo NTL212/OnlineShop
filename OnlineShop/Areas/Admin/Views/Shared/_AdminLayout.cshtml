@@ -75,35 +75,33 @@
 	<script src="~/AdminAssets/js/app.js"></script>
 
 	<script>
-		document.addEventListener("DOMContentLoaded", function() {
+		document.addEventListener("DOMContentLoaded", function () {
 			var ctx = document.getElementById("chartjs-dashboard-line").getContext("2d");
 			var gradient = ctx.createLinearGradient(0, 0, 0, 225);
 			gradient.addColorStop(0, "rgba(215, 227, 244, 1)");
 			gradient.addColorStop(1, "rgba(215, 227, 244, 0)");
+			//Monthly Revenue
+			var monthlyRevenue = JSON.parse('@Html.Raw(Json.Serialize(ViewBag.monthlyRevenue))');
+        
+			// Tính toán giá trị lớn nhất trong monthlyRevenue
+			var maxRevenue = Math.max(...monthlyRevenue);
+
+			// Tính toán stepSize dựa trên giá trị lớn nhất và số lượng giá trị trên trục y
+			var stepSize = calculateStepSize(maxRevenue, 5);
+
+			// Tính toán các mốc trên trục y dựa trên giá trị lớn nhất và stepSize
+			var ticks = calculateTicks(maxRevenue, stepSize);
+
 			// Line chart
 			new Chart(document.getElementById("chartjs-dashboard-line"), {
 				type: "line",
 				data: {
-					labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+					labels: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"],
 					datasets: [{
-						label: "Sales ($)",
 						fill: true,
 						backgroundColor: gradient,
 						borderColor: window.theme.primary,
-						data: [
-							2115,
-							1562,
-							1584,
-							1892,
-							1587,
-							1923,
-							2566,
-							2448,
-							2805,
-							3438,
-							2917,
-							3327
-						]
+						data: monthlyRevenue
 					}]
 				},
 				options: {
@@ -112,7 +110,13 @@
 						display: false
 					},
 					tooltips: {
-						intersect: false
+						intersect: false,
+						callbacks: {
+							label: function (tooltipItem, data) {
+								var value = tooltipItem.yLabel;
+								return "Doanh thu: " + value.toLocaleString() + " VNĐ";
+							}
+						}
 					},
 					hover: {
 						intersect: true
@@ -131,7 +135,12 @@
 						}],
 						yAxes: [{
 							ticks: {
-								stepSize: 1000
+								stepSize: stepSize,
+								values: ticks, // Các mốc giá trị tự động
+								beginAtZero: true,
+								callback: function (value, index, values) {
+									return value.toLocaleString() + " VNĐ";
+								}
 							},
 							display: true,
 							borderDash: [3, 3],
@@ -143,7 +152,30 @@
 				}
 			});
 		});
+
+		// Hàm tính toán stepSize dựa trên giá trị lớn nhất và số lượng giá trị trên trục y
+		function calculateStepSize(maxValue, numTicks) {
+			// Tính toán ngưỡng dựa trên giá trị lớn nhất và số lượng giá trị trên trục y
+			var threshold = Math.pow(10, Math.floor(Math.log10(maxValue)) - 1);
+			var steps = Math.ceil(maxValue / threshold);
+			var desiredSteps = numTicks - 1;
+			return Math.max(threshold, maxValue / desiredSteps);
+		}
+
+		// Hàm tính toán các mốc trên trục y dựa trên giá trị lớn nhất và stepSize
+		function calculateTicks(maxValue, stepSize) {
+			var ticks = [];
+			var tick = 0;
+			while (tick <= maxValue) {
+				// Làm tròn giá trị theo quy luật
+				tick = Math.round(tick / stepSize) * stepSize;
+				ticks.push(tick);
+				tick += stepSize;
+			}
+			return ticks;
+		}
 	</script>
+
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
 			// Pie chart
