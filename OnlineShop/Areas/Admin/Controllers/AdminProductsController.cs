@@ -104,7 +104,13 @@ namespace OnlineShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(IFormFile Image, [Bind("ProductId,ProductName,Decription,Price,PromotionalPrice,Quantity,Sold,IsActive,Image,CategoryId,StyleId,Rating,Date,IsDeleted")] Product product)
         {
-            foreach(PropertyInfo pi in product.GetType().GetProperties())
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
+            ViewData["StyleId"] = new SelectList(_context.Styles, "StyleId", "StyleName");
+            foreach (PropertyInfo pi in product.GetType().GetProperties())
             {
                 if (pi.PropertyType == typeof(string))
                 {
@@ -112,19 +118,24 @@ namespace OnlineShop.Areas.Admin.Controllers
                     if (string.IsNullOrEmpty(value))
                     {
                         ViewBag.mess = "Vui lòng điển đẩy đủ thông tin";
-                        return View();
+                        return View(product);
                     }
                 }
             }
-            if(product.PromotionalPrice >= 0 && product.Price >= 0)
+            if (_context.Products.Where(n => n.ProductName == product.ProductName).Count() > 0)
+            {
+                ViewBag.mess = "Sản phẩm đã tồn tại";
+                return View(product);
+            }
+            if (product.PromotionalPrice <= 0 || product.Price <= 0)
             {
                 ViewBag.mess = "Giá khuyến mãi và giá gốc phải lớn hơn 0";
-                return View();
+                return View(product);
             }
             if(product.PromotionalPrice >= product.Price)
             {
                 ViewBag.mess = "Giá khuyến mãi phải thấp hơn giá gốc";
-                return View();
+                return View(product);
             }
             if (ModelState.IsValid)
             {
@@ -194,6 +205,12 @@ namespace OnlineShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, IFormFile Image, [Bind("ProductId,ProductName,Decription,Price,PromotionalPrice,Quantity,Sold,IsActive,Image,CategoryId,StyleId,Rating,Date,IsDeleted")] Product product)
         {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
+            ViewData["StyleId"] = new SelectList(_context.Styles, "StyleId", "StyleName", product.StyleId);
             foreach (PropertyInfo pi in product.GetType().GetProperties())
             {
                 if (pi.PropertyType == typeof(string))

@@ -85,7 +85,10 @@ namespace OnlineShop.Controllers
             .Where(p => p.ProductName.Contains(keyword)).ToPagedList(page ?? 1, 5);
             //var categoryList = _context.Categories.ToList();
             //ViewData["Categories"] = categoryList;
-            return View("Index", results);
+            var productVM = new ProductViewModel();
+            productVM.productList = results;
+            ViewBag.Sort = new List<String> { "Mới nhất", "Giá lớn nhất", "Giá thấp nhất" };
+            return View("Index", productVM);
         }
         public IActionResult Detail(int id, string mess)
         {
