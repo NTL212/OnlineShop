@@ -1,0 +1,108 @@
+﻿<link href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<style>
+    .invoice-title h2, .invoice-title h3 {
+        display: inline-block;
+    }
+
+    .table > tbody > tr > .no-line {
+        border-top: none;
+    }
+
+    .table > thead > tr > .no-line {
+        border-bottom: none;
+    }
+
+    .table > tbody > tr > .thick-line {
+        border-top: 2px solid;
+    }
+</style>
+<!------ Include the above in your HEAD tag ---------->
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+    		<div class="invoice-title">
+    			<h2>Hóa đơn</h2><h3 class="pull-right">Mã đơn hàng #@Model.Order.OrderId</h3>
+    		</div>
+    		<hr>
+    		<div class="row">
+    			<div class="col-xs-6">
+    				<address>
+    				<strong>Hóa đơn đến:</strong><br>
+    					@Model.User.UserName<br>
+                        @Model.User.Email<br>
+    				</address>
+    			</div>
+    			<div class="col-xs-6" style="padding-left:500px;">
+    				<address>
+        			<strong>Giao đến:</strong><br>
+    					@Model.Order.Receiver<br>
+                        @Model.Order.Email<br><br>
+                        <strong>Địa chỉ:</strong>
+    				    <p style="display: block; 
+                            width: 202px; height: auto;
+                            word-break: break-all; word-wrap: break-word;
+                            white-space: normal;">@Model.Order.Address</p>
+    				</address>
+    			</div>
+    		</div>
+    		<div class="row">
+    			<div class="col-xs-6">
+    				<address>
+    					<strong>Phương thức thanh toán:</strong><br>
+    					Visa ending **** 4242<br>
+    					jsmith@email.com
+    				</address>
+    			</div>
+    			<div class="col-xs-6" style="padding-left:500px;">
+    				<address>
+    					<strong>Ngày giao:</strong><br>
+    					@Model.Order.Date<br><br>
+    				</address>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+    
+    <div class="row">
+    	<div class="col-md-12">
+    		<div class="panel panel-default">
+    			<div class="panel-heading">
+    				<h3 class="panel-title"><strong>Đơn hàng</strong></h3>
+    			</div>
+    			<div class="panel-body">
+    				<div class="table-responsive">
+    					<table class="table table-condensed">
+    						<thead>
+                                <tr>
+        							<td><strong>Sản phẩm</strong></td>
+        							<td class="text-center"><strong>Giá</strong></td>
+        							<td class="text-center"><strong>Số lượng</strong></td>
+        							<td class="text-right"><strong>Tổng</strong></td>
+                                </tr>
+    						</thead>
+    						<tbody>
+                                @foreach(var item in Model.OrderItems)
+                                {
+    							    <tr>
+    								    <td>@item.ProductName</td>
+    								    <td class="text-center">@item.PromotionalPrice.ToString("#,##0") VNĐ</td>
+    								    <td class="text-center">@item.Count</td>
+    								    <td class="text-right">@item.Total.ToString("#,##0") VNĐ</td>
+    							    </tr>
+                                }
+    							<tr>
+    								<td class="no-line"></td>
+    								<td class="no-line"></td>
+    								<td class="no-line text-center"><strong>Tổng thanh toán</strong></td>
+    								<td class="no-line text-right">@Model.Total.ToString("#,##0") VNĐ</td>
+    							</tr>
+    						</tbody>
+    					</table>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+</div>

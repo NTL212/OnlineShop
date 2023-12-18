@@ -14,6 +14,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using OnlineShop.ViewModels;
 using System.Reflection;
+using Rotativa.AspNetCore;
 
 namespace OnlineShop.Controllers
 {
@@ -511,6 +512,54 @@ namespace OnlineShop.Controllers
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Orders));
+        }
+
+        public async Task<IActionResult> Invoice(int id)
+        {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum)
+            {
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Customer")
+            {
+                return RedirectToAction("Index", "Home", new { area = "Admin" });
+            }
+            try
+            {
+                User user = _context.Users.Find(userId);
+                Order order = _context.Orders.Include(o => o.Status).Where(o => o.OrderId == id).FirstOrDefault();
+                if (order.UserId != userId || order == null)
+                {
+                    return RedirectToAction("Orders", "Customer");
+                }
+                var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id)
+                            select new OrderCartViewModel
+                            {
+                                ProductName = s1.Product.ProductName,
+                                PromotionalPrice = (decimal)s1.Product.PromotionalPrice,
+                                Count = s1.Count,
+                                Total = (decimal)s1.Product.PromotionalPrice * s1.Count
+                            };
+                List<OrderCartViewModel> orderItems = query.ToList();
+                InvoiceViewModel invoice = new InvoiceViewModel
+                {
+                    User = user,
+                    Order = order,
+                    OrderItems = orderItems,
+                    Total = orderItems.Sum(n => n.Total)
+                };
+                return new ViewAsPdf(invoice)
+                {
+                    FileName = $"Invoice_{invoice.Order.OrderId}.pdf"
+                };
+            }
+            catch
+            {
+                return RedirectToAction("Orders", "Customer");
+            }
         }
 
         public string encryptPassword(string password)

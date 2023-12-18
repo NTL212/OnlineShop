@@ -284,14 +284,19 @@ namespace OnlineShop.Areas.Admin.Controllers
             order.IsPay = 1;
             _context.Update(order);
             await _context.SaveChangesAsync();
-            var orderItem = _context.OrderItems.Where(o => o.OrderId == id);
-            foreach(var item in orderItem)
+
+            var orderItems = _context.OrderItems.Where(o => o.OrderId == id).ToList();
+
+            foreach (var item in orderItems)
             {
-                Product product = _context.Products.Find(item.ProductId);
-                product.Sold += item.Count;
-                _context.Update(product);
-                await _context.SaveChangesAsync();
+                Product product = _context.Products.SingleOrDefault(p => p.ProductId == item.ProductId);
+                if (product != null)
+                {
+                    product.Sold += item.Count;
+                    _context.Update(product);
+                }
             }
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
