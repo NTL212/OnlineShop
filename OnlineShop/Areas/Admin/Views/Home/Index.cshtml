@@ -126,19 +126,43 @@
 			<div class="card-header">
 				<h1 class="card-title mb-0" style="color:black;">Doanh thu theo tháng trong năm @ViewBag.selectedYear</h1>
 			</div>
-			@for(var i = 0; i < 12; i++)
-			{
-				<div class="card-body d-flex">
-					<div class="align-items-center">
-						<div class="m-t-15" style="height: 5px">
-							<p>Tháng @(i+1): @ViewBag.monthlyRevenue[i].ToString("#,##0") VNĐ</p>
-						</div>
-					</div>
-				</div>
-			}
-			<div class="card-header">
-				<h1 class="card-title mb-0" style="color:black;">Doanh thu trung bình: @ViewBag.averageRevenue</h1>
-			</div>
+			<table class="table table-condensed">
+    			<thead>
+                    <tr>
+        				<td class="text-center"><strong>Tháng</strong></td>
+						<td class="text-center"><strong>Số sản phẩm đã bán</strong></td>
+						<td class="text-center"><strong>Số đơn hàng đã đặt</strong></td>
+        				<td class="text-center"><strong>Doanh thu</strong></td>
+						<td class="text-center"><strong></strong></td>
+                    </tr>
+    			</thead>
+    			<tbody>
+                    @for(var i = 0; i < 12; i++)
+                    {
+    					<tr>
+    						<td class="text-center">Tháng @(i+1)</td>
+							<td class="text-center">@ViewBag.monthlySold[i].ToString("#,##0")</td>
+							<td class="text-center">@ViewBag.monthlyOrders[i].ToString("#,##0")</td>
+    						<td class="text-center">@ViewBag.monthlyRevenue[i].ToString("#,##0") VNĐ</td>
+							<td class="text-center"><a href="@Url.Action("MonthDetail", "Home", new { month = @i+1, year = @ViewBag.selectedYear })" class="btn btn-warning">Chi tiết</a></td>
+    					</tr>
+                    }
+					<tr>
+    					<td class="no-line text-center"><strong>Tổng doanh thu</strong></td>
+						<td class="text-center"><strong></strong></td>
+						<td class="text-center"><strong></strong></td>
+    					<td class="no-line text-center"><strong>@ViewBag.totalRevenue</strong></td>
+						<td class="text-center"><strong></strong></td>
+    				</tr>
+					<tr>
+    					<td class="no-line text-center"><strong>Doanh thu trung bình</strong></td>
+						<td class="text-center"><strong></strong></td>
+						<td class="text-center"><strong></strong></td>
+    					<td class="no-line text-center"><strong>@ViewBag.averageRevenue</strong></td>
+						<td class="text-center"><strong></strong></td>
+    				</tr>
+    			</tbody>
+    		</table>
 		</div>
 	</div>
 </div>
