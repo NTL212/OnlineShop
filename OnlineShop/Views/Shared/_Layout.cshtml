@@ -468,7 +468,7 @@
             </div>
             <div class="offcanvas-minicart_wrapper" id="miniCart">
                 <div class="offcanvas-body">
-                    @if(ViewBag.cartItems != null)
+                    @if(ViewBag.cartItems != null && @ViewBag.totalCartItems != 0)
                     {
                     <div class="minicart-content">
                         <div class="minicart-heading">
@@ -495,7 +495,7 @@
                         <span class="ammount">@ViewBag.totalCartItems.ToString("#,##0") VNĐ</span>
                     </div>
                     }
-                    @if(ViewBag.cartItems == null)
+                    @if(ViewBag.cartItems == null || @ViewBag.totalCartItems == 0)
                     {
                         <div class="minicart-content">
                             <div class="minicart-heading">
