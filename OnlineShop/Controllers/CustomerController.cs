@@ -578,7 +578,7 @@ namespace OnlineShop.Controllers
             HttpContext.Session.Clear();
             HttpContext.Session.Remove("userId");
             HttpContext.Session.Remove("roleName");
-            return RedirectToAction("Index", "Product");
+            return RedirectToAction("Index", "Home");
         }
         private bool UserExists(int id)
         {
