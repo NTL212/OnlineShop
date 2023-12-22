@@ -11,6 +11,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
+using OnlineShop.Payment;
+using Microsoft.Extensions.Configuration;
 
 namespace OnlineShop.Controllers
 {
@@ -18,10 +20,12 @@ namespace OnlineShop.Controllers
     {
         private readonly ILogger<ProductController> _logger;
         private readonly OnlineShopContext _context;
-        public ProductController(ILogger<ProductController> logger, OnlineShopContext context)
+        private readonly IConfiguration _configuration;
+        public ProductController(ILogger<ProductController> logger, OnlineShopContext context, IConfiguration configuration)
         {
             _logger = logger;
             _context = context;
+            _configuration = configuration;
         }
 
         public IActionResult Index(int? page, string? categoryName, string? Sort)
@@ -187,7 +191,7 @@ namespace OnlineShop.Controllers
 		}
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> OrderProduct(string receiver, string email, string phone, string address, int productId, int count)
+		public async Task<IActionResult> OrderProduct(string receiver, string email, string phone, string address, int productId, int count, string paymentOption)
 		{
             int userId = int.Parse(HttpContext.Session.GetString("userId"));
             if (receiver == null || email == null | phone == null || address == null)
@@ -244,7 +248,63 @@ namespace OnlineShop.Controllers
             product1.Quantity -= count;
             _context.OrderItems.Add(orderItem);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index", "Product");
+            if (paymentOption == "4")
+            {
+                return RedirectToAction("Index", "Product");
+            }
+            else
+            {   
+                var url = URLPayment(int.Parse(paymentOption), newOrderId);
+                return Redirect(url);
+            }
         }
-	}
+        public string URLPayment(int TypePaymentVN, int orderId)
+        {
+            var urlPayment = "";
+            var order = _context.Orders.FirstOrDefault(x => x.OrderId == orderId);
+            var totalAmount = _context.Orders
+           .Where(o => o.OrderId == order.OrderId)
+           .SelectMany(o => o.OrderItems)
+           .Sum(oi => oi.Count * oi.Product.PromotionalPrice);
+            //Get Config Info
+            string vnp_Returnurl = _configuration["VnpSettings:ReturnUrl"]; //URL nhan ket qua tra ve 
+            string vnp_Url = _configuration["VnpSettings:Url"]; //URL thanh toan cua VNPAY 
+            string vnp_TmnCode = _configuration["VnpSettings:TmnCode"]; //Ma định danh merchant kết nối (Terminal Id)
+            string vnp_HashSecret = _configuration["VnpSettings:HashSecret"]; //Secret Key
+                                                                              //Get payment input
+                                                                              //Build URL for VNPAY
+            VnPayLibrary vnpay = new VnPayLibrary();
+
+            vnpay.AddRequestData("vnp_Version", VnPayLibrary.VERSION);
+            vnpay.AddRequestData("vnp_Command", "pay");
+            vnpay.AddRequestData("vnp_TmnCode", vnp_TmnCode);
+            vnpay.AddRequestData("vnp_Amount", (totalAmount * 100).ToString()); //Số tiền thanh toán. Số tiền không mang các ký tự phân tách thập phân, phần nghìn, ký tự tiền tệ. Để gửi số tiền thanh toán là 100,000 VND (một trăm nghìn VNĐ) thì merchant cần nhân thêm 100 lần (khử phần thập phân), sau đó gửi sang VNPAY là: 10000000
+            if (TypePaymentVN == 2)
+            {
+                vnpay.AddRequestData("vnp_BankCode", "VNBANK");
+            }
+            else if (TypePaymentVN == 3)
+            {
+                vnpay.AddRequestData("vnp_BankCode", "INTCARD");
+            }
+
+            vnpay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            vnpay.AddRequestData("vnp_CurrCode", "VND");
+            vnpay.AddRequestData("vnp_IpAddr", Utils.GetIpAddress(HttpContext));
+            vnpay.AddRequestData("vnp_Locale", "vn");
+            var user = _context.Users.FirstOrDefault(u => u.UserId == order.UserId);
+            vnpay.AddRequestData("vnp_OrderInfo", "Thanh toán đơn hàng của user :" + user.UserName);
+            vnpay.AddRequestData("vnp_OrderType", "other"); //default value: other
+
+            vnpay.AddRequestData("vnp_ReturnUrl", vnp_Returnurl);
+            vnpay.AddRequestData("vnp_TxnRef", order.OrderId.ToString()); // Mã tham chiếu của giao dịch tại hệ thống của merchant. Mã này là duy nhất dùng để phân biệt các đơn hàng gửi sang VNPAY. Không được trùng lặp trong ngày
+
+            //Add Params of 2.1.0 Version
+            //Billing
+
+            urlPayment = vnpay.CreateRequestUrl(vnp_Url, vnp_HashSecret);
+            //log.InfoFormat("VNPAY URL: {0}", paymentUrl);
+            return urlPayment;
+        }
+    }
 }
