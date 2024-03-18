@@ -210,6 +210,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\Seller\Data\" />
+    <Folder Include="Areas\Seller\Models\" />
+    <Folder Include="Areas\Shipper\Data\" />
+    <Folder Include="Areas\Shipper\Models\" />
     <Folder Include="wwwroot\assets\media\" />
   </ItemGroup>
 

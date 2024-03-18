@@ -10,7 +10,9 @@ namespace OnlineShop.Models
         public User()
         {
             Carts = new HashSet<Cart>();
-            Orders = new HashSet<Order>();
+            OrderShippers = new HashSet<Order>();
+            OrderUsers = new HashSet<Order>();
+            Products = new HashSet<Product>();
         }
 
         public int UserId { get; set; }
@@ -28,6 +30,8 @@ namespace OnlineShop.Models
 
         public virtual Role Role { get; set; }
         public virtual ICollection<Cart> Carts { get; set; }
-        public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Order> OrderShippers { get; set; }
+        public virtual ICollection<Order> OrderUsers { get; set; }
+        public virtual ICollection<Product> Products { get; set; }
     }
 }

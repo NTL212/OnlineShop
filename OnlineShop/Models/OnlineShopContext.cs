@@ -33,7 +33,7 @@ namespace OnlineShop.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=SHITORU\\SQLEXPRESS;Initial Catalog=OnlineShop;Integrated Security=True");
+                optionsBuilder.UseSqlServer("Server=.;Database=OnlineShop;Integrated Security=True;");
             }
         }
 
@@ -101,6 +101,12 @@ namespace OnlineShop.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.HasOne(d => d.Shipper)
+                    .WithMany(p => p.OrderShippers)
+                    .HasForeignKey(d => d.ShipperId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_id_shipper");
+
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.StatusId)
@@ -108,7 +114,7 @@ namespace OnlineShop.Models
                     .HasConstraintName("fk_id_status");
 
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.Orders)
+                    .WithMany(p => p.OrderUsers)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_id_user_2");
@@ -155,6 +161,12 @@ namespace OnlineShop.Models
                     .HasForeignKey(d => d.CategoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_id_category");
+
+                entity.HasOne(d => d.Seller)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.SellerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_id_seller");
 
                 entity.HasOne(d => d.Style)
                     .WithMany(p => p.Products)

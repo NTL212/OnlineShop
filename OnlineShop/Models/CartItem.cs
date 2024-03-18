@@ -16,7 +16,5 @@ namespace OnlineShop.Models
 
         public virtual Cart Cart { get; set; }
         public virtual Product Product { get; set; }
-
-        public double TotalMoney => Count * Product.PromotionalPrice;
     }
 }

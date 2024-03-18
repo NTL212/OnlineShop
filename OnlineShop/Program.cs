@@ -25,4 +25,4 @@ namespace OnlineShop
     }
 }
 //Database doesn't exist: Scaffold-DbContext "Server=.;Database=OnlineShop;Integrated Security=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
-//Database alreadt exists: Scaffold-DbContext "Server=.;Database=OnlineShop;Integrated Security=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force
+//Database already exists: Scaffold-DbContext "Server=.;Database=OnlineShop;Integrated Security=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force

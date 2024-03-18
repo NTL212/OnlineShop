@@ -15,6 +15,7 @@ namespace OnlineShop.Models
         public int StyleId { get; set; }
         public string StyleName { get; set; }
         public int IsDeleted { get; set; }
+        public string Image { get; set; }
 
         public virtual ICollection<Product> Products { get; set; }
     }
