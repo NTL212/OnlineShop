@@ -23,6 +23,7 @@ namespace OnlineShop.Models
         public int IsEmailActive { get; set; }
         public string Password { get; set; }
         public int? RoleId { get; set; }
+        public int? SellerId { get; set; }
         public string Address { get; set; }
         public string Avatar { get; set; }
         public DateTime? Date { get; set; }

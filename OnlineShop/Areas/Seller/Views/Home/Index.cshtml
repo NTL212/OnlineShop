@@ -4,5 +4,167 @@
     Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
 }
 
-<h1>Index</h1>
+<h1 class="h3 mb-3"><strong>Thống kê năm @ViewBag.selectedYear</strong> </h1>
+
+<div class="row">
+    <div class="col-xl-2 col-xxl-5 d-flex">
+		<div class="col mt-0">
+			<select class="form-select" onchange="redirectToSelectedYear(this)">
+				<option class="option" hidden>@ViewBag.selectedYear</option>
+				@foreach (var year in ViewBag.Years)
+				{
+					<option class="option" value="@year">@year</option>
+				}
+			</select>
+		</div>
+    </div>
+</div>
+<script>
+    function redirectToSelectedYear(selectElement) {
+        var selectedYear = selectElement.value;
+        window.location.href = '/@ViewContext.RouteData.Values["area"]/Home/Index?selectedYear=' + selectedYear;
+    }
+</script>
+<br/>
+
+<div class="row">
+	@*<div class="col-xl-6 col-xxl-5 d-flex">*@
+	<div class="col-xl-15 col-xxl-5 d-flex">
+		<div class="w-100">
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="card">
+						<div class="card-body">
+							<div class="row">
+								<div class="col mt-0">
+									<h5 class="card-title" style="color:black;">Tăng trưởng</h5>
+								</div>
+
+								<div class="col-auto">
+									<div class="stat text-primary">
+										<i class="align-middle" data-feather="trending-up"></i>
+									</div>
+								</div>
+							</div>
+							<h1 class="mt-1 mb-3">@ViewBag.growth</h1>
+						</div>
+					</div>
+					<div class="card">
+						<div class="card-body">
+							<div class="row">
+								<div class="col mt-0">
+									<h5 class="card-title" style="color:black;">Người dùng</h5>
+								</div>
+
+								<div class="col-auto">
+									<div class="stat text-primary">
+										<i class="align-middle" data-feather="users"></i>
+									</div>
+								</div>
+							</div>
+							<h1 class="mt-1 mb-3">@ViewBag.totalUsers</h1>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="card">
+						<div class="card-body">
+							<div class="row">
+								<div class="col mt-0">
+									<h5 class="card-title" style="color:black;">Doanh thu</h5>
+								</div>
+
+								<div class="col-auto">
+									<div class="stat text-primary">
+										<i class="align-middle" data-feather="dollar-sign"></i>
+									</div>
+								</div>
+							</div>
+							<h1 class="mt-1 mb-3">@ViewBag.totalRevenue</h1>
+						</div>
+					</div>
+					<div class="card">
+						<div class="card-body">
+							<div class="row">
+								<div class="col mt-0">
+									<h5 class="card-title" style="color:black;">Số đơn hàng</h5>
+								</div>
+
+								<div class="col-auto">
+									<div class="stat text-primary">
+										<i class="align-middle" data-feather="shopping-cart"></i>
+									</div>
+								</div>
+							</div>
+							<h1 class="mt-1 mb-3">@ViewBag.totalOrders</h1>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-12 col-md-14 col-xxl-3 d-flex order-1 order-xxl-1"">
+		<div class="card flex-fill w-100">
+			<div class="card-header">
+
+				<h5 class="card-title mb-0" style="color:black;">Biểu đồ thống kê doanh thu năm @ViewBag.selectedYear</h5>
+			</div>
+			<div class="card-body py-3">
+				<div class="chart chart-sm">
+					<canvas id="chartjs-dashboard-line"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-12 col-md-14 col-xxl-3 d-flex order-1 order-xxl-1">
+		<div class="card flex-fill">
+			<div class="card-header">
+				<h1 class="card-title mb-0" style="color:black;">Doanh thu theo tháng trong năm @ViewBag.selectedYear</h1>
+			</div>
+			<table class="table table-condensed">
+    			<thead>
+                    <tr>
+        				<td class="text-center"><strong>Tháng</strong></td>
+						<td class="text-center"><strong>Số sản phẩm đã bán</strong></td>
+						<td class="text-center"><strong>Số đơn hàng đã đặt</strong></td>
+        				<td class="text-center"><strong>Doanh thu</strong></td>
+						<td class="text-center"><strong></strong></td>
+                    </tr>
+    			</thead>
+    			<tbody>
+                    @for(var i = 0; i < 12; i++)
+                    {
+    					<tr>
+    						<td class="text-center">Tháng @(i+1)</td>
+							<td class="text-center">@ViewBag.monthlySold[i].ToString("#,##0")</td>
+							<td class="text-center">@ViewBag.monthlyOrders[i].ToString("#,##0")</td>
+    						<td class="text-center">@ViewBag.monthlyRevenue[i].ToString("#,##0") VNĐ</td>
+							<td class="text-center"><a href="@Url.Action("MonthDetail", "Home", new { month = @i+1, year = @ViewBag.selectedYear })" class="btn btn-warning">Chi tiết</a></td>
+    					</tr>
+                    }
+					<tr>
+    					<td class="no-line text-center"><strong>Tổng doanh thu</strong></td>
+						<td class="text-center"><strong></strong></td>
+						<td class="text-center"><strong></strong></td>
+    					<td class="no-line text-center"><strong>@ViewBag.totalRevenue</strong></td>
+						<td class="text-center"><strong></strong></td>
+    				</tr>
+					<tr>
+    					<td class="no-line text-center"><strong>Doanh thu trung bình</strong></td>
+						<td class="text-center"><strong></strong></td>
+						<td class="text-center"><strong></strong></td>
+    					<td class="no-line text-center"><strong>@ViewBag.averageRevenue</strong></td>
+						<td class="text-center"><strong></strong></td>
+    				</tr>
+    			</tbody>
+    		</table>
+		</div>
+	</div>
+</div>
 

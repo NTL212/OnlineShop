@@ -1,6 +1,6 @@
 ﻿			<div class="sidebar-content js-simplebar">
-				<a class="sidebar-link" asp-area="Admin" asp-controller="Home" asp-action="Index">
-					<span class="align-middle" style="color:white">Admin Pages</span>
+				<a class="sidebar-link" asp-area="Seller" asp-controller="Home" asp-action="Index">
+					<span class="align-middle" style="color:white">Seller Pages</span>
 				</a>
 				<ul class="sidebar-nav">
 					<li class="sidebar-header" style="color:white">
@@ -8,43 +8,36 @@
 					</li>
 
 					<li class="sidebar-item">
-						<a class="sidebar-link" asp-area="Admin" asp-controller="Home" asp-action="Index">
+						<a class="sidebar-link" asp-area="Seller" asp-controller="Home" asp-action="Index">
 							<i class="align-middle" data-feather="sliders"></i> 
 							<span class="align-middle" style="color:white">Thống kê</span>
 						</a>
 					</li>
 
-					<li class="sidebar-item">
-						<a class="sidebar-link" asp-area="Admin" asp-controller="AdminRoles" asp-action="Index">
-							<i class="align-middle" data-feather="key"></i> 
-							<span class="align-middle" style="color:white">Quản lý quyền truy cập</span>
-						</a>
-					</li>
 
 					<li class="sidebar-item">
-						<a class="sidebar-link" asp-area="Admin" asp-controller="AdminUsers" asp-action="Index">
-								<i class="align-middle" data-feather="users"></i> 
-								<span class="align-middle" style="color:white">Quản lý tài khoản</span>
-						</a>
-					</li>
-
-					<li class="sidebar-item">
-						<a class="sidebar-link" asp-area="Admin" asp-controller="AdminCategories" asp-action="Index">
+						<a class="sidebar-link" asp-area="Seller" asp-controller="AdminCategories" asp-action="Index">
 							<i class="align-middle" data-feather="bookmark"></i> 
 							<span class="align-middle" style="color:white">Quản lý danh mục</span>
 						</a>
 					</li>
 
 					<li class="sidebar-item">
-						<a class="sidebar-link" asp-area="Admin" asp-controller="AdminProducts" asp-action="Index">
+						<a class="sidebar-link" asp-area="Seller" asp-controller="SellerProducts" asp-action="Index">
 							<i class="align-middle" data-feather="box"></i> 
 							<span class="align-middle" style="color:white">Quản lý sản phẩm</span>
 						</a>
 					</li>
 					<li class="sidebar-item">
-						<a class="sidebar-link"asp-area="Admin" asp-controller="AdminOrders" asp-action="Index">
+						<a class="sidebar-link"asp-area="Seller" asp-controller="SellerOrders" asp-action="Index">
 							<i class="align-middle" data-feather="truck"></i> 
 							<span class="align-middle" style="color:white">Quản lý đơn hàng</span>
+						</a>
+					</li>
+					<li class="sidebar-item">
+						<a class="sidebar-link" asp-area="Seller" asp-controller="SellerUsers" asp-action="Index">
+								<i class="align-middle" data-feather="users"></i> 
+								<span class="align-middle" style="color:white">Quản lý Shipper</span>
 						</a>
 					</li>
 				</ul>

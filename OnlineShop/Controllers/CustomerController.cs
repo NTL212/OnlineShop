@@ -59,6 +59,16 @@ namespace OnlineShop.Controllers
                         HttpContext.Session.SetString("roleName", "Customer");
                         return RedirectToAction("Index", "Home");
                     }
+                    else if (lst[0].RoleId == 3)
+                    {
+                        HttpContext.Session.SetString("roleName", "Seller");
+                        return RedirectToAction("Index", "Home", new { area = "Seller" });
+                    }
+                    else if (lst[0].RoleId == 4)
+                    {
+                        HttpContext.Session.SetString("roleName", "Shipper");
+                        return RedirectToAction("Index", "Home", new { area = "Shipper" });
+                    }
                 }
                 ViewBag.mess = "Email hoặc mật khẩu không chính xác";
             }
