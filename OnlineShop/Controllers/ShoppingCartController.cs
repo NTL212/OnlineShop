@@ -243,7 +243,8 @@ namespace OnlineShop.Controllers
 				Phone = phone,
 				Address = address,
 				StatusId = 1,
-				IsPay = 0,
+                ShipperId = 1,
+                IsPay = 0,
 				Date = DateTime.Now,
 				IsDeleted = 0
 			};

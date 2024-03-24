@@ -1,0 +1,84 @@
+﻿@model OnlineShop.Models.User
+
+@{
+    ViewData["Title"] = "Quan ly Shipper";
+    Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
+}
+@if (ViewBag.mess != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert">
+        <strong>Tạo tài khoản thất bại!</strong> @ViewBag.mess
+    </div>
+}
+<h2>Tạo tài khoản</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label">Họ tên</label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div><br />
+            <div class="form-group">
+                <label class="control-label">ID</label>
+                <input asp-for="IdCard" class="form-control" />
+                <span asp-validation-for="IdCard" class="text-danger"></span>
+            </div><br />
+            <div class="form-group">
+                <label class="control-label">Email</label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div><br />
+            <div class="form-group">
+                <label class="control-label">SĐT</label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div><br />
+            <div class="form-group">
+                <label class="control-label">Trạng thái email</label>
+                <select asp-for="IsEmailActive" class="form-control">
+                    <option value="0">Chưa kích hoạt</option>
+                </select>
+                <span asp-validation-for="IsEmailActive" class="text-danger"></span>
+            </div><br />
+            <div class="form-group">
+                <label class="control-label">Mật khẩu</label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div><br />
+            <div class="form-group">
+                <label class="control-label">Vai trò</label>
+                <input value="Shipper" class="form-control" disabled />
+            </div><br />
+            <div class="form-group">
+                <label class="control-label">Địa chỉ</label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div><br />
+            <div class="form-group">
+                <label class="control-label">Ảnh đại diện</label>
+                <input asp-for="Avatar" class="form-control" value="default.jpg" type="hidden" />
+                <input id="Avatar" name="Avatar" class="form-control" type="file" />
+                <span asp-validation-for="Avatar" class="text-danger"></span>
+            </div><br />
+            <div class="form-group">
+                <label class="control-label">Trạng thái</label>
+                <select asp-for="IsDeleted" class="form-control">
+                    <option value="1">Bị khóa</option>
+                </select>
+                <span asp-validation-for="IsDeleted" class="text-danger"></span>
+            </div><br />
+            <div class="form-group">
+                <input type="submit" value="Tạo" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<br />
+<div>
+    <a asp-action="Index">Trở về danh sách</a>
+</div>
+

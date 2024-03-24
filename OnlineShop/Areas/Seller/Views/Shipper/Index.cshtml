@@ -1,0 +1,75 @@
+﻿@model IEnumerable<OnlineShop.Models.User>
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@{
+    ViewData["Title"] = "Quan ly Shipper";
+    Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
+}
+
+<h2>Quản lý shipper</h2>
+
+<p>
+    <a class="btn btn-success" asp-action="Create">Tạo tài khoản</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Họ tên
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Trạng thái
+            </th>
+            <th>
+                Vai trò
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                @if (item.IsDeleted == 0)
+                {
+                    <td>Hoạt động</td>
+                }
+                @if (item.IsDeleted == 1)
+                {
+                    <td>Bị khóa</td>
+                }
+                <td>
+                    @Html.DisplayFor(modelItem => item.Role.RoleName)
+                </td>
+                @if (item.RoleId == 4)
+                {
+                    <td>
+                        <a class="btn btn-primary" asp-area="Seller" asp-controller="Shipper" asp-action="Edit" asp-route-id="@item.UserId">Chỉnh sửa</a> |
+                        <a class="btn btn-warning" asp-area="Seller" asp-controller="Shipper" asp-action="Details" asp-route-id="@item.UserId">Chi tiết</a>
+                    </td>
+                }
+                @if (item.RoleId == 1)
+                {
+                    <td>
+                        <a class="btn btn-primary" asp-area="Seller" asp-controller="Shipper" asp-action="Edit" asp-route-id="@item.UserId">Chỉnh sửa</a>
+                        <a class="btn btn-warning" asp-area="Seller" asp-controller="Shipper" asp-action="Details" asp-route-id="@item.UserId">Chi tiết</a>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+@Html.PagedListPager((IPagedList) Model, page => Url.Action("Index", new {page = page }),
+new PagedListRenderOptions {
+    LiElementClasses = new string[] {"page-item"},
+    PageClasses = new string[] {"page-link"}
+})
