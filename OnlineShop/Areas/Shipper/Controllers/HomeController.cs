@@ -32,7 +32,18 @@ namespace OnlineShop.Areas.Shipper.Controllers
                 return RedirectToAction("Index", "Home", new { area = "Admin" });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            var orderList = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => o.StatusId == 7).OrderByDescending(o => o.Date);
+            var user = _context.Users.FirstOrDefault(n => n.UserId == userId);
+            var orderList = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => o.StatusId == 1).OrderByDescending(o => o.Date);
+            foreach (var order in orderList)
+            {
+                foreach (var orderItem in order.OrderItems)
+                {
+                    if (orderItem.Product.SellerId == user.SellerId)
+                    {
+                        orderList.Where(o => o.OrderId == orderItem.OrderId);
+                    }
+                }
+            }
             return View(orderList.ToPagedList(page ?? 1, 5));
         }
         public async Task<IActionResult> ReceiveOrderList(int? page)
@@ -49,7 +60,7 @@ namespace OnlineShop.Areas.Shipper.Controllers
                 return RedirectToAction("Index", "Home", new { area = "Admin" });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            var onlineShopContext = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => o.StatusId == 2 || o.StatusId == 6).OrderByDescending(o => o.Date);
+            var onlineShopContext = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => (o.StatusId == 2 || o.StatusId == 6) && o.ShipperId==userId).OrderByDescending(o => o.Date);
             return View(onlineShopContext.ToPagedList(page ?? 1, 5));
         }
         public async Task<IActionResult> Details(int? id)
@@ -96,6 +107,8 @@ namespace OnlineShop.Areas.Shipper.Controllers
         {
             var order = await _context.Orders.FindAsync(id);
             order.StatusId = 2;
+
+            order.ShipperId = int.Parse(HttpContext.Session.GetString("userId"));
             _context.Update(order);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ReceiveOrderList));
