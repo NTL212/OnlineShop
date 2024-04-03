@@ -1,18 +1,31 @@
-﻿			<div class="sidebar-content js-simplebar">
-				<a class="sidebar-link" asp-area="Shipper" asp-controller="Home" asp-action="Index">
-					<span class="align-middle" style="color:white">Shipper Pages</span>
-				</a>
-				<ul class="sidebar-nav">
-					<li class="sidebar-header" style="color:white">
-						Pages
-					</li>
+﻿<div class="sidebar-content js-simplebar">
+	<a class="sidebar-link" asp-area="Admin" asp-controller="Home" asp-action="Index">
+		<span class="align-middle" style="color:white">Shipper Page</span>
+	</a>
+	<ul class="sidebar-nav">
+		<li class="sidebar-header" style="color:white">
+			Pages
+		</li>
+		<li class="sidebar-item">
+			<a class="sidebar-link" asp-area="Shipper" asp-controller="Home" asp-action="Index">
+				<i class="align-middle" data-feather="truck"></i>
+				<span class="align-middle" style="color:white">Danh sách đơn hàng chưa nhận</span>
+			</a>
+		</li>
+		<li class="sidebar-item">
+			<a class="sidebar-link" asp-area="Shipper" asp-controller="Home" asp-action="ReceiveOrderList">
+				<i class="align-middle" data-feather="truck"></i>
+				<span class="align-middle" style="color:white">Danh sách đơn hàng đã nhận giao</span>
+			</a>
+		</li>
+		<li class="sidebar-item">
+			<a class="sidebar-link" asp-area="Shipper" asp-controller="AdminUsers" asp-action="Index">
+				<i class="align-middle" data-feather="users"></i>
+				<span class="align-middle" style="color:white">Tài khoản</span>
+			</a>
+		</li>
 
-					<li class="sidebar-item">
-						<a class="sidebar-link"asp-area="Shipper" asp-controller="Home" asp-action="Index">
-							<i class="align-middle" data-feather="truck"></i> 
-							<span class="align-middle" style="color:white">Quản lý đơn hàng</span>
-						</a>
-					</li>
-				</ul>
-			</div>
+
+	</ul>
+</div>
 

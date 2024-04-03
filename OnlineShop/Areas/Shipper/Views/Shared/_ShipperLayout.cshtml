@@ -14,10 +14,10 @@
 
 	<link rel="canonical" href="https://demo-basic.adminkit.io/" />
 
-	<title>Shipper Pages</title>
+	<title>Shipper Page</title>
 
 	<!-- CSS only -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
 
 	<link href="~/AdminAssets/css/app.css" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
@@ -47,24 +47,24 @@
 					<div class="row text-muted">
 						<div class="col-6 text-start">
 							<p class="mb-0">
-								<h5 class="text-muted"><strong>Shipper Pages &copy;</strong></h5>
+								<h5 class="text-muted"><strong>Admin Pages &copy;</strong></h5>
 							</p>
 						</div>
 						@*<div class="col-6 text-end">
-							<ul class="list-inline">
-								<li class="list-inline-item">
-									<a class="text-muted" href="https://adminkit.io/" target="_blank">Support</a>
-								</li>
-								<li class="list-inline-item">
-									<a class="text-muted" href="https://adminkit.io/" target="_blank">Help Center</a>
-								</li>
-								<li class="list-inline-item">
-									<a class="text-muted" href="https://adminkit.io/" target="_blank">Privacy</a>
-								</li>
-								<li class="list-inline-item">
-									<a class="text-muted" href="https://adminkit.io/" target="_blank">Terms</a>
-								</li>
-							</ul>
+						<ul class="list-inline">
+						<li class="list-inline-item">
+						<a class="text-muted" href="https://adminkit.io/" target="_blank">Support</a>
+						</li>
+						<li class="list-inline-item">
+						<a class="text-muted" href="https://adminkit.io/" target="_blank">Help Center</a>
+						</li>
+						<li class="list-inline-item">
+						<a class="text-muted" href="https://adminkit.io/" target="_blank">Privacy</a>
+						</li>
+						<li class="list-inline-item">
+						<a class="text-muted" href="https://adminkit.io/" target="_blank">Terms</a>
+						</li>
+						</ul>
 						</div>*@
 					</div>
 				</div>
@@ -82,7 +82,7 @@
 			gradient.addColorStop(1, "rgba(215, 227, 244, 0)");
 			//Monthly Revenue
 			var monthlyRevenue = JSON.parse('@Html.Raw(Json.Serialize(ViewBag.monthlyRevenue))');
-        
+
 			// Tính toán giá trị lớn nhất trong monthlyRevenue
 			var maxRevenue = Math.max(...monthlyRevenue);
 
@@ -177,7 +177,7 @@
 	</script>
 
 	<script>
-		document.addEventListener("DOMContentLoaded", function() {
+		document.addEventListener("DOMContentLoaded", function () {
 			// Pie chart
 			new Chart(document.getElementById("chartjs-dashboard-pie"), {
 				type: "pie",
@@ -205,7 +205,7 @@
 		});
 	</script>
 	<script>
-		document.addEventListener("DOMContentLoaded", function() {
+		document.addEventListener("DOMContentLoaded", function () {
 			// Bar chart
 			new Chart(document.getElementById("chartjs-dashboard-bar"), {
 				type: "bar",
@@ -249,47 +249,47 @@
 		});
 	</script>
 	<script>
-		document.addEventListener("DOMContentLoaded", function() {
+		document.addEventListener("DOMContentLoaded", function () {
 			var markers = [{
-					coords: [31.230391, 121.473701],
-					name: "Shanghai"
-				},
-				{
-					coords: [28.704060, 77.102493],
-					name: "Delhi"
-				},
-				{
-					coords: [6.524379, 3.379206],
-					name: "Lagos"
-				},
-				{
-					coords: [35.689487, 139.691711],
-					name: "Tokyo"
-				},
-				{
-					coords: [23.129110, 113.264381],
-					name: "Guangzhou"
-				},
-				{
-					coords: [40.7127837, -74.0059413],
-					name: "New York"
-				},
-				{
-					coords: [34.052235, -118.243683],
-					name: "Los Angeles"
-				},
-				{
-					coords: [41.878113, -87.629799],
-					name: "Chicago"
-				},
-				{
-					coords: [51.507351, -0.127758],
-					name: "London"
-				},
-				{
-					coords: [40.416775, -3.703790],
-					name: "Madrid "
-				}
+				coords: [31.230391, 121.473701],
+				name: "Shanghai"
+			},
+			{
+				coords: [28.704060, 77.102493],
+				name: "Delhi"
+			},
+			{
+				coords: [6.524379, 3.379206],
+				name: "Lagos"
+			},
+			{
+				coords: [35.689487, 139.691711],
+				name: "Tokyo"
+			},
+			{
+				coords: [23.129110, 113.264381],
+				name: "Guangzhou"
+			},
+			{
+				coords: [40.7127837, -74.0059413],
+				name: "New York"
+			},
+			{
+				coords: [34.052235, -118.243683],
+				name: "Los Angeles"
+			},
+			{
+				coords: [41.878113, -87.629799],
+				name: "Chicago"
+			},
+			{
+				coords: [51.507351, -0.127758],
+				name: "London"
+			},
+			{
+				coords: [40.416775, -3.703790],
+				name: "Madrid "
+			}
 			];
 			var map = new jsVectorMap({
 				map: "world",
@@ -316,7 +316,7 @@
 		});
 	</script>
 	<script>
-		document.addEventListener("DOMContentLoaded", function() {
+		document.addEventListener("DOMContentLoaded", function () {
 			var date = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
 			var defaultDate = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
 			document.getElementById("datetimepicker-dashboard").flatpickr({

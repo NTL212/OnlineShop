@@ -3,7 +3,7 @@
 @using X.PagedList.Mvc.Core;
 @using X.PagedList.Web.Common;
 @{
-    ViewData["Title"] = "Danh sách đơn hàng";
+    ViewData["Title"] = "Đơn hàng đã nhận";
     Layout = "~/Areas/Shipper/Views/Shared/_ShipperLayout.cshtml";
 }
 
@@ -47,13 +47,23 @@
                     <td>Đã thanh toán</td>
                 }
                 <td>
-                    @Html.DisplayFor(modelItem => item.Status.StatusName)
+                    <span class="btn btn-success">
+                        @Html.DisplayFor(modelItem => item.Status.StatusName)
+                    </span>
                 </td>
+                @if (item.Status.StatusName == "Đang giao")
+                {
                     <td>
-                        
-                        <a class="btn btn-success" asp-controller="Home" asp-action="ReceiveDelivery" asp-route-id="@item.OrderId">Nhận giao hàng</a>
-                    <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a>
+                        <a class="btn btn-warning" asp-controller="Home" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a> |
+                        <a class="btn btn-primary" asp-controller="Home" asp-action="Delivered" asp-route-id="@item.OrderId">Đã giao</a>
                     </td>
+                }
+                else
+                {
+                    <td>
+                        <a class="btn btn-warning" asp-controller="Home" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a>
+                    </td>
+
                 }
             </tr>
         }
