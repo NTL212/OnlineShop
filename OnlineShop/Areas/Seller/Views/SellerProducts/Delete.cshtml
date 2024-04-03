@@ -2,25 +2,20 @@
 
 @{
     ViewData["Title"] = "Delete";
-    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
 }
+
 @if (Model.IsDeleted == 0)
 {
-    <h3>Khóa sản phẩm</h3>    
+    <h3>Ngừng bán sản phẩm</h3>    
 }
 @if (Model.IsDeleted == 1)
 {
-    <h3>Mở khóa sản phẩm</h3>    
+    <h3>Mở bán sản phẩm</h3>    
 }
 <div>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            Mã người bán
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.SellerId)
-        </dd>
         <dt>
             Tên sản phẩm
         </dt>
@@ -112,14 +107,15 @@
     </dl>
     
     <form asp-action="Delete">
+        <input type="hidden" asp-for="SellerId" />
         <input type="hidden" asp-for="ProductId" />
-        @if (Model.IsDeleted == 0)
+        @if (Model.IsActive == 1)
         {
-            <input type="submit" value="Khóa" class="btn btn-danger" />
+            <input type="submit" value="Ngừng bán" class="btn btn-danger" />
         }
-        @if (Model.IsDeleted == 1)
+        @if (Model.IsActive == 0)
         {
-            <input type="submit" value="Mở khóa" class="btn btn-success" />
+            <input type="submit" value="Mở bán" class="btn btn-success" />
         }
         <a asp-action="Index">Trở về danh sách</a>
     </form>

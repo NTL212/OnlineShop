@@ -1,26 +1,15 @@
 ﻿@model OnlineShop.Models.Product
 
 @{
-    ViewData["Title"] = "Delete";
-    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Details";
+    Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
 }
-@if (Model.IsDeleted == 0)
-{
-    <h3>Khóa sản phẩm</h3>    
-}
-@if (Model.IsDeleted == 1)
-{
-    <h3>Mở khóa sản phẩm</h3>    
-}
+
+<h2>Chi tiết sản phẩm</h2>
+
 <div>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            Mã người bán
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.SellerId)
-        </dd>
         <dt>
             Tên sản phẩm
         </dt>
@@ -110,17 +99,8 @@
             @Html.DisplayFor(model => model.Style.StyleName)
         </dd>
     </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="ProductId" />
-        @if (Model.IsDeleted == 0)
-        {
-            <input type="submit" value="Khóa" class="btn btn-danger" />
-        }
-        @if (Model.IsDeleted == 1)
-        {
-            <input type="submit" value="Mở khóa" class="btn btn-success" />
-        }
-        <a asp-action="Index">Trở về danh sách</a>
-    </form>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.ProductId" class="btn btn-warning">Chỉnh sửa</a> |
+    <a asp-action="Index">Trở về danh sách</a>
 </div>

@@ -1,10 +1,11 @@
-﻿@model IEnumerable<OnlineShop.Models.Order>
-@using X.PagedList;
-@using X.PagedList.Mvc.Core;
-@using X.PagedList.Web.Common;
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model IEnumerable<OnlineShop.Models.Order>
+
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
 }
 
 <h2>Quản lý đơn hàng</h2>
@@ -29,7 +30,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.User.UserName)
@@ -48,7 +49,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Status.StatusName)
             </td>
-            @if(item.Status.StatusName == "Đang xử lý")
+           @* @if(item.Status.StatusName == "Đang xử lý")
             {
                 <td>
                     <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a> |
@@ -67,13 +68,10 @@
                     <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a> |
                     <a class="btn btn-primary" asp-action="Update" asp-route-id="@item.OrderId">Đã giao</a>
                 </td>    
-            }
-            @if(item.Status.StatusName == "Đã nhận")
-            {
-                <td>
-                    <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a>
-                </td>    
-            }
+            }*@
+            <td>
+                <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a>
+            </td>
             </tr>
 }
     </tbody>
@@ -83,3 +81,4 @@ new PagedListRenderOptions {
     LiElementClasses = new string[] {"page-item"},
     PageClasses = new string[] {"page-link"}
 })
+

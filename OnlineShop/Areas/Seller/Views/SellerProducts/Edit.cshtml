@@ -2,8 +2,9 @@
 
 @{
     ViewData["Title"] = "Edit";
-    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
 }
+
 @if (ViewBag.mess != null)
 {
     <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert">
@@ -17,13 +18,8 @@
     <div class="col-md-4">
         <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ProductId" />
-            <div class="form-group">
-               <label class="control-label">Mã người bán</label>
-                <input disabled asp-for="SellerId" class="form-control" />
-                <span asp-validation-for="SellerId" class="text-danger"></span>
-            </div>
-            <br />
+            <input type="hidden" asp-for="ProductId" /> 
+            <input type="hidden" asp-for="SellerId" />
             <div class="form-group">
                <label class="control-label">Tên sản phẩm</label>
                 <input asp-for="ProductName" class="form-control" />
@@ -104,10 +100,15 @@
             <br />
             <div class="form-group">
                 <label class="control-label">Khả dụng</label>
-                <select asp-for="IsDeleted" class="form-control">
-                    <option value = "0">Khả dụng</option>
-                    <option value = "1">Bị cấm</option>
-                </select>
+                <input asp-for="IsDeleted" class="form-control" type="hidden"/>
+                @if(Model.IsDeleted == 0)
+                {
+                    <input disabled class="form-control" value="Khả dụng"/>
+                }
+                @if(Model.IsDeleted == 1)
+                {
+                    <input disabled class="form-control" value="Không khả dụng"/>
+                }
                 <span asp-validation-for="IsDeleted" class="text-danger"></span>
             </div>
             <br />
@@ -121,4 +122,3 @@
 <div>
     <a asp-action="Index">Trở về danh sách</a>
 </div>
-

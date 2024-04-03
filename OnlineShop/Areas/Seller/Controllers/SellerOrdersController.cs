@@ -2,27 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
 using OnlineShop.Models;
-using X.PagedList;
 using OnlineShop.ViewModels;
+using X.PagedList;
 
-namespace OnlineShop.Areas.Admin.Controllers
+namespace OnlineShop.Areas.Seller.Controllers
 {
-    [Area("Admin")]
-    public class AdminOrdersController : Controller
+    [Area("Seller")]
+    public class SellerOrdersController : Controller
     {
         private readonly OnlineShopContext _context;
 
-        public AdminOrdersController(OnlineShopContext context)
+        public SellerOrdersController(OnlineShopContext context)
         {
             _context = context;
         }
 
-        // GET: Admin/AdminOrders
+        // GET: Seller/SellerOrders
         public async Task<IActionResult> Index(int? page)
         {
             int userId;
@@ -32,16 +32,20 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName != "Admin")
+            if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Product", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            var onlineShopContext = _context.Orders.Include(o => o.Status).Include(o => o.User).OrderByDescending(o => o.Date);
+            var onlineShopContext = (from orderItem in _context.OrderItems
+                                    join order in _context.Orders on orderItem.OrderId equals order.OrderId
+                                    join product in _context.Products on orderItem.ProductId equals product.ProductId
+                                    where product.SellerId == userId
+                                    select order).Distinct().Include(o => o.Status).Include(o => o.User).OrderByDescending(o => o.Date);
             return View(onlineShopContext.ToPagedList(page ?? 1, 5));
         }
 
-        // GET: Admin/AdminOrders/Details/5
+        // GET: Seller/SellerOrders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             int userId;
@@ -51,9 +55,9 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName != "Admin")
+            if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Product", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -69,7 +73,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id)
+            var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id && s1.Product.SellerId == userId)
                         select new OrderCartViewModel
                         {
                             ProductName = s1.Product.ProductName,
@@ -82,7 +86,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             return View(order);
         }
 
-        // GET: Admin/AdminOrders/Create
+        // GET: Seller/SellerOrders/Create
         public IActionResult Create()
         {
             int userId;
@@ -92,9 +96,9 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName != "Admin")
+            if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Product", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             ViewData["StatusId"] = new SelectList(_context.StatusOrders, "StatusId", "StatusName");
@@ -102,12 +106,12 @@ namespace OnlineShop.Areas.Admin.Controllers
             return View();
         }
 
-        // POST: Admin/AdminOrders/Create
+        // POST: Seller/SellerOrders/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OrderId,UserId,Receiver,Address,Phone,StatusId,IsPay,Email,Date,IsDeleted")] Order order)
+        public async Task<IActionResult> Create([Bind("OrderId,UserId,Receiver,ShipperId,Address,Phone,StatusId,IsPay,Email,Date,IsDeleted")] Order order)
         {
             if (ModelState.IsValid)
             {
@@ -115,24 +119,25 @@ namespace OnlineShop.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["ShipperId"] = new SelectList(_context.Users, "UserId", "Address", order.ShipperId);
             ViewData["StatusId"] = new SelectList(_context.StatusOrders, "StatusId", "StatusName", order.StatusId);
             ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Address", order.UserId);
             return View(order);
         }
 
-        // GET: Admin/AdminOrders/Edit/5
+        // GET: Seller/SellerOrders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
-            if (!isNum)
+            if   (!isNum)
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName != "Admin")
+            if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Product", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -161,7 +166,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             return View(order);
         }
 
-        // POST: Admin/AdminOrders/Edit/5
+        // POST: Seller/SellerOrders/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -175,7 +180,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Admin/AdminOrders/Delete/5
+        // GET: Seller/SellerOrders/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             int userId;
@@ -185,9 +190,9 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName != "Admin")
+            if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Product", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -216,7 +221,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             return View(order);
         }
 
-        // POST: Admin/AdminOrders/Delete/5
+        // POST: Seller/SellerOrders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -226,7 +231,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             _context.Update(order);
             await _context.SaveChangesAsync();
             List<OrderItem> orderItems = _context.OrderItems.Where(n => n.OrderId == id).ToList();
-            foreach(OrderItem orderItem in orderItems)
+            foreach (OrderItem orderItem in orderItems)
             {
                 Product product = _context.Products.FirstOrDefault(n => n.ProductId == orderItem.ProductId);
                 product.Quantity += orderItem.Count;

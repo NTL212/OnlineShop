@@ -1,0 +1,105 @@
+﻿@model OnlineShop.Models.Order
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
+}
+
+<h2>Từ chối đơn hàng</h2>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Người đặt
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.User.UserName)
+        </dd>
+        <dt>
+            Người nhận
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Receiver)
+        </dd>
+        <dt>
+            Địa chỉ
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Address)
+        </dd>
+        <dt>
+            SĐT
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Phone)
+        </dd>
+        <dt>
+            Tình trạng thanh toán
+        </dt>
+        @if (Model.IsPay == 0)
+        {
+            <dd>Chưa thanh toán</dd>
+        }
+        @if(Model.IsPay == 1)
+        {
+            <dd>Đã thanh toán</dd>
+        }
+        <dt>
+            Email
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt>
+            Ngày đặt
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+        <dt>
+            Khả dụng
+        </dt>
+        @if(Model.IsDeleted == 0)
+        {
+            <dd>Khả dụng</dd>
+        }
+        @if(Model.IsDeleted == 1)
+        {
+            <dd>Không khả dụng</dd>
+        }
+        <dt>
+            Tình trạng đơn hàng
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Status.StatusName)
+        </dd>
+        <dt>
+            Sản phẩm
+        </dt>
+        <dd>
+            @foreach(var item in ViewBag.lst)
+            {
+                <div style="display:flex;"> 
+                    <div><p style="display: block; 
+                                    width: 202px; height: auto;
+                                    word-break: break-all; word-wrap: break-word;
+                                    white-space: normal;">@item.ProductName</p></div>
+                    <div><span class="amount" style="padding-left:10px; font-weight:bold;">x @item.Count: </span></div>
+                    <div><span class="amount"  style="padding-left:10px;">@item.Total.ToString("#,##0") VNĐ</span></div>
+                </div>
+            }
+        </dd>
+        <dt>
+            Tổng đơn hàng
+        </dt>
+        <dd>
+            @ViewBag.total.ToString("#,##0") VNĐ
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="OrderId" />
+        <input type="submit" value="Hủy" class="btn btn-danger" /> |
+        <a asp-action="Index">Trở về danh sách</a>
+    </form>
+</div>

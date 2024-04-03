@@ -1,33 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Models;
 using X.PagedList;
-using System.IO;
-using Microsoft.AspNetCore.Hosting;
-using System.Reflection;
 
-namespace OnlineShop.Areas.Admin.Controllers
+namespace OnlineShop.Areas.Seller.Controllers
 {
-    [Area("Admin")]
-    public class AdminProductsController : Controller
+    [Area("Seller")]
+    public class SellerProductsController : Controller
     {
         private readonly OnlineShopContext _context;
         private readonly IHostingEnvironment _environment;
 
-        public AdminProductsController(OnlineShopContext context, IHostingEnvironment environment)
+        public SellerProductsController(OnlineShopContext context, IHostingEnvironment environment)
         {
             _context = context;
             _environment = environment;
         }
 
-        // GET: Admin/AdminProducts
-        public async Task<IActionResult> Index(int ?page)
+        // GET: Seller/SellerProducts
+        public async Task<IActionResult> Index(int? page)
         {
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
@@ -36,16 +36,16 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName != "Admin")
+            if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            var onlineShopContext = _context.Products.Include(p => p.Category).Include(p => p.Style);
+            var onlineShopContext = _context.Products.Where(p => p.SellerId == userId).Include(p => p.Category).Include(p => p.Style);
             return View(onlineShopContext.ToPagedList(page ?? 1, 5));
         }
 
-        // GET: Admin/AdminProducts/Details/5
+        // GET: Seller/SellerProducts/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             int userId;
@@ -55,9 +55,9 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName != "Admin")
+            if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -66,6 +66,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
 
             var product = await _context.Products
+                .Where(p => p.SellerId == userId)
                 .Include(p => p.Category)
                 .Include(p => p.Style)
                 .FirstOrDefaultAsync(m => m.ProductId == id);
@@ -77,7 +78,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             return View(product);
         }
 
-        // GET: Admin/AdminProducts/Create
+        // GET: Seller/SellerProducts/Create
         public IActionResult Create()
         {
             int userId;
@@ -87,9 +88,9 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName != "Admin")
+            if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
@@ -97,7 +98,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             return View();
         }
 
-        // POST: Admin/AdminProducts/Create
+        // POST: Seller/SellerProducts/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -132,18 +133,18 @@ namespace OnlineShop.Areas.Admin.Controllers
                 ViewBag.mess = "Giá khuyến mãi và giá gốc phải lớn hơn 0";
                 return View(product);
             }
-            if(product.PromotionalPrice >= product.Price)
+            if (product.PromotionalPrice >= product.Price)
             {
                 ViewBag.mess = "Giá khuyến mãi phải thấp hơn giá gốc";
                 return View(product);
             }
             if (ModelState.IsValid)
             {
-                if(product.Quantity <= 0)
+                if (product.Quantity <= 0)
                 {
                     product.Quantity = 1;
                 }
-                if(product.Sold < 0)
+                if (product.Sold < 0)
                 {
                     product.Sold = 0;
                 }
@@ -159,6 +160,7 @@ namespace OnlineShop.Areas.Admin.Controllers
                     using var fileStream = new FileStream(path, FileMode.Create);
                     await Image.CopyToAsync(fileStream);
                 }
+                product.SellerId = userId;
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -168,7 +170,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             return View(product);
         }
 
-        // GET: Admin/AdminProducts/Edit/5
+        // GET: Seller/SellerProducts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             int userId;
@@ -178,9 +180,9 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName != "Admin")
+            if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Product", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -198,7 +200,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             return View(product);
         }
 
-        // POST: Admin/AdminProducts/Edit/5
+        // POST: Seller/SellerProducts/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -266,7 +268,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             return View(product);
         }
 
-        // GET: Admin/AdminProducts/Delete/5
+        // GET: Seller/SellerProducts/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             int userId;
@@ -276,9 +278,9 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName != "Admin")
+            if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Product", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -298,19 +300,19 @@ namespace OnlineShop.Areas.Admin.Controllers
             return View(product);
         }
 
-        // POST: Admin/AdminProducts/Delete/5
+        // POST: Seller/SellerProducts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _context.Products.FindAsync(id);
-            if(product.IsDeleted == 0)
+            if (product.IsActive == 0)
             {
-                product.IsDeleted = 1;
+                product.IsActive = 1;
             }
-            else if (product.IsDeleted == 1)
+            else if (product.IsActive == 1)
             {
-                product.IsDeleted = 0;
+                product.IsActive = 0;
             }
             _context.Products.Update(product);
             await _context.SaveChangesAsync();

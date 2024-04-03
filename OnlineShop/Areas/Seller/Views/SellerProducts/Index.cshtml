@@ -1,0 +1,79 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model IEnumerable<OnlineShop.Models.Product>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
+}
+
+<h2>Quản lý sản phẩm</h2>
+
+<p>
+    <a class="btn btn-success" asp-action="Create">Thêm sản phẩm</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Tên sản phẩm
+            </th>
+            <th>
+                Đã bán
+            </th>
+            <th>
+                Tình trạng
+            </th>
+            <th>
+                Khả dụng
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sold)
+            </td>
+            @if (item.IsActive == 0)
+            {
+                <td>Ngừng bán</td>
+            }
+             @if (item.IsActive == 1)
+            {
+                <td>Đang bán</td>
+            }
+            @if (item.IsDeleted == 0)
+            {
+                <td>Khả dụng</td>
+            }
+             @if (item.IsDeleted == 1)
+            {
+                <td>Bị khóa</td>
+            }
+            <td>
+                <a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.ProductId">Chỉnh sửa</a> |
+                <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.ProductId">Chi tiết</a> |
+                @if (item.IsActive == 0)
+                {
+                    <a class="btn btn-success" asp-action="Delete" asp-route-id="@item.ProductId">Mở bán</a>
+                }
+                @if (item.IsActive == 1)
+                {
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.ProductId">Ngừng bán</a>
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@Html.PagedListPager((IPagedList) Model, page => Url.Action("Index", new {page = page }), 
+    new PagedListRenderOptions {
+    LiElementClasses = new string[] {"page-item"},
+    PageClasses = new string[] {"page-link"}
+})
