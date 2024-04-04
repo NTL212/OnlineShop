@@ -26,7 +26,7 @@ namespace OnlineShop.Areas.Seller.Controllers
             }
             if (roleName != "Seller")
             {
-                RedirectToAction("Index", "Home", new { area = roleName });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             int year = DateTime.Now.Year;
@@ -119,7 +119,7 @@ namespace OnlineShop.Areas.Seller.Controllers
             }
             if (roleName != "Seller")
             {
-                RedirectToAction("Index", "Home", new { area = roleName });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             ViewBag.Month = month;

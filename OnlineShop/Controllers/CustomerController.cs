@@ -281,7 +281,7 @@ namespace OnlineShop.Controllers
             }
             if (roleName != "Customer")
             {
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
@@ -405,7 +405,7 @@ namespace OnlineShop.Controllers
             }
             if (roleName != "Customer")
             {
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
@@ -439,7 +439,7 @@ namespace OnlineShop.Controllers
             }
             if (roleName != "Customer")
             {
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             try
@@ -477,7 +477,7 @@ namespace OnlineShop.Controllers
             }
             if (roleName != "Customer")
             {
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             try
@@ -535,7 +535,7 @@ namespace OnlineShop.Controllers
             }
             if (roleName != "Customer")
             {
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             try
             {

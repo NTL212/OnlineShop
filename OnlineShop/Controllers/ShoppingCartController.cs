@@ -139,7 +139,7 @@ namespace OnlineShop.Controllers
 			}
 			if(roleName != "Customer")
             {
-				return RedirectToAction("Index", "Home", new { area = "Admin" });
+				return RedirectToAction("Index", "Home", new { area = roleName });
 			}
 			ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
 			int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
@@ -185,7 +185,7 @@ namespace OnlineShop.Controllers
 			}
 			if (roleName != "Customer")
 			{
-				return RedirectToAction("Index", "Home", new { area = "Admin" });
+				return RedirectToAction("Index", "Home", new { area = roleName });
 			}
 			var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
 						join s2 in _context.CartItems on s1.CartId equals s2.CartId

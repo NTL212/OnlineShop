@@ -37,7 +37,12 @@ namespace OnlineShop
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-            services.AddSession();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            }); ;
 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

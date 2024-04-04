@@ -27,7 +27,7 @@ namespace OnlineShop.Areas.Shipper.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName == "Shipper")
+            if (roleName != "Shipper")
             {
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }
@@ -55,7 +55,7 @@ namespace OnlineShop.Areas.Shipper.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName == "Shipper")
+            if (roleName != "Shipper")
             {
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }
@@ -72,7 +72,7 @@ namespace OnlineShop.Areas.Shipper.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName == "Shipper")
+            if (roleName != "Shipper")
             {
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }

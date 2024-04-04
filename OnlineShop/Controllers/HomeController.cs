@@ -30,9 +30,10 @@ namespace OnlineShop.Controllers
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
             if (isNum)
             {
-                if (_context.Users.FirstOrDefault(n => n.UserId == userId).RoleId == 1)
+                string roleName = HttpContext.Session.GetString("roleName");
+                if (roleName != "Customer")
                 {
-                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+                    return RedirectToAction("Index", "Home", new { area = roleName });
                 }
                 ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
                 var query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
