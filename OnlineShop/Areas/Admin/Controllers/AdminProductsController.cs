@@ -38,7 +38,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             if (roleName != "Admin")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             var onlineShopContext = _context.Products.Include(p => p.Category).Include(p => p.Style);
@@ -57,7 +57,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             if (roleName != "Admin")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -89,7 +89,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             if (roleName != "Admin")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
@@ -180,7 +180,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             if (roleName != "Admin")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -278,7 +278,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             if (roleName != "Admin")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)

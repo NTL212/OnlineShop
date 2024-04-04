@@ -27,9 +27,9 @@ namespace OnlineShop.Areas.Shipper.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName == "Admin")
+            if (roleName == "Shipper")
             {
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             var user = _context.Users.FirstOrDefault(n => n.UserId == userId);
@@ -55,9 +55,9 @@ namespace OnlineShop.Areas.Shipper.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName == "Admin")
+            if (roleName == "Shipper")
             {
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             var onlineShopContext = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => (o.StatusId == 2 || o.StatusId == 6) && o.ShipperId==userId).OrderByDescending(o => o.Date);
@@ -72,9 +72,9 @@ namespace OnlineShop.Areas.Shipper.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName == "Admin")
+            if (roleName == "Shipper")
             {
-                return RedirectToAction("Index", "Home", new { area = "Admin" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)

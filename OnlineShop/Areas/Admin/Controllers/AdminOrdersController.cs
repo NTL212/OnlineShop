@@ -34,7 +34,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             if (roleName != "Admin")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             var onlineShopContext = _context.Orders.Include(o => o.Status).Include(o => o.User).OrderByDescending(o => o.Date);
@@ -53,7 +53,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             if (roleName != "Admin")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -94,7 +94,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             if (roleName != "Admin")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             ViewData["StatusId"] = new SelectList(_context.StatusOrders, "StatusId", "StatusName");
@@ -132,7 +132,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             if (roleName != "Admin")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -187,7 +187,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             if (roleName != "Admin")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -247,7 +247,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             }
             if (roleName != "Admin")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)

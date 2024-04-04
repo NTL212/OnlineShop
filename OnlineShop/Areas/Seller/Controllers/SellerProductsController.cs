@@ -182,7 +182,7 @@ namespace OnlineShop.Areas.Seller.Controllers
             }
             if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = roleName });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -280,7 +280,7 @@ namespace OnlineShop.Areas.Seller.Controllers
             }
             if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = roleName });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)

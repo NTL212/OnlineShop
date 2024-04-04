@@ -39,7 +39,7 @@ namespace OnlineShop.Areas.Seller.Controllers
 			}
 			if (roleName != "Seller")
 			{
-				return RedirectToAction("Index", "Product", new { area = "Default" });
+				return RedirectToAction("Index", "Home", new { area = roleName });
 			}
 			ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
 			var onlineShopContext = _context.Users.Include(u => u.Role).Where(n=>n.SellerId==userId);
@@ -56,9 +56,9 @@ namespace OnlineShop.Areas.Seller.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName != "Admin")
+            if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -89,7 +89,7 @@ namespace OnlineShop.Areas.Seller.Controllers
             }
             if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             ViewData["RoleId"] = new SelectList(_context.Roles, "RoleId", "RoleName");
@@ -183,7 +183,7 @@ namespace OnlineShop.Areas.Seller.Controllers
             }
             if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
@@ -293,9 +293,9 @@ namespace OnlineShop.Areas.Seller.Controllers
             {
                 return RedirectToAction("SignIn", "Customer", new { area = "Default" });
             }
-            if (roleName != "Admin")
+            if (roleName != "Seller")
             {
-                return RedirectToAction("Index", "Product", new { area = "Default" });
+                return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             if (id == null)
