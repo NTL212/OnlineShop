@@ -28,6 +28,20 @@ namespace OnlineShop.Controllers
             _context = context;
             _environment = environment;
         }
+        [HttpGet]
+        public IActionResult GetSessionValue(string key)
+        {
+            var value = HttpContext.Session.GetString(key);
+            return Json(value);
+        }
+
+        [HttpGet]
+        public IActionResult GetSellerInfo(int productId)
+        {
+            var product = _context.Products.Find(productId);
+            var seller = _context.Users.Find(product.SellerId);
+            return Json(seller);
+        }
         public IActionResult SignIn()
         {
             return View();
@@ -44,6 +58,7 @@ namespace OnlineShop.Controllers
                 if (lst.Count() > 0)
                 {
                     HttpContext.Session.SetString("userId", lst[0].UserId.ToString());
+                    HttpContext.Session.SetString("userName", lst[0].UserName);
                     HttpContext.Session.SetString("avatar", lst[0].Avatar);
                     if (lst[0].IsDeleted == 1)
                     {

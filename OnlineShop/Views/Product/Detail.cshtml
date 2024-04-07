@@ -61,9 +61,9 @@
                                                     </li>
                                                 @{
                                                     var i = Model.Rating;
-                                                                            @while (i > 0)
+                                                                                                                            @while (i > 0)
                                                     {
-                                                                                <li><i class="pe-7s-star"></i></li>
+                                                                                                                                <li><i class="pe-7s-star"></i></li>
                                                         i--;
                                                     }
                                                 }
@@ -74,9 +74,10 @@
                                             Mô tả: @Model.Decription
                                         </h6>
                                         <br />
+
                                         <form asp-action="OrderProduct" method="get">
                                             <ul class="quantity-with-btn pb-7">
-                                                <li class="quantity">
+                                                <li class="quantity" style="display:inline">
                                                     <input name="productId" id="productId" type="hidden" value="@Model.ProductId">
                                                     <div class="cart-plus-minus" style="width: 170px; text-align:center;">
                                                         <input name="quantity" id="quantity" class="cart-plus-minus-box" value="1" type="text">
@@ -89,6 +90,7 @@
                                                 </li>
                                             </ul>
                                         </form>
+
                                         <ul class="quantity-with-btn pb-7">
                                             <li class="add-to-cart">
                                                 <form asp-controller="ShoppingCart" asp-action="AddToCart" id="addToCart" method="post">
@@ -98,7 +100,15 @@
                                                 </form>
                                             </li>
                                         </ul>
-                                        @section Scripts {
+
+                                                <input name="productId" value="@Model.ProductId" type="hidden" />
+                                                <input id="sellerId" value="@Model.SellerId" type="hidden"/>
+                                    @* <button id="btnChatSeller" onclick="toggleFab()" class="btn btn-custom-size lg-size btn-info btn-secondary-hover rounded-0" style="width:auto;">Chat với người bán</button> *@
+
+ 
+
+                                        @section scripts {
+
                                             <script>
                                             $('.cart-plus-minus').append(
                                                 '<div class="dec qtybutton"><i class="fa fa-minus"></i></div><div class="inc qtybutton"><i class="fa fa-plus"></i></div>'
@@ -127,7 +137,322 @@
                                                         countInput.value = quantityInput.value;
                                                     });
                                                 });
+
+
+                                            
                                             </script>
+                                        <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+                                        <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+                                        <script>
+                                            var connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
+
+                                            connection.start().then(function () {
+                                                console.log("SignalR connected");
+                                            }).catch(function (err) {
+                                                return console.error(err.toString());
+                                            });
+                                            document.addEventListener("DOMContentLoaded", function () {
+                                                getSessionValue("userId", function (sessionValue) {
+                                                    if (!sessionValue) {
+                                                        var divToHide = document.getElementById("myChatBox");
+
+                                                        // Ẩn div bằng cách đặt style.display thành "none"
+                                                        divToHide.style.display = "none";
+                                                    } else {
+                                                        getMessageFromFirebase(sessionValue, document.getElementById("sellerId").value);
+                                                    }
+                                                });
+                                            });
+
+                                            function sendMessage() {
+                                                var sellerId = document.getElementById("sellerId").value;
+                                                var message = document.getElementById("messageChatInput").value;
+                                                getSessionValue("userId", function (senderId) {
+                                                    if (sellerId && message && senderId) {
+
+                                                        displayMessage("You", message);
+                                                        pushMessageToFirebase(senderId, sellerId, message, senderId);
+                                                        connection.invoke("SendMessageToUser", sellerId, senderId, message).catch(function (err) {
+                                                            console.error(err.toString());
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                            function pushMessageToFirebase(userId, sellerId, message, senderId) {
+                                                $.ajax({
+                                                    url: '/api/Firebase/SetMessage',
+                                                    type: 'POST',
+                                                    contentType: 'application/json',
+                                                    data: JSON.stringify({
+                                                        userId: userId,
+                                                        sellerId: sellerId,
+                                                        message: message,
+                                                        senderId: senderId
+                                                    }),
+                                                    success: function (response) {
+                                                        console.log(response); // Log response from server
+                                                        // Handle success
+                                                    },
+                                                    error: function (xhr, status, error) {
+                                                        console.error('Error:', error); // Log error
+                                                        // Handle error
+                                                    }
+                                                });
+                                            }
+                                            
+                                            function getMessageFromFirebase(userId, sellerId){
+                                                $.ajax({
+                                                    url: '/api/Firebase/GetMessages',
+                                                    type: 'GET',
+                                                    data: {
+                                                        userId: userId,
+                                                        sellerId: sellerId
+                                                    },
+                                                    success: function (data) {
+                                                        // Lặp qua các khóa trong đối tượng data
+                                                        Object.values(data).forEach(function (mess) {
+                                                            var messageObj = JSON.parse(mess);
+
+                                                        });
+                                                        getSessionValue("userId", function (sessionValue) {
+                                                            if (sessionValue) {
+                                                                // Lặp qua các khóa trong đối tượng data
+                                                                Object.values(data).forEach(function (mess) {
+                                                                    var messageObj = JSON.parse(mess);
+                                                                    if (sessionValue) {
+                                                                        if (sessionValue == messageObj.senderId) {
+                                                                            initChat(messageObj.content, true, messageObj.timeSend);
+                                                                        }
+                                                                        else {
+                                                                            initChat(messageObj.content, false, messageObj.timeSend);
+                                                                        }
+                                                                    }
+                                                                });
+                                                            }
+                                                        });
+                                                        
+                                                    },
+                                                    error: function (xhr, status, error) {
+                                                        console.error('Error:', error);
+                                                    }
+                                                });
+                                            }
+                                            function displayMessage(sender, message) {
+                                                var chatFull = document.getElementById("chat_fullscreen");
+                                                var chatMsgItem = document.createElement("span");
+                                                chatMsgItem.className = "chat_msg_item chat_msg_item_user";
+                                                chatMsgItem.innerHTML = message;
+                                                chatFull.appendChild(chatMsgItem);
+                                                // Thời gian trước đó
+                                                var previousTime = new Date();
+                                                previousTime.setMinutes(previousTime.getMinutes()); // Giả sử 10 phút trước
+
+                                                // Tính thời gian đã trôi qua
+                                                var timeElapsed = calculateTimeElapsed(previousTime);
+
+                                                chatFull.innerHTML += '<div class="status2" style=" right: 0px; top:20px; position:relative ;font - size: 11px; opacity: 0.3;">' + timeElapsed + ' phút trước' + '</div>';
+                                            }
+                                            function initChat(message, user, time) {
+                                                var chatFull = document.getElementById("chat_fullscreen");
+                                                if (user) {
+                                                    var chatMsgItem = document.createElement("span");
+                                                    chatMsgItem.className = "chat_msg_item chat_msg_item_user";
+                                                    chatMsgItem.innerHTML = message;
+                                                    chatFull.appendChild(chatMsgItem);
+
+                                                    chatFull.innerHTML += '<div class="status2" style=" right: 0px; top:20px; position:relative ;font - size: 11px; opacity: 0.3;">' + time + '</div>';
+                                                }
+                                                else {
+                                                    var avatarSrc = "/AdminAssets/img/avatars/avatar.jpg";
+                                                    var chatMsgItemHTML = '<span class="chat_msg_item chat_msg_item_admin">' +
+                                                        '<div class="chat_avatar">' +
+                                                        '<img src="' + avatarSrc + '" style="border-radius:5px; max-height:50px; max-width: 50px;" />' +
+                                                        '</div>' +
+                                                        message +
+
+                                                        '</span>' +
+                                                        '<div class="status2" style=" left: 60px; top:20px; position:relative;font - size: 11px; opacity: 0.3;">' + time + '</div>';
+
+                                                    var chatFull = document.getElementById("chat_fullscreen");
+                                                    chatFull.innerHTML += chatMsgItemHTML;
+                                                }
+                                            }
+
+                                            connection.on("ReceiveMessage", function (senderId, message) {
+                                                var chatFull = document.getElementById("chat_fullscreen");
+                                                var avatarSrc = "/AdminAssets/img/avatars/avatar.jpg";
+
+                                                // Thời gian trước đó
+                                                var previousTime = new Date();
+                                                previousTime.setMinutes(previousTime.getMinutes() - 10); // Giả sử 10 phút trước
+
+                                                // Tính thời gian đã trôi qua
+                                                var timeElapsed = calculateTimeElapsed(previousTime);
+
+
+                                                var chatMsgItemHTML = '<span class="chat_msg_item chat_msg_item_admin">' +
+                                                    '<div class="chat_avatar">' +
+                                                    '<img src="' + avatarSrc + '" style="border-radius:5px; max-height:50px; max-width: 50px;" />' +
+                                                    '</div>' +
+                                                    message +
+                                                 
+                                                    '</span>'+
+                                                    '<div class="status2" style=" left: 60px; top:20px; position:relative;font - size: 11px; opacity: 0.3;">' + timeElapsed + ' phút trước' + '</div>';
+                                                
+                                                var chatFull = document.getElementById("chat_fullscreen");
+                                                chatFull.innerHTML += chatMsgItemHTML;
+                                            });
+
+                                            function calculateTimeElapsed(previousTime) {
+                                                var currentTime = new Date();
+                                                var elapsedTime = currentTime - previousTime;
+
+                                                // Chuyển thời gian thành phút
+                                                var minutesElapsed = Math.floor(elapsedTime / (1000 * 60));
+
+                                                return minutesElapsed;
+                                            }
+
+                                            function getSessionValue(key, callback) {
+                                                $.ajax({
+                                                    url: '/Customer/GetSessionValue?key=' + key,
+                                                    type: 'GET',
+                                                    success: function (data) {
+                                                        // Gọi hàm callback và truyền dữ liệu session vào đó
+                                                        callback(data);
+                                                    },
+                                                    error: function (xhr, status, error) {
+                                                        console.error('Error:', error);
+                                                    }
+                                                });
+                                            }
+
+                                            function getSelletInfo(key, callback) {
+                                                var productId = document.getElementById("productId").value;
+                                                // Tạo một request AJAX
+                                                $.ajax({
+                                                    url: '/Customer/GetSellerInfo', // Địa chỉ URL của controller và action
+                                                    type: 'GET', // Phương thức GET
+                                                    data: { productId: productId }, // Dữ liệu gửi đi, productId là tên tham số và productId là giá trị
+                                                    success: function (data) { // Hàm được gọi khi request thành công
+                                                        console.log(data); // Hiển thị dữ liệu nhận được từ server trong console
+                                                    },
+                                                    error: function (xhr, status, error) { // Hàm được gọi khi có lỗi xảy ra
+                                                        console.error(xhr.responseText); // Hiển thị thông báo lỗi trong console
+                                                    }
+                                                });
+                                            }
+                                            /*
+                                            document.getElementById("fab_send").addEventListener("click", function (event) {
+                                                var user = "";
+                                                getSessionValue("userName", function(sessionValue){
+                                                    user = sessionValue;
+                                                    var message = document.getElementById("messageChatInput").value;
+                                                    connection.invoke("SendMessage", user, message).catch(function (err) {
+                                                        return console.error(err.toString());
+                                                    });
+                                                    event.preventDefault();
+                                                });
+                                            });
+
+                                            connection.on("ReceiveMessage", function (user, message) {
+                                                var encodedMessage = user + " says: " + message;
+                                                var li = document.createElement("li");
+                                                li.textContent = encodedMessage;
+                                                document.getElementById("messagesList").appendChild(li);
+
+                                                var chatFull = document.getElementById("chat_fullscreen");
+                                                var chatMsgItem = document.createElement("span");
+                                                chatMsgItem.className = "chat_msg_item chat_msg_item_user";
+                                                chatMsgItem.innerHTML = message;
+                                                chatFull.appendChild(chatMsgItem);
+
+                                                // Cuộn xuống cuối cùng để hiển thị tin nhắn mới nhất
+                                                chatFull.scrollTop = chatFull.scrollHeight;
+                                            });
+                                            */
+                                            //ChatBox
+                                            hideChat(4);
+
+                                            $('#prime').click(function () {
+                                                toggleFab();
+                                            });
+
+
+                                            //Toggle chat and links
+                                            function toggleFab() {
+                                                $('.prime').toggleClass('zmdi-comment-outline');
+                                                $('.prime').toggleClass('zmdi-close');
+                                                $('.prime').toggleClass('is-active');
+                                                $('.prime').toggleClass('is-visible');
+                                                $('#prime').toggleClass('is-float');
+                                                $('.chat').toggleClass('is-visible');
+                                                $('.fab').toggleClass('is-visible');
+
+                                            }
+
+
+
+                                            $('#chat_fullscreen_loader').click(function (e) {
+                                                $('.fullscreen').toggleClass('zmdi-window-maximize');
+                                                $('.fullscreen').toggleClass('zmdi-window-restore');
+                                                $('.chat').toggleClass('chat_fullscreen');
+                                                $('.fab').toggleClass('is-hide');
+                                                $('.header_img').toggleClass('change_img');
+                                                $('.img_container').toggleClass('change_img');
+                                                $('.chat_header').toggleClass('chat_header2');
+                                                $('.fab_field').toggleClass('fab_field2');
+                                                $('.chat_converse').toggleClass('chat_converse2');
+                                                //$('#chat_converse').css('display', 'none');
+                                                // $('#chat_body').css('display', 'none');
+                                                // $('#chat_form').css('display', 'none');
+                                                // $('.chat_login').css('display', 'none');
+                                                // $('#chat_fullscreen').css('display', 'block');
+                                            });
+
+                                            function hideChat(hide) {
+                                                switch (hide) {
+                                                    case 0:
+                                                        $('#chat_converse').css('display', 'none');
+                                                        $('#chat_body').css('display', 'none');
+                                                        $('#chat_form').css('display', 'none');
+                                                        $('.chat_login').css('display', 'block');
+                                                        $('.chat_fullscreen_loader').css('display', 'none');
+                                                        $('#chat_fullscreen').css('display', 'none');
+                                                        break;
+                                                    case 1:
+                                                        $('#chat_converse').css('display', 'block');
+                                                        $('#chat_body').css('display', 'none');
+                                                        $('#chat_form').css('display', 'none');
+                                                        $('.chat_login').css('display', 'none');
+                                                        $('.chat_fullscreen_loader').css('display', 'block');
+                                                        break;
+                                                    case 2:
+                                                        $('#chat_converse').css('display', 'none');
+                                                        $('#chat_body').css('display', 'block');
+                                                        $('#chat_form').css('display', 'none');
+                                                        $('.chat_login').css('display', 'none');
+                                                        $('.chat_fullscreen_loader').css('display', 'block');
+                                                        break;
+                                                    case 3:
+                                                        $('#chat_converse').css('display', 'none');
+                                                        $('#chat_body').css('display', 'none');
+                                                        $('#chat_form').css('display', 'block');
+                                                        $('.chat_login').css('display', 'none');
+                                                        $('.chat_fullscreen_loader').css('display', 'block');
+                                                        break;
+                                                    case 4:
+                                                        $('#chat_converse').css('display', 'none');
+                                                        $('#chat_body').css('display', 'none');
+                                                        $('#chat_form').css('display', 'none');
+                                                        $('.chat_login').css('display', 'none');
+                                                        $('.chat_fullscreen_loader').css('display', 'block');
+                                                        $('#chat_fullscreen').css('display', 'block');
+                                                        break;
+                                                }
+                                            }
+                                        </script>
+
                                         }
                                     </div>
                                 </div>
@@ -135,7 +460,7 @@
                         </div>
                         @if(ViewBag.mess != null)
                         {
-                            <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert" style="text-align:center;">
+                            <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert" style="text-align:center;position:relative">
                                 <strong>@ViewBag.mess!</strong> Số lượng sản phẩm đã chọn vượt quá số lượng còn lại trong kho
                             </div>
                         }
@@ -151,4 +476,34 @@
         <!-- Scroll To Top End Here -->
 
     </div>
+<h1></h1>
+<div class="fabs" id="myChatBox">
+
+    <!-- For demo purpose-->
+
     
+
+
+    <div class="chat">
+        <div class="chat_header">
+            <div class="chat_option">
+                <div class="header_img">
+                    <img src="~/AdminAssets/img/avatars/avatar.jpg" style="border-radius:5px; max-height:50px; max-width: 50px; margin-top:-5px" />
+                </div>
+                <span id="chat_head">@Model.Seller.UserName</span>
+                <span id="chat_fullscreen_loader" class="chat_fullscreen_loader"><i class="fullscreen zmdi zmdi-window-maximize"></i></span>
+
+            </div>
+
+        </div>
+        <div id="chat_fullscreen" class="chat_conversion chat_converse">
+
+        </div>
+        <div class="fab_field">
+            <a id="fab_camera" class="fab"><i class="zmdi zmdi-camera"></i></a>
+            <a id="fab_send" onclick="sendMessage()" class="fab"><i class="zmdi zmdi-mail-send"></i></a>
+            <textarea id="messageChatInput" name="chat_message" placeholder="Send a message" class="chat_field chat_message"></textarea>
+        </div>
+    </div>
+    <a id="prime" class="fab"><i class="prime zmdi zmdi-comment-outline"></i></a>
+</div>

@@ -1,4 +1,4 @@
-(function ($) {
+﻿(function ($) {
 	'use strict';
 	/*----------------------------------------*/
 	/*  Check if element exists
@@ -82,6 +82,7 @@
 			},
 		});
 	}
+	
 	$(".menu-slider").hover(function () {
 		(this).swiper.autoplay.stop();
 	}, function () {
@@ -165,7 +166,7 @@
 			}
 		});
 	}
-
+	
 	/* --- Product List Slider--- */
 	if($('.product-list-slider').elExists()){
 		var mySwiper = new Swiper('.product-list-slider', {
