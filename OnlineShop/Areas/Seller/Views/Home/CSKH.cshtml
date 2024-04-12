@@ -1,0 +1,503 @@
+﻿@{
+    ViewData["Title"] = "CSKH";
+    Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
+}
+@section Styles {
+	<link href="~/assets/mystyle/SellerChatStyle.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+}
+
+	<div class="containerChat">
+		<div class="row no-gutters">
+			<div id="customer-panel" class="col-md-4 border-right">
+				<div class="settings-tray">
+					<img class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/filip.jpg" alt="Profile img">
+				</div>
+				<div class="search-box">
+					<div class="input-wrapper">
+						<i class="material-icons">search</i>
+						<input placeholder="Search here" type="text">
+					</div>
+				</div>
+				<hr>
+				<div class="friend-drawer friend-drawer--onhover">
+					<img class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/optimus-prime.jpeg" alt="">
+					<div class="text">
+						<h6>Optimus</h6>
+						<p class="text-muted">Wanna grab a beer?</p>
+					</div>
+					<span class="time text-muted small">00:32</span>
+				</div>
+				
+			</div>
+			<div class="col-md-8">
+				<div class="settings-tray">
+					<div class="friend-drawer no-gutters friend-drawer--grey">
+						<img id="img-selected" class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/robocop.jpg" alt="">
+						<div class="text">
+							<h6 id="username-selected">Robo Cop</h6>
+						</div>
+					</div>
+				</div>
+			<div id="chat-panel-container">
+				<div id="chat-panel" class="chat-panel">
+					<div class="row no-gutters">
+						<div class="col-md-3">
+							<div class="chat-bubble chat-bubble--left">
+								Hello dude!
+							</div>
+						</div>
+					</div>
+					<div class="row no-gutters">
+						<div class="col-md-3 offset-md-9">
+							<div class="chat-bubble chat-bubble--right">
+								Hello dude!
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-12">
+					<div class="chat-box-tray" style="display: flex; justify-content: space-between;">
+						@* <i class="material-icons">sentiment_very_satisfied</i> *@
+						<input onkeyup="if(event.keyCode === 13) sendMessage()" id="messageChatInput" type="text" placeholder="Nhập tin nhắn ...">
+						<a onclick="sendMessage()"><i style="color:#0084ff" class="material-icons">send</i></a>
+					</div>
+				</div>
+			</div>
+			</div>
+
+		</div>
+	</div>
+@section Scripts {
+
+	<script>
+		var connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
+
+		connection.start().then(function () {
+			console.log("SignalR connected");
+		}).catch(function (err) {
+			return console.error(err.toString());
+		});
+		document.addEventListener("DOMContentLoaded", function () {
+			// Tạo một phần tử input hidden
+			var hiddenInput = document.createElement("input");
+			hiddenInput.type = "hidden";
+			hiddenInput.id = "senderId";
+			hiddenInput.value = ''; // Đặt giá trị senderId vào input
+
+			document.body.appendChild(hiddenInput);
+			getSessionValue("userId", function (sessionValue) {
+				if (!sessionValue) {
+					var divToHide = document.getElementById("myChatBox");
+
+					// Ẩn div bằng cách đặt style.display thành "none"
+					divToHide.style.display = "none";
+				} else {
+					getChats(sessionValue);
+				}
+			});
+		});
+
+		// Khi người dùng click vào bạn bè
+		$('.friend-drawer--onhover').on('click', function () {
+			// Ẩn tất cả các panel chat trước khi hiển thị panel cho người dùng mới
+			//$('.chat-panel').hide();
+			console.log("Hello");
+			// Lấy ID của người dùng tương ứng với panel chat
+			//var userId = $(this).attr('data-user-id');
+
+			// Hiển thị panel chat cho người dùng tương ứng cùng với panel chat của người dùng C
+			//$('#chat-panel-' + userId + '-C').show();
+		});
+
+
+		function pushMessageToFirebase(userId, sellerId, message, senderId) {
+			$.ajax({
+				url: '/api/Firebase/SetMessage',
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify({
+					userId: userId,
+					sellerId: sellerId,
+					message: message,
+					senderId: senderId
+				}),
+				success: function (response) {
+					console.log(response); // Log response from server
+					// Handle success
+				},
+				error: function (xhr, status, error) {
+					console.error('Error:', error); // Log error
+					// Handle error
+				}
+			});
+		}
+		function getMessageFromFirebase(userId, sellerId) {
+			$.ajax({
+				url: '/api/Firebase/GetMessages',
+				type: 'GET',
+				data: {
+					userId: userId,
+					sellerId: sellerId
+				},
+				success: function (data) {
+					// Lặp qua các khóa trong đối tượng data
+					getSessionValue("userId", function (sellerId) {
+						Object.values(data).forEach(function (mess) {
+							var messageObj = JSON.parse(mess);
+								if (sellerId) {
+									if (sellerId == messageObj.senderId) {
+										addChatToPanel(userId, messageObj.content, false);
+									}
+									else {
+										addChatToPanel(userId, messageObj.content);
+									}
+								}
+						});
+					});
+					
+
+				},
+				error: function (xhr, status, error) {
+					console.error('Error:', error);
+				}
+			});
+		}
+		function getChats(sellerId) {
+			$.ajax({
+				url: '/api/Firebase/GetChatsBySellerId',
+				type: 'GET',
+				data: {
+					sellerId: sellerId
+				},
+				success: function (data) {
+					data.forEach(function (item) {
+						var messageObj = JSON.parse(item.message);
+						console.log(messageObj);
+						console.log(item.userId);
+						createCustomer(item.userId, sellerId, messageObj.content, messageObj.timeSend);
+						createChatPanel(item.userId, '')
+					});
+
+				},
+				error: function (xhr, status, error) {
+					console.error('Error:', error);
+				}
+			});
+		}
+		
+		function getUser(userId, callback) {
+			// Xây dựng URL API
+			var url = '/Seller/Home/GetUser?userId=' + userId;
+
+			// Gọi API bằng AJAX
+			$.ajax({
+				url: url,
+				type: 'GET',
+				success: function (data) {
+					callback(data);
+				},
+				error: function (xhr, status, error) {
+					console.error('There was a problem with the AJAX request:', error);
+				}
+			});
+		}
+		function getUserTest(userId) {
+			// Xây dựng URL API
+			var url = '/Seller/Home/GetUser?userId=' + userId;
+
+			// Gọi API bằng AJAX
+			$.ajax({
+				url: url,
+				type: 'GET',
+				success: function (data) {
+					console.log(data.avatar);
+				},
+				error: function (xhr, status, error) {
+					console.error('There was a problem with the AJAX request:', error);
+				}
+			});
+		}
+		function sendMessage() {
+			var userId;
+			if (document.getElementById("senderId")) {
+				userId = document.getElementById("senderId").value;
+			}
+			var message = document.getElementById("messageChatInput").value;
+			getSessionValue("userId", function (senderId) {
+				if (userId && message && senderId) {
+
+					displayMessage("You", message);
+					pushMessageToFirebase(userId, senderId, message, senderId);
+					document.getElementById("messageChatInput").value="";
+					connection.invoke("SendMessageToUser", userId, senderId, message).catch(function (err) {
+						console.error(err.toString());
+					});
+				}
+			});
+		}
+
+		function displayMessage(sender, message) {
+			var chatFull = document.getElementById("chat-panel-userId-" + document.getElementById("senderId").value);
+
+			// Tạo phần tử div chứa tin nhắn
+			var messageContainer = document.createElement("div");
+			messageContainer.className = "row no-gutters ";
+
+			// Tạo phần tử div chứa bubble tin nhắn
+			var bubbleContainer = document.createElement("div");
+			bubbleContainer.className = "col-md-3 offset-md-9";
+
+			// Tạo bubble tin nhắn
+			var chatBubble = document.createElement("div");
+			chatBubble.className = "chat-bubble chat-bubble--right";
+			chatBubble.innerHTML = message;
+			chatBubble.style = "display: inline-block;"
+			// Đưa bubble vào container
+			bubbleContainer.appendChild(chatBubble);
+
+			// Đưa container vào chat panel
+			messageContainer.appendChild(bubbleContainer);
+			chatFull.appendChild(messageContainer);
+
+			// Thời gian trước đó
+			var previousTime = new Date();
+			previousTime.setMinutes(previousTime.getMinutes()); // Giả sử 10 phút trước
+
+			// Tính thời gian đã trôi qua
+			var timeElapsed = calculateTimeElapsed(previousTime);
+
+			// Tạo phần tử div chứa thời gian
+			var timeContainer = document.createElement("div");
+			timeContainer.className = "status2";
+			timeContainer.style.margin = "50px -25px 0 0px";
+			timeContainer.style.float = "right";
+			timeContainer.style.display = "block";
+			timeContainer.style.fontSize = "11px";
+			timeContainer.style.opacity = "0.3";
+			timeContainer.innerHTML = timeElapsed + " phút trước";
+
+			// Đưa thời gian vào chat panel
+			//chatFull.appendChild(timeContainer);
+		}
+
+
+
+		connection.on("ReceiveMessage", function (senderId, message) {
+			var chatFull = document.getElementById("chat-panel");
+			var avatarSrc = "/AdminAssets/img/avatars/avatar.jpg";
+			// Thời gian trước đó
+			var previousTime = new Date();
+			previousTime.setMinutes(previousTime.getMinutes() - 10); // Giả sử 10 phút trước
+
+			// Tính thời gian đã trôi qua
+			var timeElapsed = calculateTimeElapsed(previousTime);
+
+			if (!document.getElementById("senderId")) {
+				// Tạo một phần tử input hidden
+				var hiddenInput = document.createElement("input");
+				hiddenInput.type = "hidden";
+				hiddenInput.id = "senderId";
+				hiddenInput.value = senderId; // Đặt giá trị senderId vào input
+
+				document.body.appendChild(hiddenInput);
+				getSessionValue("userId", function (sessionValue) {
+					createCustomer(senderId, sessionValue, message);
+					createChatPanel(senderId, message);
+				});
+			}
+			else {
+				if (document.getElementById("chat-panel-userId-" + senderId)) {
+					var currentTime = new Date();
+					var hours = currentTime.getHours().toString().padStart(2, '0');
+					var minutes = currentTime.getMinutes().toString().padStart(2, '0');
+					var timeString = hours + ":" + minutes;
+					document.getElementById("time-text-userId-" + senderId).textContent = timeString;
+					document.getElementById("paragraph-userId-" + senderId).textContent = message;
+
+					addChatToPanel(senderId, message);
+
+				}
+				else {
+					getSessionValue("userId", function (sessionValue) {
+						createCustomer(senderId, sessionValue);
+						createChatPanel(senderId, message);
+					});
+				}
+			}
+			
+			
+		});
+		function createCustomer(userId, sellerId, message, time='') {
+			if (!document.getElementById("friend-drawer-unique-userId-" + userId + "-sellerId-" + sellerId)) {
+				var customerPanel = document.getElementById("customer-panel");
+
+				// Tạo phần tử div chứa bạn bè
+				var friendDrawer = document.createElement("div");
+				friendDrawer.className = "friend-drawer friend-drawer--onhover";
+				friendDrawer.id = "friend-drawer-unique-userId-" + userId + "-sellerId-" + sellerId; // Đặt ID riêng cho phần tử
+				friendDrawer.setAttribute("user-id", userId);
+				friendDrawer.setAttribute("isloaded", false);
+				friendDrawer.onclick = function () {
+					// Xử lý sự kiện khi click vào phần tử friendDrawer
+					if (this.getAttribute('isloaded') == 'false') {
+						getMessageFromFirebase(userId, sellerId);
+						friendDrawer.setAttribute("isloaded", true);
+					}
+					$('.chat-panel').hide();
+					$('#chat-panel-userId-' + userId).show();
+					document.getElementById('senderId').value = userId;
+					getUser(userId, function (user) {
+						document.getElementById('img-selected').src = "/upload/images/avatars/customer/" + user.avatar;
+						document.getElementById('username-selected').innerText = user.userName
+					});
+
+
+
+				};
+				// Tạo phần tử hình ảnh
+				var profileImage = document.createElement("img");
+				profileImage.className = "profile-image";
+				// Tạo phần tử tiêu đề h6
+				var heading6 = document.createElement("h6");
+				getUser(userId, function (user) {
+					profileImage.src = "/upload/images/avatars/customer/" + user.avatar;
+					profileImage.alt = user.avatar + user.userName;
+
+					heading6.textContent = user.userName;
+				});
+
+
+
+				// Tạo phần tử div chứa text
+				var textDiv = document.createElement("div");
+				textDiv.className = "text";
+
+
+
+				// Tạo phần tử đoạn văn bản
+				var paragraph = document.createElement("p");
+				paragraph.className = "text-muted";
+				paragraph.id = "paragraph-userId-" + userId;
+				paragraph.textContent = message;
+
+				// Tạo phần tử thời gian
+				var timeSpan = document.createElement("span");
+				timeSpan.className = "time text-muted small";
+				timeSpan.id = "time-text-userId-" + userId;
+				var currentTime = new Date();
+				var hours = currentTime.getHours().toString().padStart(2, '0');
+				var minutes = currentTime.getMinutes().toString().padStart(2, '0');
+				var timeString = hours + ":" + minutes;
+				if (time != '') {
+					timeSpan.textContent = time;
+				} else {
+					timeSpan.textContent = timeString;
+				}
+				
+
+				// Đưa các phần tử vào cấu trúc cây HTML
+				textDiv.appendChild(heading6);
+				textDiv.appendChild(paragraph);
+				friendDrawer.appendChild(profileImage);
+				friendDrawer.appendChild(textDiv);
+				friendDrawer.appendChild(timeSpan);
+
+				// Đưa phần tử vào trong body hoặc bất kỳ phần tử nào khác trong DOM
+				customerPanel.appendChild(friendDrawer);
+			}
+		}
+		function createChatPanel(senderId, message) {
+			var chatContainer = document.getElementById("chat-panel-container")
+			var chatPanel = document.createElement("div");
+			chatPanel.className = "chat-panel";
+			chatPanel.id = "chat-panel-userId-" + senderId;
+
+			chatContainer.appendChild(chatPanel);
+			$('#chat-panel-userId-' + senderId).hide();
+		}
+
+		function addChatToPanel(senderId, message, left=true) {
+			var chatPanel = document.getElementById("chat-panel-userId-" + senderId);
+
+			if (chatPanel) {
+				// Tạo một phần tử div chứa tin nhắn
+				var messageContainer = document.createElement("div");
+				messageContainer.className = "row no-gutters";
+
+				// Tạo phần tử div chứa bubble tin nhắn
+				var bubbleContainer = document.createElement("div");
+
+
+
+				// Tạo bubble tin nhắn
+				var chatBubble = document.createElement("div");
+
+				if (left) {
+					bubbleContainer.className = "col-md-3";
+					chatBubble.className = "chat-bubble chat-bubble--left";
+				} else {
+					bubbleContainer.className = "col-md-3 offset-md-9";
+					chatBubble.className = "chat-bubble chat-bubble--right";
+				}
+
+				chatBubble.innerHTML = message;
+				chatBubble.style = "display: inline-block;"
+				// Đưa bubble vào container
+				bubbleContainer.appendChild(chatBubble);
+
+				// Đưa container vào chat panel
+				messageContainer.appendChild(bubbleContainer);
+				chatPanel.appendChild(messageContainer);
+			}
+		}
+		function calculateTimeElapsed(previousTime) {
+			var currentTime = new Date();
+			var elapsedTime = currentTime - previousTime;
+
+			// Chuyển thời gian thành phút
+			var minutesElapsed = Math.floor(elapsedTime / (1000 * 60));
+
+			return minutesElapsed;
+		}
+
+		function getSessionValue(key, callback) {
+			$.ajax({
+				url: '/Customer/GetSessionValue?key=' + key,
+				type: 'GET',
+				success: function (data) {
+					// Gọi hàm callback và truyền dữ liệu session vào đó
+					callback(data);
+				},
+				error: function (xhr, status, error) {
+					console.error('Error:', error);
+				}
+			});
+		}
+
+		function getSelletInfo(key, callback) {
+			var productId = document.getElementById("productId").value;
+			// Tạo một request AJAX
+			$.ajax({
+				url: '/Customer/GetSellerInfo', // Địa chỉ URL của controller và action
+				type: 'GET', // Phương thức GET
+				data: { productId: productId }, // Dữ liệu gửi đi, productId là tên tham số và productId là giá trị
+				success: function (data) { // Hàm được gọi khi request thành công
+					console.log(data); // Hiển thị dữ liệu nhận được từ server trong console
+				},
+				error: function (xhr, status, error) { // Hàm được gọi khi có lỗi xảy ra
+					console.error(xhr.responseText); // Hiển thị thông báo lỗi trong console
+				}
+			});
+		}
+	</script>
+	}
+
+
+
+
+

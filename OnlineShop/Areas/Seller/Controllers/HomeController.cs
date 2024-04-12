@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OnlineShop.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OnlineShop.Areas.Seller.Controllers
 {
@@ -251,6 +253,32 @@ namespace OnlineShop.Areas.Seller.Controllers
             {
                 return -1;
             }
+        }
+
+        public IActionResult CSKH()
+        {
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetUser(int userId)
+        {
+            var user =  await _context.Users.FirstOrDefaultAsync(u=>u.UserId.Equals(userId));
+           
+            if(user == null)
+            {
+                return BadRequest("Không tìm thấy user");
+            }
+            else
+			{
+                var userObj = new
+                {
+                    userId = user.UserId,
+                    userName = user.UserName,
+                    avatar = user.Avatar,
+                };
+
+				return Ok(userObj);
+            }    
         }
     }
 }

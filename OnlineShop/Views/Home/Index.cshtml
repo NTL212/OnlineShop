@@ -62,45 +62,45 @@
                     {
 
                         
-                        <div class="@class_name">
-                            <div class="product-item">
-                                <div class="product-img img-zoom-effect">
-                                    <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
-                                        <img class="img-full" src="~/upload/images/product/@Model.productList[i].Image" alt="Product Images">
-                                    </a>
-                                    <div class="product-add-action">
-                                        <ul>
-                                            <li>
-                                                <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
-                                                    <i class="pe-7s-wallet"></i>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
-                                                    <i class="pe-7s-cart"></i>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="product-content">
-                                   
-                                    @if(Model.productList[i].ProductName.Length < 20)
+                                                <div class="@class_name">
+                                                    <div class="product-item">
+                                                        <div class="product-img img-zoom-effect">
+                                                            <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
+                                                                <img class="img-full" src="~/upload/images/product/@Model.productList[i].Image" alt="Product Images">
+                                                            </a>
+                                                            <div class="product-add-action">
+                                                                <ul>
+                                                                    <li>
+                                                                        <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
+                                                                            <i class="pe-7s-wallet"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
+                                                                            <i class="pe-7s-cart"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <div class="product-content">
+                                                           
+                                                            @if(Model.productList[i].ProductName.Length < 20)
                                     {
-                                        <a class="product-name" asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">@Model.productList[i].ProductName </a>
-                                        <br />
+                                                                <a class="product-name" asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">@Model.productList[i].ProductName </a>
+                                                                <br />
                                     }
                                     else
                                     {
-                                        <a class="product-name" asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">@Model.productList[i].ProductName</a>
+                                                                <a class="product-name" asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">@Model.productList[i].ProductName</a>
                                     }
 
-                                    <div class="price-box pb-1">
-                                        <span class="new-price">@Model.productList[i].PromotionalPrice.ToString("#,##0") VNĐ</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                                            <div class="price-box pb-1">
+                                                                <span class="new-price">@Model.productList[i].PromotionalPrice.ToString("#,##0") VNĐ</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                     }
                }
 
@@ -202,5 +202,236 @@
             <i class="fa fa-chevron-up"></i>
         </a>
         <!-- Scroll To Top End Here -->
+        <h2>Chat</h2>
 
+        <div id="chatBox">
+            <input type="text" id="userIdInput" placeholder="User ID">
+        </div>
+        <h1></h1>
+
+
+        @section scripts{
+            <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+           
+            <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+            <script>
+                var connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
+                
+                connection.start().then(function () {
+                    console.log("SignalR connected");
+                }).catch(function (err) {
+                    return console.error(err.toString());
+                });
+                document.addEventListener("DOMContentLoaded", function () {
+                    getSessionValue("userId", function (sessionValue) {
+                        if (!sessionValue){
+                            var divToHide = document.getElementById("myChatBox");
+
+                            // Ẩn div bằng cách đặt style.display thành "none"
+                            divToHide.style.display = "none";
+                        }
+                    });
+                });
+
+                function sendMessage() {
+                    var userId = document.getElementById("userIdInput").value;
+                    var message = document.getElementById("messageChatInput").value;
+
+                    if (userId && message) {
+
+                        displayMessage("You", message);
+                        
+                        connection.invoke("SendMessageToUser", userId, message).catch(function (err) {
+                            console.error(err.toString());
+                        });
+                    }
+
+
+                }
+
+                function displayMessage(sender, message) {
+                    var chatFull = document.getElementById("chat_fullscreen");
+                    var chatMsgItem = document.createElement("span");
+                    chatMsgItem.className = "chat_msg_item chat_msg_item_user";
+                    chatMsgItem.innerHTML = message;
+                    chatFull.appendChild(chatMsgItem);
+                }
+
+                connection.on("ReceiveMessage", function (message) {
+                    var chatFull = document.getElementById("chat_fullscreen");
+                    var chatMsgItem = document.createElement("span");
+                    chatMsgItem.className = "chat_msg_item chat_msg_item_admin";
+
+                    chatMsgItem.innerHTML = '<div class="chat_avatar"><img src="/AdminAssets/img/avatars/avatar.jpg" style="border-radius:5px; max-height:50px; max-width: 50px;" /></div>' + message;
+
+                    chatFull.appendChild(chatMsgItem);
+                });
+                
+                function getSessionValue(key, callback) {
+                    $.ajax({
+                        url: '/Customer/GetSessionValue?key=' + key,
+                        type: 'GET',
+                        success: function (data) {
+                            // Gọi hàm callback và truyền dữ liệu session vào đó
+                            callback(data);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                }
+                /*
+                document.getElementById("fab_send").addEventListener("click", function (event) {
+                    var user = "";
+                    getSessionValue("userName", function(sessionValue){
+                        user = sessionValue;
+                        var message = document.getElementById("messageChatInput").value;
+                        connection.invoke("SendMessage", user, message).catch(function (err) {
+                            return console.error(err.toString());
+                        });
+                        event.preventDefault();
+                    });
+                });
+                
+                connection.on("ReceiveMessage", function (user, message) {
+                    var encodedMessage = user + " says: " + message;
+                    var li = document.createElement("li");
+                    li.textContent = encodedMessage;
+                    document.getElementById("messagesList").appendChild(li);
+
+                    var chatFull = document.getElementById("chat_fullscreen");
+                    var chatMsgItem = document.createElement("span");
+                    chatMsgItem.className = "chat_msg_item chat_msg_item_user";
+                    chatMsgItem.innerHTML = message;
+                    chatFull.appendChild(chatMsgItem);
+
+                    // Cuộn xuống cuối cùng để hiển thị tin nhắn mới nhất
+                    chatFull.scrollTop = chatFull.scrollHeight;
+                });
+                */
+                //ChatBox
+                hideChat(4);
+
+                $('#prime').click(function () {
+                    toggleFab();
+                });
+
+
+                //Toggle chat and links
+                function toggleFab() {
+                    $('.prime').toggleClass('zmdi-comment-outline');
+                    $('.prime').toggleClass('zmdi-close');
+                    $('.prime').toggleClass('is-active');
+                    $('.prime').toggleClass('is-visible');
+                    $('#prime').toggleClass('is-float');
+                    $('.chat').toggleClass('is-visible');
+                    $('.fab').toggleClass('is-visible');
+
+                }
+
+               
+
+                $('#chat_fullscreen_loader').click(function (e) {
+                    $('.fullscreen').toggleClass('zmdi-window-maximize');
+                    $('.fullscreen').toggleClass('zmdi-window-restore');
+                    $('.chat').toggleClass('chat_fullscreen');
+                    $('.fab').toggleClass('is-hide');
+                    $('.header_img').toggleClass('change_img');
+                    $('.img_container').toggleClass('change_img');
+                    $('.chat_header').toggleClass('chat_header2');
+                    $('.fab_field').toggleClass('fab_field2');
+                    $('.chat_converse').toggleClass('chat_converse2');
+                    //$('#chat_converse').css('display', 'none');
+                    // $('#chat_body').css('display', 'none');
+                    // $('#chat_form').css('display', 'none');
+                    // $('.chat_login').css('display', 'none');
+                    // $('#chat_fullscreen').css('display', 'block');
+                });
+
+                function hideChat(hide) {
+                    switch (hide) {
+                        case 0:
+                            $('#chat_converse').css('display', 'none');
+                            $('#chat_body').css('display', 'none');
+                            $('#chat_form').css('display', 'none');
+                            $('.chat_login').css('display', 'block');
+                            $('.chat_fullscreen_loader').css('display', 'none');
+                            $('#chat_fullscreen').css('display', 'none');
+                            break;
+                        case 1:
+                            $('#chat_converse').css('display', 'block');
+                            $('#chat_body').css('display', 'none');
+                            $('#chat_form').css('display', 'none');
+                            $('.chat_login').css('display', 'none');
+                            $('.chat_fullscreen_loader').css('display', 'block');
+                            break;
+                        case 2:
+                            $('#chat_converse').css('display', 'none');
+                            $('#chat_body').css('display', 'block');
+                            $('#chat_form').css('display', 'none');
+                            $('.chat_login').css('display', 'none');
+                            $('.chat_fullscreen_loader').css('display', 'block');
+                            break;
+                        case 3:
+                            $('#chat_converse').css('display', 'none');
+                            $('#chat_body').css('display', 'none');
+                            $('#chat_form').css('display', 'block');
+                            $('.chat_login').css('display', 'none');
+                            $('.chat_fullscreen_loader').css('display', 'block');
+                            break;
+                        case 4:
+                            $('#chat_converse').css('display', 'none');
+                            $('#chat_body').css('display', 'none');
+                            $('#chat_form').css('display', 'none');
+                            $('.chat_login').css('display', 'none');
+                            $('.chat_fullscreen_loader').css('display', 'block');
+                            $('#chat_fullscreen').css('display', 'block');
+                            break;
+                    }
+                }
+            </script>
+        }
     </div>
+
+
+        <div class="fabs" id="myChatBox">
+            <div class="chat">
+                <div class="chat_header">
+                    <div class="chat_option">
+                        <div class="header_img">
+                            <img src="http://res.cloudinary.com/dqvwa7vpe/image/upload/v1496415051/avatar_ma6vug.jpg" />
+                        </div>
+                        <span id="chat_head">Jane Doe</span><span class="online">(Online)</span>
+                        <span id="chat_fullscreen_loader" class="chat_fullscreen_loader"><i class="fullscreen zmdi zmdi-window-maximize"></i></span>
+
+                    </div>
+
+                </div>
+                <div id="chat_fullscreen" class="chat_conversion chat_converse">
+                    @* <span class="chat_msg_item chat_msg_item_admin">
+                        <div class="chat_avatar">
+                            <img src="http://res.cloudinary.com/dqvwa7vpe/image/upload/v1496415051/avatar_ma6vug.jpg" />
+                        </div>Hey there! Any question?
+                    </span>
+                    <span class="chat_msg_item chat_msg_item_user">
+                        Hello!
+                    </span>
+                    <div class="status">20m ago</div>
+                    <span class="chat_msg_item ">
+                        <ul class="tags">
+                            <li>Hats</li>
+                            <li>T-Shirts</li>
+                            <li>Pants</li>
+                        </ul>
+                    </span> *@
+                </div>
+                <div class="fab_field">
+                    <a id="fab_camera" class="fab"><i class="zmdi zmdi-camera"></i></a>
+                    <a id="fab_send" onclick="sendMessage()" class="fab"><i class="zmdi zmdi-mail-send"></i></a>
+                <textarea id="messageChatInput" name="chat_message" placeholder="Send a message" class="chat_field chat_message"></textarea>
+                </div>
+            </div>
+            <a id="prime" class="fab"><i class="prime zmdi zmdi-comment-outline"></i></a>
+        </div>
+
+

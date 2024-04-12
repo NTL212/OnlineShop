@@ -128,7 +128,7 @@ namespace OnlineShop.Controllers
                 ViewBag.cartItems = lst;
                 ViewBag.totalCartItems = lst.Sum(n => n.Total);
             }
-            var product = _context.Products.Include(p => p.Category).Include(p => p.Style).FirstOrDefault(p=>p.ProductId.Equals(id));
+            var product = _context.Products.Include(p => p.Category).Include(p => p.Style).Include(p=>p.Seller).FirstOrDefault(p=>p.ProductId.Equals(id));
 
             if (product == null)
             {

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using OnlineShop.Hubs;
 using OnlineShop.Models;
 using Rotativa.AspNetCore;
 using System;
@@ -52,6 +53,8 @@ namespace OnlineShop
                 googleOptions.ClientId = googleAuthNSention["ClientId"];
                 googleOptions.ClientSecret = googleAuthNSention["ClientSecret"];
             });
+            services.AddSignalR();
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,6 +84,7 @@ namespace OnlineShop
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<ChatHub>("/chathub");
                 endpoints.MapControllerRoute(
                     name: "areas",
                     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
