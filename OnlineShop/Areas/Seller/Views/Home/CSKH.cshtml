@@ -1,6 +1,6 @@
 ﻿@{
-    ViewData["Title"] = "CSKH";
-    Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
+	ViewData["Title"] = "CSKH";
+	Layout = "~/Areas/Seller/Views/Shared/_SellerLayout.cshtml";
 }
 @section Styles {
 	<link href="~/assets/mystyle/SellerChatStyle.css" rel="stylesheet">
@@ -8,38 +8,38 @@
 
 }
 
-	<div class="containerChat">
-		<div class="row no-gutters">
-			<div id="customer-panel" class="col-md-4 border-right">
-				<div class="settings-tray">
-					<img class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/filip.jpg" alt="Profile img">
-				</div>
-				<div class="search-box">
-					<div class="input-wrapper">
-						<i class="material-icons">search</i>
-						<input placeholder="Search here" type="text">
-					</div>
-				</div>
-				<hr>
-				<div class="friend-drawer friend-drawer--onhover">
-					<img class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/optimus-prime.jpeg" alt="">
-					<div class="text">
-						<h6>Optimus</h6>
-						<p class="text-muted">Wanna grab a beer?</p>
-					</div>
-					<span class="time text-muted small">00:32</span>
-				</div>
-				
+<div class="containerChat">
+	<div class="row no-gutters">
+		<div id="customer-panel" class="col-md-4 border-right">
+			<div class="settings-tray">
+				<img class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/filip.jpg" alt="Profile img">
 			</div>
-			<div class="col-md-8">
-				<div class="settings-tray">
-					<div class="friend-drawer no-gutters friend-drawer--grey">
-						<img id="img-selected" class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/robocop.jpg" alt="">
-						<div class="text">
-							<h6 id="username-selected">Robo Cop</h6>
-						</div>
+			<div class="search-box">
+				<div class="input-wrapper">
+					<i class="material-icons">search</i>
+					<input placeholder="Search here" type="text">
+				</div>
+			</div>
+			<hr>
+			<div class="friend-drawer friend-drawer--onhover">
+				<img class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/optimus-prime.jpeg" alt="">
+				<div class="text">
+					<h6>Optimus</h6>
+					<p class="text-muted">Wanna grab a beer?</p>
+				</div>
+				<span class="time text-muted small">00:32</span>
+			</div>
+
+		</div>
+		<div class="col-md-8">
+			<div class="settings-tray">
+				<div class="friend-drawer no-gutters friend-drawer--grey">
+					<img id="img-selected" class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/robocop.jpg" alt="">
+					<div class="text">
+						<h6 id="username-selected">Robo Cop</h6>
 					</div>
 				</div>
+			</div>
 			<div id="chat-panel-container">
 				<div id="chat-panel" class="chat-panel">
 					<div class="row no-gutters">
@@ -64,14 +64,18 @@
 					<div class="chat-box-tray" style="display: flex; justify-content: space-between;">
 						@* <i class="material-icons">sentiment_very_satisfied</i> *@
 						<input onkeyup="if(event.keyCode === 13) sendMessage()" id="messageChatInput" type="text" placeholder="Nhập tin nhắn ...">
+						<label style="display: inline-block; position: relative; overflow: hidden; padding: 6px 12px; background-color: #f5f6f7; color: #4b4f56; border: 1px solid #ced0d4; border-radius: 4px; cursor: pointer;">
+							<span class="fileInputIcon">&#128206;</span>
+							<input type="file" id="imageInput" accept="image/*" style="position: absolute; left: -9999px;">
+						</label>
 						<a onclick="sendMessage()"><i style="color:#0084ff" class="material-icons">send</i></a>
 					</div>
 				</div>
 			</div>
-			</div>
-
 		</div>
+
 	</div>
+</div>
 @section Scripts {
 
 	<script>
@@ -101,19 +105,6 @@
 				}
 			});
 		});
-
-		// Khi người dùng click vào bạn bè
-		$('.friend-drawer--onhover').on('click', function () {
-			// Ẩn tất cả các panel chat trước khi hiển thị panel cho người dùng mới
-			//$('.chat-panel').hide();
-			console.log("Hello");
-			// Lấy ID của người dùng tương ứng với panel chat
-			//var userId = $(this).attr('data-user-id');
-
-			// Hiển thị panel chat cho người dùng tương ứng cùng với panel chat của người dùng C
-			//$('#chat-panel-' + userId + '-C').show();
-		});
-
 
 		function pushMessageToFirebase(userId, sellerId, message, senderId) {
 			$.ajax({
@@ -149,17 +140,17 @@
 					getSessionValue("userId", function (sellerId) {
 						Object.values(data).forEach(function (mess) {
 							var messageObj = JSON.parse(mess);
-								if (sellerId) {
-									if (sellerId == messageObj.senderId) {
-										addChatToPanel(userId, messageObj.content, false);
-									}
-									else {
-										addChatToPanel(userId, messageObj.content);
-									}
+							if (sellerId) {
+								if (sellerId == messageObj.senderId) {
+									addChatToPanel(userId, messageObj.content, false);
 								}
+								else {
+									addChatToPanel(userId, messageObj.content);
+								}
+							}
 						});
 					});
-					
+
 
 				},
 				error: function (xhr, status, error) {
@@ -189,7 +180,7 @@
 				}
 			});
 		}
-		
+
 		function getUser(userId, callback) {
 			// Xây dựng URL API
 			var url = '/Seller/Home/GetUser?userId=' + userId;
@@ -228,19 +219,85 @@
 				userId = document.getElementById("senderId").value;
 			}
 			var message = document.getElementById("messageChatInput").value;
-			getSessionValue("userId", function (senderId) {
-				if (userId && message && senderId) {
 
-					displayMessage("You", message);
-					pushMessageToFirebase(userId, senderId, message, senderId);
-					document.getElementById("messageChatInput").value="";
-					connection.invoke("SendMessageToUser", userId, senderId, message).catch(function (err) {
-						console.error(err.toString());
-					});
+			const fileInput = document.getElementById("imageInput");
+			const file = fileInput.files[0];
+
+			
+
+			getSessionValue("userId", function (senderId) {
+				if (userId && senderId) {
+					
+					if (message!="") {
+						displayMessage("You", message);
+						pushMessageToFirebase(userId, senderId, message, senderId);
+						document.getElementById("messageChatInput").value = "";
+						connection.invoke("SendMessageToUser", userId, senderId, message).catch(function (err) {
+							console.error(err.toString());
+						});
+						message.value = "";
+					}
+					if (file) {
+						const reader = new FileReader();
+						const loadImageData = (file) => {
+							return new Promise((resolve, reject) => {
+								reader.onload = () => {
+									resolve(reader.result);
+								};
+								reader.onerror = reject;
+								reader.readAsDataURL(file);
+							});
+						};
+						loadImageData(file)
+							.then((imageData) => {
+								displayMessage("You", message);
+								pushMessageToFirebase(userId, senderId, imageData, senderId);
+								// Gửi dữ liệu hình ảnh lên server
+								connection.invoke("SendImage", userId, senderId, imageData)
+									.catch((err) => {
+										console.error(err.toString());
+									});
+							})
+							.catch((err) => {
+								console.error(err.toString());
+							});
+						fileInput.value = null;						
+					}					
 				}
 			});
 		}
+		connection.on("ReceiveImage", function (senderId, imageData) {
+			// Xử lý hình ảnh nhận được từ server
+			// Ví dụ: Hiển thị hình ảnh trong một thẻ <img>
+			addImage(senderId, imageData)
 
+		});
+		function addImage(senderId, imageData) {
+			var chatFull = document.getElementById("chat-panel-userId-" + document.getElementById("senderId").value);
+
+			// Tạo phần tử div chứa tin nhắn
+			var messageContainer = document.createElement("div");
+			messageContainer.className = "row no-gutters ";
+
+			// Tạo phần tử div chứa bubble tin nhắn
+			var bubbleContainer = document.createElement("div");
+			bubbleContainer.className = "col-md-3";
+
+			
+			if (imageData) {
+				const imageElement = document.createElement("img");
+				imageElement.src = imageData;
+				imageElement.style.width = "100px"; // Đặt chiều rộng là 200px
+				imageElement.style.height = "100px"; // Đặt chiều cao là 150px
+				bubbleContainer.appendChild(imageElement);
+			}
+
+
+			// Đưa container vào chat panel
+			messageContainer.appendChild(bubbleContainer);
+			chatFull.appendChild(messageContainer);
+			chatFull.scrollTop = chatFull.scrollHeight;
+		}
 		function displayMessage(sender, message) {
 			var chatFull = document.getElementById("chat-panel-userId-" + document.getElementById("senderId").value);
 
@@ -251,14 +308,24 @@
 			// Tạo phần tử div chứa bubble tin nhắn
 			var bubbleContainer = document.createElement("div");
 			bubbleContainer.className = "col-md-3 offset-md-9";
-
-			// Tạo bubble tin nhắn
-			var chatBubble = document.createElement("div");
-			chatBubble.className = "chat-bubble chat-bubble--right";
-			chatBubble.innerHTML = message;
-			chatBubble.style = "display: inline-block;"
-			// Đưa bubble vào container
-			bubbleContainer.appendChild(chatBubble);
+		
+			if(isBase64(message)){
+				// Tạo bubble tin nhắn
+				var chatBubble = document.createElement("div");
+				chatBubble.className = "chat-bubble chat-bubble--right";
+				chatBubble.innerHTML = message;
+				chatBubble.style = "display: inline-block;"
+				// Đưa bubble vào container
+				bubbleContainer.appendChild(chatBubble);
+			}
+			else {
+				const imageElement = document.createElement("img");
+				imageElement.src = imageData;
+				imageElement.style.width = "100px"; // Đặt chiều rộng là 200px
+				imageElement.style.height = "100px"; // Đặt chiều cao là 150px
+				bubbleContainer.appendChild(imageElement);
+			}
+			
 
 			// Đưa container vào chat panel
 			messageContainer.appendChild(bubbleContainer);
@@ -283,6 +350,7 @@
 
 			// Đưa thời gian vào chat panel
 			//chatFull.appendChild(timeContainer);
+			chatFull.scrollTop = chatFull.scrollHeight;
 		}
 
 
@@ -329,10 +397,10 @@
 					});
 				}
 			}
-			
-			
+
+
 		});
-		function createCustomer(userId, sellerId, message, time='') {
+		function createCustomer(userId, sellerId, message, time = '') {
 			if (!document.getElementById("friend-drawer-unique-userId-" + userId + "-sellerId-" + sellerId)) {
 				var customerPanel = document.getElementById("customer-panel");
 
@@ -350,6 +418,7 @@
 					}
 					$('.chat-panel').hide();
 					$('#chat-panel-userId-' + userId).show();
+					$('#chat-panel-userId-' + userId).scrollTop = $('#chat-panel-userId-' + userId).scrollHeight;
 					document.getElementById('senderId').value = userId;
 					getUser(userId, function (user) {
 						document.getElementById('img-selected').src = "/upload/images/avatars/customer/" + user.avatar;
@@ -398,7 +467,7 @@
 				} else {
 					timeSpan.textContent = timeString;
 				}
-				
+
 
 				// Đưa các phần tử vào cấu trúc cây HTML
 				textDiv.appendChild(heading6);
@@ -421,7 +490,7 @@
 			$('#chat-panel-userId-' + senderId).hide();
 		}
 
-		function addChatToPanel(senderId, message, left=true) {
+		function addChatToPanel(senderId, message, left = true) {
 			var chatPanel = document.getElementById("chat-panel-userId-" + senderId);
 
 			if (chatPanel) {
@@ -432,11 +501,8 @@
 				// Tạo phần tử div chứa bubble tin nhắn
 				var bubbleContainer = document.createElement("div");
 
-
-
 				// Tạo bubble tin nhắn
 				var chatBubble = document.createElement("div");
-
 				if (left) {
 					bubbleContainer.className = "col-md-3";
 					chatBubble.className = "chat-bubble chat-bubble--left";
@@ -445,14 +511,24 @@
 					chatBubble.className = "chat-bubble chat-bubble--right";
 				}
 
-				chatBubble.innerHTML = message;
-				chatBubble.style = "display: inline-block;"
-				// Đưa bubble vào container
-				bubbleContainer.appendChild(chatBubble);
+				if (isBase64(message)) {
+					const imageElement = document.createElement("img");
+					imageElement.src = message;
+					imageElement.style.width = "100px"; // Đặt chiều rộng là 200px
+					imageElement.style.height = "100px"; // Đặt chiều cao là 150px
+					bubbleContainer.appendChild(imageElement);
+				} else {								
+					chatBubble.innerHTML = message;
+					chatBubble.style = "display: inline-block;"
+					// Đưa bubble vào container
+					bubbleContainer.appendChild(chatBubble);
+				}
+				
 
 				// Đưa container vào chat panel
 				messageContainer.appendChild(bubbleContainer);
 				chatPanel.appendChild(messageContainer);
+				chatPanel.scrollTop = chatPanel.scrollHeight;
 			}
 		}
 		function calculateTimeElapsed(previousTime) {
@@ -494,9 +570,12 @@
 				}
 			});
 		}
+		function isBase64(str) {
+			return str.includes("data:image/jpeg;base64");
+		}
+
 	</script>
 	}
-
 
 
 

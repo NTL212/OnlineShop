@@ -38,8 +38,8 @@ namespace OnlineShop.Controllers
         [HttpGet]
         public IActionResult GetSellerInfo(int productId)
         {
-            var product = _context.Products.Find(productId);
-            var seller = _context.Users.Find(product.SellerId);
+            var product = _context.Products.FirstOrDefault(p=>p.ProductId==productId);
+            var seller = _context.Users.FirstOrDefault(s=>s.UserId==product.SellerId);
             return Json(seller);
         }
         public IActionResult SignIn()

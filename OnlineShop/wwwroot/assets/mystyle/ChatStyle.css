@@ -836,3 +836,14 @@ input::placeholder {
     font-size: 0.9rem;
     color: #999;
 }
+/* CSS để tạo khoảng cách giữa các ngôi sao */
+#starContainer {
+    display: flex;
+}
+
+    #starContainer .star {
+        margin-right: 5px;
+        font-size: 20px; /* Điều chỉnh kích thước của biểu tượng ngôi sao */
+        color: #ccc; /* Màu mặc định của ngôi sao */
+        cursor: pointer; /* Đổi con trỏ thành dạng tay khi rê chuột qua ngôi sao */
+    }
