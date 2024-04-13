@@ -2,12 +2,12 @@
 @{
     ViewData["Title"] = "Chi tiết sản phẩm";
 }
-    <div class="main-wrapper">
+<div class="main-wrapper">
 
-        <!-- Begin Main Header Area -->
-        <!-- Main Header Area End Here -->
-        <!-- Begin Main Content Area  -->
-        <main class="main-content">
+    <!-- Begin Main Header Area -->
+    <!-- Main Header Area End Here -->
+    <!-- Begin Main Content Area  -->
+    <main class="main-content">
         <br />
         <div class="container h-100">
             <div class="row h-100">
@@ -23,93 +23,94 @@
                 </div>
             </div>
         </div>
-            <div class="single-product-area section-space-top-100">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="">
-                                <img class="img-full" src="~/upload/images/product/@Model.Image" alt="Product Image">
-                            </div>
+        <div class="single-product-area section-space-top-100">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="">
+                            <img class="img-full" src="~/upload/images/product/@Model.Image" alt="Product Image">
                         </div>
-                        <div class="col-lg-6">
-                            <div class="product-thumb-with-content row">
-                                <div class="col-12 order-lg-1 order-2 pt-10 pt-lg-0">
-                                    <div class="single-product-content">
-                                        <h2 class="title">@Model.ProductName</h2>
-                                        <div class="price-box pb-1">
-                                            <span class="new-price text-primary">Giá: @Model.PromotionalPrice.ToString("#,##0") VNĐ</span>
-                                            <span class="old-price text-danger">@Model.Price.ToString("#,##0") VNĐ</span>
-                                        </div>
-                                        <div class="rating-box-wrap pb-7">
-                                            <div class="rating-box">
-                                                <div class="product-category text-matterhorn pb-2">
-                                                    <span class="title">Danh mục :</span>
-                                                    <ul>
-                                                        <li>
-                                                        <h6><a asp-controller="Product" asp-action="Index" asp-route-categoryName="@Model.Category.CategoryName">@Model.Category.CategoryName</a></h6>
-                                                        </li>
-                                                    </ul>
-                                                </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="product-thumb-with-content row">
+                            <div class="col-12 order-lg-1 order-2 pt-10 pt-lg-0">
+                                <div class="single-product-content">
+                                    <h2 class="title">@Model.ProductName</h2>
+                                    <div class="price-box pb-1">
+                                        <span class="new-price text-primary">Giá: @Model.PromotionalPrice.ToString("#,##0") VNĐ</span>
+                                        <span class="old-price text-danger">@Model.Price.ToString("#,##0") VNĐ</span>
+                                    </div>
+                                    <div class="rating-box-wrap pb-7">
+                                        <div class="rating-box">
+                                            <div class="product-category text-matterhorn pb-2">
+                                                <span class="title">Danh mục :</span>
                                                 <ul>
                                                     <li>
-                                                        <p style="padding-right:17px;">Số lượng trong kho: @Model.Quantity</p>
+                                                        <h6><a asp-controller="Product" asp-action="Index" asp-route-categoryName="@Model.Category.CategoryName">@Model.Category.CategoryName</a></h6>
                                                     </li>
                                                 </ul>
-                                                <ul>
-                                                    <li>
-                                                        <p style="padding-right:17px;">Đánh giá:</p>
-                                                    </li>
+                                            </div>
+                                            <ul>
+                                                <li>
+                                                    <p style="padding-right:17px;">Số lượng trong kho: @Model.Quantity</p>
+                                                </li>
+                                            </ul>
+                                            <ul>
+                                                <li>
+                                                    <p style="padding-right:17px;">Đánh giá:</p>
+                                                </li>
                                                 @{
                                                     var i = Model.Rating;
-                                                                                                                            @while (i > 0)
+                                                                                                @while (i > 0)
                                                     {
-                                                                                                                                <li><i class="pe-7s-star"></i></li>
+                                                                                                    <li><i class="pe-7s-star"></i></li>
                                                         i--;
                                                     }
                                                 }
-                                                </ul>
-                                            </div>
+                                            </ul>
                                         </div>
-                                        <h6>
-                                            Mô tả: @Model.Decription
-                                        </h6>
-                                        <br />
+                                    </div>
+                                    <h6>
+                                        Mô tả: @Model.Decription
+                                    </h6>
+                                    <br />
 
-                                        <form asp-action="OrderProduct" method="get">
-                                            <ul class="quantity-with-btn pb-7">
-                                                <li class="quantity" style="display:inline">
-                                                    <input name="productId" id="productId" type="hidden" value="@Model.ProductId">
-                                                    <div class="cart-plus-minus" style="width: 170px; text-align:center;">
-                                                        <input name="quantity" id="quantity" class="cart-plus-minus-box" value="1" type="text">
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                            <ul class="quantity-with-btn pb-7">
-                                                <li class="add-to-cart">
-                                                    <button class="btn btn-custom-size lg-size btn-danger btn-secondary-hover rounded-0" type="submit">Mua</button>
-                                                </li>
-                                            </ul>
-                                        </form>
-
+                                    <form asp-action="OrderProduct" method="get">
                                         <ul class="quantity-with-btn pb-7">
-                                            <li class="add-to-cart">
-                                                <form asp-controller="ShoppingCart" asp-action="AddToCart" id="addToCart" method="post">
-                                                    <input name="productId" value="@Model.ProductId" type="hidden"/>
-                                                    <input name="count" id="count" value="" type="hidden"/>
-                                                    <button class="btn btn-custom-size lg-size btn-primary btn-secondary-hover rounded-0" type="submit">Thêm vào giỏ hàng</button>
-                                                </form>
+                                            <li class="quantity" style="display:inline">
+                                                <input name="productId" id="productId" type="hidden" value="@Model.ProductId">
+                                                <div class="cart-plus-minus" style="width: 170px; text-align:center;">
+                                                    <input name="quantity" id="quantity" class="cart-plus-minus-box" value="1" type="text">
+                                                </div>
                                             </li>
                                         </ul>
+                                        <ul class="quantity-with-btn pb-7">
+                                            <li class="add-to-cart">
+                                                <button class="btn btn-custom-size lg-size btn-danger btn-secondary-hover rounded-0" type="submit">Mua</button>
+                                            </li>
+                                        </ul>
+                                    </form>
 
+                                    <ul class="quantity-with-btn pb-7">
+                                        <li class="add-to-cart">
+                                            <form asp-controller="ShoppingCart" asp-action="AddToCart" id="addToCart" method="post">
                                                 <input name="productId" value="@Model.ProductId" type="hidden" />
-                                                <input id="sellerId" value="@Model.SellerId" type="hidden"/>
+                                                <input name="count" id="count" value="" type="hidden" />
+
+                                                <button class="btn btn-custom-size lg-size btn-primary btn-secondary-hover rounded-0" type="submit">Thêm vào giỏ hàng</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+
+                                    <input name="productId" value="@Model.ProductId" type="hidden" />
+                                    <input id="sellerId" value="@Model.SellerId" type="hidden" />
                                     @* <button id="btnChatSeller" onclick="toggleFab()" class="btn btn-custom-size lg-size btn-info btn-secondary-hover rounded-0" style="width:auto;">Chat với người bán</button> *@
 
- 
 
-                                        @section scripts {
 
-                                            <script>
+                                    @section scripts {
+
+                                        <script>
                                             $('.cart-plus-minus').append(
                                                 '<div class="dec qtybutton"><i class="fa fa-minus"></i></div><div class="inc qtybutton"><i class="fa fa-plus"></i></div>'
                                             );
@@ -128,19 +129,19 @@
                                                 }
                                                 $button.parent().find('input').val(newVal);
                                             });
-                                                document.addEventListener('DOMContentLoaded', function () {
-                                                    var quantityInput = document.getElementById('quantity');
-                                                    var countInput = document.getElementById('count');
-                                                    var addToCartForm = document.getElementById('addToCart');
+                                            document.addEventListener('DOMContentLoaded', function () {
+                                                var quantityInput = document.getElementById('quantity');
+                                                var countInput = document.getElementById('count');
+                                                var addToCartForm = document.getElementById('addToCart');
 
-                                                    addToCartForm.addEventListener('submit', function () {
-                                                        countInput.value = quantityInput.value;
-                                                    });
+                                                addToCartForm.addEventListener('submit', function () {
+                                                    countInput.value = quantityInput.value;
                                                 });
+                                            });
 
+                                        
 
-                                            
-                                            </script>
+                                        </script>
                                         <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
                                         <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
                                         <script>
@@ -167,17 +168,55 @@
                                             function sendMessage() {
                                                 var sellerId = document.getElementById("sellerId").value;
                                                 var message = document.getElementById("messageChatInput").value;
-                                                getSessionValue("userId", function (senderId) {
-                                                    if (sellerId && message && senderId) {
+                                                const fileInput = document.getElementById("imageInput");
+                                                const file = fileInput ? fileInput.files[0]:null;
 
-                                                        displayMessage("You", message);
-                                                        pushMessageToFirebase(senderId, sellerId, message, senderId);
-                                                        connection.invoke("SendMessageToUser", sellerId, senderId, message).catch(function (err) {
-                                                            console.error(err.toString());
-                                                        });
+                                              
+                                                getSessionValue("userId", function (senderId) {
+                                                    if (sellerId && senderId) {
+                                                        if (message) {
+                                                            displayMessage("You", message);
+                                                            pushMessageToFirebase(senderId, sellerId, message, senderId);
+                                                            connection.invoke("SendMessageToUser", sellerId, senderId, message).catch(function (err) {
+                                                                console.error(err.toString());
+                                                            });
+                                                        }
+                                                        if (file) {
+                                                            const reader = new FileReader();
+                                                            const loadImageData = (file) => {
+                                                                return new Promise((resolve, reject) => {
+                                                                    reader.onload = () => {
+                                                                        resolve(reader.result);
+                                                                    };
+                                                                    reader.onerror = reject;
+                                                                    reader.readAsDataURL(file);
+                                                                });
+                                                            };
+                                                            loadImageData(file)
+                                                                .then((imageData) => {
+                                                                    displayMessage("You", message, imageData);
+                                                                    pushMessageToFirebase(senderId, sellerId, imageData, senderId);
+                                                                    // Gửi dữ liệu hình ảnh lên server
+                                                                    connection.invoke("SendImage", sellerId, senderId, imageData)
+                                                                        .catch((err) => {
+                                                                            console.error(err.toString());
+                                                                        });
+                                                                })
+                                                                .catch((err) => {
+                                                                    console.error(err.toString());
+                                                                });
+                                                            fileInput.value = null;
+                                                        }
                                                     }
+                                                   
                                                 });
                                             }
+                                            connection.on("ReceiveImage", function (senderId,imageData) {
+                                                // Xử lý hình ảnh nhận được từ server
+                                                // Ví dụ: Hiển thị hình ảnh trong một thẻ <img>
+                                                addChat(imageData);
+                                                
+                                            });
                                             function pushMessageToFirebase(userId, sellerId, message, senderId) {
                                                 $.ajax({
                                                     url: '/api/Firebase/SetMessage',
@@ -199,8 +238,8 @@
                                                     }
                                                 });
                                             }
-                                            
-                                            function getMessageFromFirebase(userId, sellerId){
+
+                                            function getMessageFromFirebase(userId, sellerId) {
                                                 $.ajax({
                                                     url: '/api/Firebase/GetMessages',
                                                     type: 'GET',
@@ -230,7 +269,7 @@
                                                                 });
                                                             }
                                                         });
-                                                        
+
                                                     },
                                                     error: function (xhr, status, error) {
                                                         console.error('Error:', error);
@@ -241,7 +280,18 @@
                                                 var chatFull = document.getElementById("chat_fullscreen");
                                                 var chatMsgItem = document.createElement("span");
                                                 chatMsgItem.className = "chat_msg_item chat_msg_item_user";
-                                                chatMsgItem.innerHTML = message;
+                                                if (isBase64(message)) {
+                                                    // Thêm img vào chatMsgItem
+                                                    var messageImg = document.createElement('img');
+                                                    messageImg.src = message; // Đặt URL của hình ảnh tại đây
+                                                    messageImg.style.maxWidth = "100px"; // Cài đặt chiều rộng tối đa của hình ảnh
+                                                    messageImg.style.marginTop = '10px'; // Tạo khoảng trống giữa nội dung tin nhắn và hình ảnh
+
+                                                    chatMsgItem.appendChild(messageImg);
+                                                } else {
+                                                    chatMsgItem.innerHTML = message;
+                                                }
+                                                
                                                 chatFull.appendChild(chatMsgItem);
                                                 // Thời gian trước đó
                                                 var previousTime = new Date();
@@ -254,53 +304,124 @@
                                             }
                                             function initChat(message, user, time) {
                                                 var chatFull = document.getElementById("chat_fullscreen");
+
                                                 if (user) {
+                                                    // Tạo phần tử chat_msg_item_user
                                                     var chatMsgItem = document.createElement("span");
                                                     chatMsgItem.className = "chat_msg_item chat_msg_item_user";
-                                                    chatMsgItem.innerHTML = message;
+
+                                                   
+                                                    if (isBase64(message)) {
+                                                        // Thêm img vào chatMsgItem
+                                                        var messageImg = document.createElement('img');
+                                                        messageImg.src = message; // Đặt URL của hình ảnh tại đây
+                                                        messageImg.style.maxWidth = "100px"; // Cài đặt chiều rộng tối đa của hình ảnh
+                                                        messageImg.style.marginTop = '10px'; // Tạo khoảng trống giữa nội dung tin nhắn và hình ảnh
+
+                                                        chatMsgItem.appendChild(messageImg);
+                                                    } else {
+                                                        // Thêm nội dung tin nhắn
+                                                        chatMsgItem.textContent = message;
+                                                    }
+                                                    // Thêm chatMsgItem vào chatFull
                                                     chatFull.appendChild(chatMsgItem);
 
-                                                    chatFull.innerHTML += '<div class="status2" style=" right: 0px; top:20px; position:relative ;font - size: 11px; opacity: 0.3;">' + time + '</div>';
-                                                }
-                                                else {
+                                                    
+                                                } else {
                                                     var avatarSrc = "/AdminAssets/img/avatars/avatar.jpg";
-                                                    var chatMsgItemHTML = '<span class="chat_msg_item chat_msg_item_admin">' +
-                                                        '<div class="chat_avatar">' +
-                                                        '<img src="' + avatarSrc + '" style="border-radius:5px; max-height:50px; max-width: 50px;" />' +
-                                                        '</div>' +
-                                                        message +
 
-                                                        '</span>' +
-                                                        '<div class="status2" style=" left: 60px; top:20px; position:relative;font - size: 11px; opacity: 0.3;">' + time + '</div>';
+                                                    // Tạo phần tử chat_msg_item_admin
+                                                    var chatMsgItem = document.createElement("span");
+                                                    chatMsgItem.className = "chat_msg_item chat_msg_item_admin";
 
-                                                    var chatFull = document.getElementById("chat_fullscreen");
-                                                    chatFull.innerHTML += chatMsgItemHTML;
+                                                    // Tạo phần tử chat_avatar
+                                                    var chatAvatar = document.createElement("div");
+                                                    chatAvatar.className = "chat_avatar";
+
+                                                    // Tạo phần tử img
+                                                    var img = document.createElement("img");
+                                                    getSelletInfo("userId", function (data) {
+                                                        console.log(data);
+                                                    });
+                                                    img.src = avatarSrc;
+                                                    img.style.cssText = "border-radius:5px; max-height:50px; max-width:50px;";
+
+                                                    // Thêm img vào chat_avatar
+                                                    chatAvatar.appendChild(img);
+
+                                                    // Thêm chat_avatar vào chatMsgItem
+                                                    chatMsgItem.appendChild(chatAvatar);
+
+                                                    
+                                                    if (isBase64(message)) {
+                                                        // Thêm img vào chatMsgItem
+                                                        var messageImg = document.createElement('img');
+                                                        messageImg.src = message; // Đặt URL của hình ảnh tại đây
+                                                        messageImg.style.maxWidth = '100px'; // Cài đặt chiều rộng tối đa của hình ảnh
+                                                        messageImg.style.marginTop = '10px'; // Tạo khoảng trống giữa nội dung tin nhắn và hình ảnh
+
+                                                        chatMsgItem.appendChild(messageImg);
+                                                    } else {
+                                                        // Thêm nội dung tin nhắn
+                                                        chatMsgItem.innerHTML += message;
+                                                    }
+                                                    // Thêm chatMsgItem vào chatFull
+                                                    chatFull.appendChild(chatMsgItem);
+
+                                             
                                                 }
                                             }
 
-                                            connection.on("ReceiveMessage", function (senderId, message) {
+                                            function addChat(message) {
                                                 var chatFull = document.getElementById("chat_fullscreen");
                                                 var avatarSrc = "/AdminAssets/img/avatars/avatar.jpg";
 
                                                 // Thời gian trước đó
                                                 var previousTime = new Date();
-                                                previousTime.setMinutes(previousTime.getMinutes() - 10); // Giả sử 10 phút trước
+                                                previousTime.setMinutes(previousTime.getMinutes()); // Giả sử 10 phút trước
 
                                                 // Tính thời gian đã trôi qua
                                                 var timeElapsed = calculateTimeElapsed(previousTime);
 
+                                                // Tạo phần tử chat_msg_item_admin
+                                                var chatMsgItem = document.createElement('span');
+                                                chatMsgItem.classList.add('chat_msg_item', 'chat_msg_item_admin');
 
-                                                var chatMsgItemHTML = '<span class="chat_msg_item chat_msg_item_admin">' +
-                                                    '<div class="chat_avatar">' +
-                                                    '<img src="' + avatarSrc + '" style="border-radius:5px; max-height:50px; max-width: 50px;" />' +
-                                                    '</div>' +
-                                                    message +
-                                                 
-                                                    '</span>'+
-                                                    '<div class="status2" style=" left: 60px; top:20px; position:relative;font - size: 11px; opacity: 0.3;">' + timeElapsed + ' phút trước' + '</div>';
-                                                
-                                                var chatFull = document.getElementById("chat_fullscreen");
-                                                chatFull.innerHTML += chatMsgItemHTML;
+                                                // Tạo phần tử chat_avatar
+                                                var chatAvatar = document.createElement('div');
+                                                chatAvatar.classList.add('chat_avatar');
+                                                var img = document.createElement('img');
+                                                img.src = avatarSrc;
+                                                img.style.borderRadius = '5px';
+                                                img.style.maxHeight = '50px';
+                                                img.style.maxWidth = '50px';
+                                                chatAvatar.appendChild(img);
+
+                                                // Thêm chat_avatar vào chat_msg_item
+                                                chatMsgItem.appendChild(chatAvatar);
+                                                if (isBase64(message)) {
+                                                    // Thêm img vào chatMsgItem
+                                                    var messageImg = document.createElement('img');
+                                                    messageImg.src = message; // Đặt URL của hình ảnh tại đây
+                                                    messageImg.style.maxWidth = '100%'; // Cài đặt chiều rộng tối đa của hình ảnh
+                                                    messageImg.style.marginTop = '10px'; // Tạo khoảng trống giữa nội dung tin nhắn và hình ảnh
+
+                                                    chatMsgItem.appendChild(messageImg);
+                                                } else {
+                                                    // Thêm nội dung tin nhắn
+                                                    var messageNode = document.createTextNode(message);
+                                                    chatMsgItem.appendChild(messageNode);
+                                                }
+
+
+                                              
+
+
+                                                // Thêm chatMsgItem vào chatFull
+                                                chatFull.appendChild(chatMsgItem);
+                                            }
+                                            connection.on("ReceiveMessage", function (senderId, message) {
+                                                addChat(message);
                                             });
 
                                             function calculateTimeElapsed(previousTime) {
@@ -335,42 +456,14 @@
                                                     type: 'GET', // Phương thức GET
                                                     data: { productId: productId }, // Dữ liệu gửi đi, productId là tên tham số và productId là giá trị
                                                     success: function (data) { // Hàm được gọi khi request thành công
-                                                        console.log(data); // Hiển thị dữ liệu nhận được từ server trong console
+                                                        callback(data); // Hiển thị dữ liệu nhận được từ server trong console
                                                     },
                                                     error: function (xhr, status, error) { // Hàm được gọi khi có lỗi xảy ra
                                                         console.error(xhr.responseText); // Hiển thị thông báo lỗi trong console
                                                     }
                                                 });
                                             }
-                                            /*
-                                            document.getElementById("fab_send").addEventListener("click", function (event) {
-                                                var user = "";
-                                                getSessionValue("userName", function(sessionValue){
-                                                    user = sessionValue;
-                                                    var message = document.getElementById("messageChatInput").value;
-                                                    connection.invoke("SendMessage", user, message).catch(function (err) {
-                                                        return console.error(err.toString());
-                                                    });
-                                                    event.preventDefault();
-                                                });
-                                            });
-
-                                            connection.on("ReceiveMessage", function (user, message) {
-                                                var encodedMessage = user + " says: " + message;
-                                                var li = document.createElement("li");
-                                                li.textContent = encodedMessage;
-                                                document.getElementById("messagesList").appendChild(li);
-
-                                                var chatFull = document.getElementById("chat_fullscreen");
-                                                var chatMsgItem = document.createElement("span");
-                                                chatMsgItem.className = "chat_msg_item chat_msg_item_user";
-                                                chatMsgItem.innerHTML = message;
-                                                chatFull.appendChild(chatMsgItem);
-
-                                                // Cuộn xuống cuối cùng để hiển thị tin nhắn mới nhất
-                                                chatFull.scrollTop = chatFull.scrollHeight;
-                                            });
-                                            */
+                                           
                                             //ChatBox
                                             hideChat(4);
 
@@ -451,37 +544,309 @@
                                                         break;
                                                 }
                                             }
+                                            function isBase64(str) {
+                                                return str.includes("data:image/jpeg;base64");
+                                            }
                                         </script>
 
-                                        }
-                                    </div>
+                                    }
                                 </div>
                             </div>
                         </div>
-                        @if(ViewBag.mess != null)
-                        {
-                            <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert" style="text-align:center;position:relative">
-                                <strong>@ViewBag.mess!</strong> Số lượng sản phẩm đã chọn vượt quá số lượng còn lại trong kho
-                            </div>
-                        }
+                    </div>
+                    @if (ViewBag.mess != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" id="myAlert" role="alert" style="text-align:center;position:relative">
+                            <strong>@ViewBag.mess!</strong> Số lượng sản phẩm đã chọn vượt quá số lượng còn lại trong kho
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Main Content Area End Here  -->
+    <!-- Begin Scroll To Top -->
+    <h5 style="margin:10px">Danh gia</h5>
+    <div id="newCommentFormContainer">
+        <form id="newCommentForm" onsubmit="submitComment(event)">
+            <!-- Nội dung bình luận -->
+            <div style="display: flex; align-items: center; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+                <!-- Không có trường avatar hoặc username -->
+                <div style="width: 100%;">
+                    <textarea id="content" name="content" placeholder="Nhap noi dung" style="width: 100%; height: 60px; border-radius: 5px; padding: 5px; margin-bottom: 5px;" required></textarea>
+                    <!-- Trường đánh giá bằng ngôi sao -->
+                    <div id="ratingStars" style="display: flex; align-items: center;">
+                        <label for="rating" style="font-size: 16px; color: #999;">Rating:</label>
+                        <div id="starContainer" style="margin-left: 5px;">
+                            <!-- Sử dụng biểu tượng ngôi sao -->
+                            <span class="star" data-value="1"><i class="pe-7s-star"></i></span>
+                            <span class="star" data-value="2"><i class="pe-7s-star"></i></span>
+                            <span class="star" data-value="3"><i class="pe-7s-star"></i></span>
+                            <span class="star" data-value="4"><i class="pe-7s-star"></i></span>
+                            <span class="star" data-value="5"><i class="pe-7s-star"></i></span>
+                        </div>
+                        <input type="hidden" id="rating" name="rating" value="0">
                     </div>
                 </div>
             </div>
-        </main>
-        <!-- Main Content Area End Here  -->
-        <!-- Begin Scroll To Top -->
-        <a class="scroll-to-top" href="">
-            <i class="fa fa-chevron-up"></i>
-        </a>
-        <!-- Scroll To Top End Here -->
-
+            <!-- Nút submit để gửi bình luận -->
+            <button type="submit" style="margin-top: 10px;margin-left:1000px">Submit Comment</button>
+        </form>
     </div>
+
+    <div id="commentsContainer">
+        <div class="comment">
+            <div style="display: flex; align-items: center; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+                <div style="margin-right: 10px;">
+                    <img src="path_to_avatar_image" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%;">
+                </div>
+                <div>
+                    <p style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">Người dùng</p>
+                    <p style="font-size: 14px; color: #555;">Nội dung bình luận</p>
+                    <div style="display: flex; align-items: center;">
+                        <span style="font-size: 12px; color: #999;">Đánh giá:</span>
+                        <span style="margin-left: 5px; font-size: 14px; color: #ff9800;">4.5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Thêm các phần tử bình luận tương tự ở đây -->
+    </div>
+
+    <div id="paginationContainer">
+        <!-- Các liên kết phân trang sẽ được thêm vào đây -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const starContainer = document.getElementById('starContainer');
+            const stars = starContainer.querySelectorAll('.star');
+            const ratingInput = document.getElementById('rating');
+
+            stars.forEach(function (star) {
+                star.addEventListener('click', function () {
+                    // Lấy giá trị ngôi sao được click
+                    const rating = parseInt(star.getAttribute('data-value'));
+
+                    // Cập nhật giá trị đánh giá
+                    ratingInput.value = rating;
+
+                    // Đặt lại màu sắc cho tất cả các ngôi sao
+                    stars.forEach(function (s) {
+                        const starValue = parseInt(s.getAttribute('data-value'));
+                        if (starValue <= rating) {
+                            // Nếu ngôi sao có giá trị nhỏ hơn hoặc bằng giá trị được chọn, đổi màu vàng
+                            s.style.color = '#ff9800';
+                        } else {
+                            // Nếu ngôi sao có giá trị lớn hơn, đổi lại màu mặc định
+                            s.style.color = '#ccc';
+                        }
+                    });
+                });
+            });
+        });
+
+        const comments = [
+            {
+                user: "Người dùng 1",
+                content: "Nội dung bình luận 1",
+                avatarSrc: "path_to_avatar_image_1.jpg",
+                rating: 4.5
+            },
+            {
+                user: "Người dùng 2",
+                content: "Nội dung bình luận 2",
+                avatarSrc: "path_to_avatar_image_2.jpg",
+                rating: 3.8
+            },
+            {
+                user: "Người dùng 3",
+                content: "Nội dung bình luận 1",
+                avatarSrc: "path_to_avatar_image_1.jpg",
+                rating: 4.5
+            },
+            {
+                user: "Người dùng 4",
+                content: "Nội dung bình luận 2",
+                avatarSrc: "path_to_avatar_image_2.jpg",
+                rating: 3.8
+            },
+            {
+                user: "Người dùng 5",
+                content: "Nội dung bình luận 1",
+                avatarSrc: "path_to_avatar_image_1.jpg",
+                rating: 4.5
+            },
+            {
+                user: "Người dùng 6",
+                content: "Nội dung bình luận 2",
+                avatarSrc: "path_to_avatar_image_2.jpg",
+                rating: 3.8
+            },
+            {
+                user: "Người dùng 7",
+                content: "Nội dung bình luận 1",
+                avatarSrc: "path_to_avatar_image_1.jpg",
+                rating: 4.5
+            },
+            {
+                user: "Người dùng 8",
+                content: "Nội dung bình luận 2",
+                avatarSrc: "path_to_avatar_image_2.jpg",
+                rating: 3.8
+            },
+            // Thêm các bình luận khác
+        ];
+        // Tổng số bình luận
+        const totalComments = comments.length
+
+        // Số bình luận hiển thị trên mỗi trang
+        const commentsPerPage = 3;
+
+        // Số trang tính được
+        const totalPages = Math.ceil(totalComments / commentsPerPage);
+
+        // Đối tượng phân trang
+        const paginationContainer = document.getElementById('paginationContainer');
+        paginationContainer.className = 'page-item';
+        paginationContainer.style = "display: flex;flex-direction: row;"
+        // Tạo các liên kết phân trang
+        for (let i = 1; i <= totalPages; i++) {
+            const pageLink = document.createElement('a');
+            pageLink.href = '#';
+            pageLink.className = 'page-link';
+            pageLink.textContent = i;
+
+            // Xử lý sự kiện khi người dùng nhấp vào liên kết phân trang
+            pageLink.addEventListener('click', function () {
+                // Hiển thị các bình luận cho trang được chọn
+                showComments(i);
+            });
+
+            paginationContainer.appendChild(pageLink);
+        }
+        
+
+        // Hiển thị các bình luận cho trang đầu tiên khi trang được tải
+        showComments(1);
+
+        // Hàm hiển thị các bình luận cho một trang cụ thể
+        function showComments(page) {
+            const commentsContainer = document.getElementById('commentsContainer');
+
+            // Xóa các bình luận hiện tại
+            commentsContainer.innerHTML = '';
+
+            // Tính chỉ số bắt đầu và kết thúc của các bình luận trên trang hiện tại
+            const startIndex = (page - 1) * commentsPerPage;
+            const endIndex = startIndex + commentsPerPage;
+
+            // Lặp qua các bình luận trên trang hiện tại và hiển thị chúng
+            for (let i = startIndex; i < endIndex; i++) {
+                // Kiểm tra xem vị trí bình luận có hợp lệ hay không
+                if (i < totalComments) {
+                    // Tạo phần tử bình luận sử dụng hàm createCommentElement
+                    const commentElement = createCommentElement(comments[i]);
+
+                    // Thêm phần tử bình luận vào commentsContainer
+                    commentsContainer.appendChild(commentElement);
+                }
+            }
+        }
+        function createCommentElement(comment) {
+            // Tạo phần tử bình luận chính
+            const commentElement = document.createElement('div');
+            commentElement.className = 'comment';
+
+            // Tạo phần tử chứa bình luận
+            const commentContainer = document.createElement('div');
+            commentContainer.style.display = 'flex';
+            commentContainer.style.alignItems = 'center';
+            commentContainer.style.padding = '10px';
+            commentContainer.style.border = '1px solid #ccc';
+            commentContainer.style.borderRadius = '5px';
+            commentContainer.style.backgroundColor = '#f5f5f5';
+
+            // Tạo phần tử chứa avatar
+            const avatarContainer = document.createElement('div');
+            avatarContainer.style.marginRight = '30px';
+
+            // Tạo phần tử avatar (img)
+            const avatar = document.createElement('img');
+            avatar.src = comment.avatarSrc;
+            avatar.alt = 'Avatar';
+            avatar.style.width = '50px';
+            avatar.style.height = '50px';
+            avatar.style.borderRadius = '50%';
+
+            // Thêm avatar vào container
+            avatarContainer.appendChild(avatar);
+
+            // Tạo phần tử chứa nội dung bình luận
+            const contentContainer = document.createElement('div');
+
+            // Tạo phần tử tên người dùng
+            const userName = document.createElement('p');
+            userName.style.fontSize = '16px';
+            userName.style.fontWeight = 'bold';
+            userName.style.marginBottom = '5px';
+            userName.textContent = comment.user;
+
+            // Tạo phần tử nội dung bình luận
+            const content = document.createElement('p');
+            content.style.fontSize = '14px';
+            content.style.color = '#555';
+            content.textContent = comment.content;
+
+            // Tạo phần tử đánh giá
+            const ratingContainer = document.createElement('div');
+            ratingContainer.style.display = 'flex';
+            ratingContainer.style.alignItems = 'center';
+
+            const ratingLabel = document.createElement('span');
+            ratingLabel.style.fontSize = '12px';
+            ratingLabel.style.color = '#999';
+            ratingLabel.textContent = 'Đánh giá:';
+
+            const rating = document.createElement('span');
+            rating.style.marginLeft = '5px';
+            rating.style.fontSize = '14px';
+            rating.style.color = '#ff9800';
+            rating.textContent = comment.rating;
+
+            // Thêm các phần tử đánh giá vào container
+            ratingContainer.appendChild(ratingLabel);
+            ratingContainer.appendChild(rating);
+
+            // Thêm các phần tử vào contentContainer
+            contentContainer.appendChild(userName);
+            contentContainer.appendChild(content);
+            contentContainer.appendChild(ratingContainer);
+
+            // Thêm avatarContainer và contentContainer vào commentContainer
+            commentContainer.appendChild(avatarContainer);
+            commentContainer.appendChild(contentContainer);
+
+            // Thêm commentContainer vào commentElement
+            commentElement.appendChild(commentContainer);
+
+            // Trả về phần tử bình luận
+            return commentElement;
+        }
+
+    </script>
+    <a class="scroll-to-top" href="">
+        <i class="fa fa-chevron-up"></i>
+    </a>
+    <!-- Scroll To Top End Here -->
+
+</div>
 <h1></h1>
 <div class="fabs" id="myChatBox">
 
     <!-- For demo purpose-->
 
-    
+
 
 
     <div class="chat">
@@ -497,10 +862,12 @@
 
         </div>
         <div id="chat_fullscreen" class="chat_conversion chat_converse">
-
         </div>
         <div class="fab_field">
-            <a id="fab_camera" class="fab"><i class="zmdi zmdi-camera"></i></a>
+            <label style="display: inline-block; position: relative; overflow: hidden; padding: 6px 12px; background-color: #f5f6f7; color: #4b4f56; border: 1px solid #ced0d4; border-radius: 4px; cursor: pointer;">
+                <span class="fileInputIcon">&#128206;</span>
+                <input type="file" id="imageInput" accept="image/*" style="position: absolute; left: -9999px;">
+            </label>
             <a id="fab_send" onclick="sendMessage()" class="fab"><i class="zmdi zmdi-mail-send"></i></a>
             <textarea id="messageChatInput" name="chat_message" placeholder="Send a message" class="chat_field chat_message"></textarea>
         </div>
