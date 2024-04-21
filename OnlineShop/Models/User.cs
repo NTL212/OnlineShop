@@ -10,9 +10,7 @@ namespace OnlineShop.Models
         public User()
         {
             Carts = new HashSet<Cart>();
-            OrderShippers = new HashSet<Order>();
-            OrderUsers = new HashSet<Order>();
-            Products = new HashSet<Product>();
+            Orders = new HashSet<Order>();
         }
 
         public int UserId { get; set; }
@@ -22,7 +20,7 @@ namespace OnlineShop.Models
         public string Phone { get; set; }
         public int IsEmailActive { get; set; }
         public string Password { get; set; }
-        public int? RoleId { get; set; }
+        public int RoleId { get; set; }
         public int? SellerId { get; set; }
         public string Address { get; set; }
         public string Avatar { get; set; }
@@ -31,8 +29,6 @@ namespace OnlineShop.Models
 
         public virtual Role Role { get; set; }
         public virtual ICollection<Cart> Carts { get; set; }
-        public virtual ICollection<Order> OrderShippers { get; set; }
-        public virtual ICollection<Order> OrderUsers { get; set; }
-        public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

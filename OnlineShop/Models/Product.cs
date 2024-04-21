@@ -14,7 +14,7 @@ namespace OnlineShop.Models
         }
 
         public int ProductId { get; set; }
-        public int SellerId { get; set; }
+        public int? SellerId { get; set; }
         public string ProductName { get; set; }
         public string Decription { get; set; }
         public double Price { get; set; }
@@ -24,14 +24,12 @@ namespace OnlineShop.Models
         public int IsActive { get; set; }
         public string Image { get; set; }
         public int CategoryId { get; set; }
-        public int StyleId { get; set; }
         public double Rating { get; set; }
         public DateTime? Date { get; set; }
         public int IsDeleted { get; set; }
 
         public virtual Category Category { get; set; }
         public virtual User Seller { get; set; }
-        public virtual Style Style { get; set; }
         public virtual ICollection<CartItem> CartItems { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
     }

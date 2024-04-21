@@ -41,7 +41,7 @@ namespace OnlineShop.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            var onlineShopContext = _context.Products.Where(p => p.SellerId == userId).Include(p => p.Category).Include(p => p.Style);
+            var onlineShopContext = _context.Products.Where(p => p.SellerId == userId).Include(p => p.Category);
             return View(onlineShopContext.ToPagedList(page ?? 1, 5));
         }
 
@@ -68,7 +68,6 @@ namespace OnlineShop.Areas.Seller.Controllers
             var product = await _context.Products
                 .Where(p => p.SellerId == userId)
                 .Include(p => p.Category)
-                .Include(p => p.Style)
                 .FirstOrDefaultAsync(m => m.ProductId == id);
             if (product == null)
             {
@@ -94,7 +93,6 @@ namespace OnlineShop.Areas.Seller.Controllers
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
-            ViewData["StyleId"] = new SelectList(_context.Styles, "StyleId", "StyleName");
             return View();
         }
 
@@ -166,7 +164,6 @@ namespace OnlineShop.Areas.Seller.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
-            ViewData["StyleId"] = new SelectList(_context.Styles, "StyleId", "StyleName", product.StyleId);
             return View(product);
         }
 
@@ -196,7 +193,6 @@ namespace OnlineShop.Areas.Seller.Controllers
                 return NotFound();
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
-            ViewData["StyleId"] = new SelectList(_context.Styles, "StyleId", "StyleName", product.StyleId);
             return View(product);
         }
 
@@ -212,7 +208,6 @@ namespace OnlineShop.Areas.Seller.Controllers
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
-            ViewData["StyleId"] = new SelectList(_context.Styles, "StyleId", "StyleName", product.StyleId);
             foreach (PropertyInfo pi in product.GetType().GetProperties())
             {
                 if (pi.PropertyType == typeof(string))
@@ -264,7 +259,6 @@ namespace OnlineShop.Areas.Seller.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
-            ViewData["StyleId"] = new SelectList(_context.Styles, "StyleId", "StyleName", product.StyleId);
             return View(product);
         }
 
@@ -290,7 +284,6 @@ namespace OnlineShop.Areas.Seller.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Category)
-                .Include(p => p.Style)
                 .FirstOrDefaultAsync(m => m.ProductId == id);
             if (product == null)
             {

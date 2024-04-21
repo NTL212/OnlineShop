@@ -20,6 +20,7 @@ namespace OnlineShop.Models
         public virtual DbSet<Cart> Carts { get; set; }
         public virtual DbSet<CartItem> CartItems { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<Comment> Comments { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<Product> Products { get; set; }
@@ -80,6 +81,15 @@ namespace OnlineShop.Models
                     .HasMaxLength(100);
             });
 
+            modelBuilder.Entity<Comment>(entity =>
+            {
+                entity.Property(e => e.Content)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(e => e.Date).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<Order>(entity =>
             {
                 entity.Property(e => e.Address)
@@ -101,12 +111,6 @@ namespace OnlineShop.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.HasOne(d => d.Shipper)
-                    .WithMany(p => p.OrderShippers)
-                    .HasForeignKey(d => d.ShipperId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("fk_id_shipper");
-
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.StatusId)
@@ -114,7 +118,7 @@ namespace OnlineShop.Models
                     .HasConstraintName("fk_id_status");
 
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.OrderUsers)
+                    .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_id_user_2");
@@ -161,18 +165,6 @@ namespace OnlineShop.Models
                     .HasForeignKey(d => d.CategoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_id_category");
-
-                entity.HasOne(d => d.Seller)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.SellerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("fk_id_seller");
-
-                entity.HasOne(d => d.Style)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.StyleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("fk_id_style");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -204,9 +196,7 @@ namespace OnlineShop.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.Property(e => e.Address)
-                    .IsRequired()
-                    .HasMaxLength(200);
+                entity.Property(e => e.Address).HasMaxLength(200);
 
                 entity.Property(e => e.Avatar)
                     .HasMaxLength(100)
@@ -224,6 +214,7 @@ namespace OnlineShop.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.Password)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .IsFixedLength(true);
 
@@ -238,6 +229,7 @@ namespace OnlineShop.Models
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Users)
                     .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_id_role");
             });
 

@@ -10,6 +10,7 @@ namespace OnlineShop.Models
         public int OrderItemId { get; set; }
         public int OrderId { get; set; }
         public int ProductId { get; set; }
+        public int? StyleId { get; set; }
         public int Count { get; set; }
 
         public virtual Order Order { get; set; }

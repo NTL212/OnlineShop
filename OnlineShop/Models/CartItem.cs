@@ -10,6 +10,7 @@ namespace OnlineShop.Models
         public int CartItemId { get; set; }
         public int CartId { get; set; }
         public int ProductId { get; set; }
+        public int? StyleId { get; set; }
         public int Count { get; set; }
         public DateTime Date { get; set; }
         public int IsDeleted { get; set; }

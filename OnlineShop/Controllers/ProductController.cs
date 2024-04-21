@@ -86,7 +86,7 @@ namespace OnlineShop.Controllers
         [HttpPost]
         public IActionResult Search(int? page, string keyword)
         {
-            var results = _context.Products.Include(p => p.Category).Include(p => p.Style)
+            var results = _context.Products.Include(p => p.Category)
             .Where(p => p.ProductName.Contains(keyword)).ToPagedList(page ?? 1, 5);
             //var categoryList = _context.Categories.ToList();
             //ViewData["Categories"] = categoryList;
@@ -128,7 +128,7 @@ namespace OnlineShop.Controllers
                 ViewBag.cartItems = lst;
                 ViewBag.totalCartItems = lst.Sum(n => n.Total);
             }
-            var product = _context.Products.Include(p => p.Category).Include(p => p.Style).Include(p=>p.Seller).FirstOrDefault(p=>p.ProductId.Equals(id));
+            var product = _context.Products.Include(p => p.Category).Include(p => p.Seller).FirstOrDefault(p=>p.ProductId.Equals(id));
 
             if (product == null)
             {
