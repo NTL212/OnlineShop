@@ -13,6 +13,7 @@ using X.PagedList;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 using OnlineShop.Payment;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace OnlineShop.Controllers
 {
@@ -103,6 +104,16 @@ namespace OnlineShop.Controllers
             }
             int userId;
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            var order = _context.Orders.Where(o => o.UserId == userId && o.Status.StatusName.Equals("Đã nhận")).FirstOrDefault();
+            if (order != null)
+            {
+
+                ViewBag.flagComment = true;
+            }
+            else
+            {
+                ViewBag.flagComment = false;
+            }
             if (isNum)
             {
                 string roleName = HttpContext.Session.GetString("roleName");
@@ -312,5 +323,35 @@ namespace OnlineShop.Controllers
             //log.InfoFormat("VNPAY URL: {0}", paymentUrl);
             return urlPayment;
         }
-    }
+
+        [HttpGet]
+        public async Task<IActionResult> getAllCommnentByProductId(int id)
+        {
+            var comments = await _context.Comments.Where(c=>c.ProductId == id && c.IsDeleted==0).OrderByDescending(c=>c.Date).ToListAsync();
+            if(comments.Any())
+            {
+                // Chuyển đổi danh sách List<Comment> thành chuỗi JSON
+                var jsonComments = JsonConvert.SerializeObject(comments);
+                return Ok(comments);
+            }
+            else
+            {
+                return BadRequest("không có comments");
+            }
+        }
+        [HttpPost]
+		public IActionResult CreateComment(string content, int rating, int productId, int userId)
+		{
+            var commnent = new Comment();
+            commnent.UserId = userId;
+            commnent.ProductId = productId;
+            commnent.Content = content;
+            commnent.Rate = rating;
+            commnent.Date = DateTime.Now;
+            commnent.IsDeleted = 0;
+            _context.Comments.Add(commnent);
+            _context.SaveChanges();
+			return RedirectToAction("Detail", "Product", new { id =productId, mess="" });
+		}
+	}
 }

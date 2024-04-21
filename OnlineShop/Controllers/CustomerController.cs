@@ -42,6 +42,13 @@ namespace OnlineShop.Controllers
             var seller = _context.Users.FirstOrDefault(s=>s.UserId==product.SellerId);
             return Json(seller);
         }
+
+        [HttpGet]
+        public IActionResult GetUserInfo(int userId)
+        {
+            var user = _context.Users.FirstOrDefault(s => s.UserId == userId);
+            return Json(user);
+        }
         public IActionResult SignIn()
         {
             return View();
