@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "Chi tiết sản phẩm";
 }
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 <div class="main-wrapper">
 
     <!-- Begin Main Header Area -->
@@ -61,9 +63,9 @@
                                                 </li>
                                                 @{
                                                     var i = Model.Rating;
-                                                                                                @while (i > 0)
+                                                                                                                        @while (i > 0)
                                                     {
-                                                                                                    <li><i class="pe-7s-star"></i></li>
+                                                                                                                            <li><i class="pe-7s-star"></i></li>
                                                         i--;
                                                     }
                                                 }
@@ -101,8 +103,6 @@
                                             </form>
                                         </li>
                                     </ul>
-
-                                    <input name="productId" value="@Model.ProductId" type="hidden" />
                                     <input id="sellerId" value="@Model.SellerId" type="hidden" />
                                     @* <button id="btnChatSeller" onclick="toggleFab()" class="btn btn-custom-size lg-size btn-info btn-secondary-hover rounded-0" style="width:auto;">Chat với người bán</button> *@
 
@@ -566,56 +566,66 @@
     </main>
     <!-- Main Content Area End Here  -->
     <!-- Begin Scroll To Top -->
-    <h5 style="margin:10px">Danh gia</h5>
-    <div id="newCommentFormContainer">
-        <form id="newCommentForm" onsubmit="submitComment(event)">
-            <!-- Nội dung bình luận -->
-            <div style="display: flex; align-items: center; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-                <!-- Không có trường avatar hoặc username -->
-                <div style="width: 100%;">
-                    <textarea id="content" name="content" placeholder="Nhap noi dung" style="width: 100%; height: 60px; border-radius: 5px; padding: 5px; margin-bottom: 5px;" required></textarea>
-                    <!-- Trường đánh giá bằng ngôi sao -->
-                    <div id="ratingStars" style="display: flex; align-items: center;">
-                        <label for="rating" style="font-size: 16px; color: #999;">Rating:</label>
-                        <div id="starContainer" style="margin-left: 5px;">
-                            <!-- Sử dụng biểu tượng ngôi sao -->
-                            <span class="star" data-value="1"><i class="pe-7s-star"></i></span>
-                            <span class="star" data-value="2"><i class="pe-7s-star"></i></span>
-                            <span class="star" data-value="3"><i class="pe-7s-star"></i></span>
-                            <span class="star" data-value="4"><i class="pe-7s-star"></i></span>
-                            <span class="star" data-value="5"><i class="pe-7s-star"></i></span>
+   
+   <div style="margin:30px">
+        <h5 style="margin:10px">Đánh giá của khách hàng</h5>
+       
+        <div id="newCommentFormContainer">
+            @if (ViewBag.flagComment)
+            {
+                <form id="newCommentForm" style="flex-direction:row" asp-action="CreateComment" asp-controller="Product">
+                    <!-- Nội dung bình luận -->
+                    <div style="display: flex; align-items: center; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+                        <!-- Không có trường avatar hoặc username -->
+                        <div style="width: 100%;">
+                            <textarea id="content" name="content" placeholder="Nhập nội dung ... " style="width: 100%; height: 60px; border-radius: 5px; padding: 5px; margin-bottom: 5px;" required></textarea>
+                            <!-- Trường đánh giá bằng ngôi sao -->
+                            <div id="ratingStars" style="display: flex; align-items: center;">
+                                <label for="rating" style="font-size: 16px; color: #999;">Rating:</label>
+                                <div id="starContainer" style="margin-left: 5px;">
+                                    <!-- Sử dụng biểu tượng ngôi sao -->
+                                    <span class="star" data-value="1"><i class="pe-7s-star"></i></span>
+                                    <span class="star" data-value="2"><i class="pe-7s-star"></i></span>
+                                    <span class="star" data-value="3"><i class="pe-7s-star"></i></span>
+                                    <span class="star" data-value="4"><i class="pe-7s-star"></i></span>
+                                    <span class="star" data-value="5"><i class="pe-7s-star"></i></span>
+                                </div>
+                                <input type="hidden" id="rating" name="rating" value="0">
+                            </div>
                         </div>
-                        <input type="hidden" id="rating" name="rating" value="0">
+                        <input type="hidden" id="userId" name="userId" value="@HttpContextAccessor.HttpContext.Session.GetString("userId")" />
+                        <input type="hidden" id="productId" name="productId" value="@Model.ProductId" />
                     </div>
-                </div>
-            </div>
-            <!-- Nút submit để gửi bình luận -->
-            <button type="submit" style="margin-top: 10px;margin-left:1000px">Submit Comment</button>
-        </form>
-    </div>
+                    <!-- Nút submit để gửi bình luận -->
+                    <button type="submit" class="btn btn-outline-warning" style="">Gửi đánh giá</button>
+                </form>
 
-    <div id="commentsContainer">
-        <div class="comment">
-            <div style="display: flex; align-items: center; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
-                <div style="margin-right: 10px;">
-                    <img src="path_to_avatar_image" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%;">
-                </div>
-                <div>
-                    <p style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">Người dùng</p>
-                    <p style="font-size: 14px; color: #555;">Nội dung bình luận</p>
-                    <div style="display: flex; align-items: center;">
-                        <span style="font-size: 12px; color: #999;">Đánh giá:</span>
-                        <span style="margin-left: 5px; font-size: 14px; color: #ff9800;">4.5</span>
-                    </div>
-                </div>
-            </div>
+            }         
         </div>
-        <!-- Thêm các phần tử bình luận tương tự ở đây -->
-    </div>
 
-    <div id="paginationContainer">
-        <!-- Các liên kết phân trang sẽ được thêm vào đây -->
-    </div>
+        <div id="commentsContainer">
+            <div class="comment">
+                <div style="display: flex; align-items: center; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f5f5f5;">
+                    <div style="margin-right: 10px;">
+                        <img src="path_to_avatar_image" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%;">
+                    </div>
+                    <div>
+                        <p style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">Người dùng</p>
+                        <p style="font-size: 14px; color: #555;">Nội dung bình luận</p>
+                        <div style="display: flex; align-items: center;">
+                            <span style="font-size: 12px; color: #999;">Đánh giá:</span>
+                            <span style="margin-left: 5px; font-size: 14px; color: #ff9800;">4.5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Thêm các phần tử bình luận tương tự ở đây -->
+        </div>
+
+        <div id="paginationContainer">
+            <!-- Các liên kết phân trang sẽ được thêm vào đây -->
+        </div>
+   </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -645,115 +655,172 @@
                 });
             });
         });
-
-        const comments = [
-            {
-                user: "Người dùng 1",
-                content: "Nội dung bình luận 1",
-                avatarSrc: "path_to_avatar_image_1.jpg",
-                rating: 4.5
-            },
-            {
-                user: "Người dùng 2",
-                content: "Nội dung bình luận 2",
-                avatarSrc: "path_to_avatar_image_2.jpg",
-                rating: 3.8
-            },
-            {
-                user: "Người dùng 3",
-                content: "Nội dung bình luận 1",
-                avatarSrc: "path_to_avatar_image_1.jpg",
-                rating: 4.5
-            },
-            {
-                user: "Người dùng 4",
-                content: "Nội dung bình luận 2",
-                avatarSrc: "path_to_avatar_image_2.jpg",
-                rating: 3.8
-            },
-            {
-                user: "Người dùng 5",
-                content: "Nội dung bình luận 1",
-                avatarSrc: "path_to_avatar_image_1.jpg",
-                rating: 4.5
-            },
-            {
-                user: "Người dùng 6",
-                content: "Nội dung bình luận 2",
-                avatarSrc: "path_to_avatar_image_2.jpg",
-                rating: 3.8
-            },
-            {
-                user: "Người dùng 7",
-                content: "Nội dung bình luận 1",
-                avatarSrc: "path_to_avatar_image_1.jpg",
-                rating: 4.5
-            },
-            {
-                user: "Người dùng 8",
-                content: "Nội dung bình luận 2",
-                avatarSrc: "path_to_avatar_image_2.jpg",
-                rating: 3.8
-            },
-            // Thêm các bình luận khác
-        ];
-        // Tổng số bình luận
-        const totalComments = comments.length
-
+        function getDanhGia(callback) {
+            $.ajax({
+                url: '/Product/getAllCommnentByProductId',
+                type: 'GET',
+                data: {
+                    id: document.getElementById('productId').value // Thay thế yourProductId bằng giá trị thực của id bạn muốn truy vấn
+                },
+                success: function (response) {
+                    callback(Object.values(response));
+                },
+                error: function (xhr, status, error) {
+                    // Xử lý khi có lỗi xảy ra trong quá trình request
+                    console.error('Request failed. Status:', status);
+                }
+            });
+        }
+        function getUserInfo(userId, callback=null) {
+            $.ajax({
+                url: '/Customer/GetUserInfo',
+                type: 'GET',
+                data: {
+                    userId: userId // Thay thế yourProductId bằng giá trị thực của id bạn muốn truy vấn
+                },
+                success: function (response) {
+                    if (callback != null) {
+                        callback(response);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Xử lý khi có lỗi xảy ra trong quá trình request
+                    console.error('Request failed. Status:', status);
+                }
+            });
+        }
+        function checkRoleComment(userId) {
+            $.ajax({
+                url: '/ControllerName/CheckRoleComment',
+                type: 'GET',
+                data: { userId: userId },
+                success: function (response) {
+                    // Xử lý dữ liệu trả về khi request thành công
+                    console.log('User has permission to comment.');
+                },
+                error: function (xhr, status, error) {
+                    // Xử lý khi có lỗi xảy ra trong quá trình request
+                    console.error('Failed to check role for commenting. Status:', status);
+                }
+            });
+        }
         // Số bình luận hiển thị trên mỗi trang
         const commentsPerPage = 3;
+        let currentPage = 1;
+        // Sử dụng hàm getDanhGia với một callback function
+        getDanhGia(function (comments) {
+            // Thiết lập biến toàn cục
+           
+           
+            const totalComments = comments.length;
 
-        // Số trang tính được
-        const totalPages = Math.ceil(totalComments / commentsPerPage);
+           
+            // Số trang tính được
+            const totalPages = Math.ceil(totalComments / commentsPerPage);
 
-        // Đối tượng phân trang
-        const paginationContainer = document.getElementById('paginationContainer');
-        paginationContainer.className = 'page-item';
-        paginationContainer.style = "display: flex;flex-direction: row;"
-        // Tạo các liên kết phân trang
-        for (let i = 1; i <= totalPages; i++) {
-            const pageLink = document.createElement('a');
-            pageLink.href = '#';
-            pageLink.className = 'page-link';
-            pageLink.textContent = i;
-
-            // Xử lý sự kiện khi người dùng nhấp vào liên kết phân trang
-            pageLink.addEventListener('click', function () {
-                // Hiển thị các bình luận cho trang được chọn
-                showComments(i);
+            // Đối tượng phân trang
+            const paginationContainer = document.getElementById('paginationContainer');
+            paginationContainer.className = 'page-item';
+            paginationContainer.style = "display: flex;flex-direction: row;margin-top:20px"
+            // Nút Previous
+            const prevButton = document.createElement('a');
+            prevButton.href = '#';
+            prevButton.className = 'page-link';
+            prevButton.textContent = 'Previous';
+            prevButton.addEventListener('click', function () {
+                showPreviousPage();
             });
+            paginationContainer.appendChild(prevButton);
 
-            paginationContainer.appendChild(pageLink);
+            // Tính số trang hiển thị tối đa
+            const maxVisiblePages = totalComments > 5 ? 5 : totalComments; // Số trang tối đa hiển thị trên thanh phân trang
+            const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+            // Tạo các liên kết phân trang cho các trang hiển thị
+            for (let i = startPage; i <= endPage; i++) {
+                const pageItem = document.createElement('span');
+                pageItem.className = 'page-item';
+
+                const pageLink = document.createElement('a');
+                pageLink.href = '#';
+                pageLink.className = 'page-link';
+                pageLink.textContent = i;
+
+                pageLink.addEventListener('click', function () {
+                    var item = document.getElementsByClassName('page-item active');
+                    if (item != null) {
+                        document.getElementsByClassName('page-item active')[0].className = 'page-item';
+                    }
+                    pageItem.className = 'page-item active';
+                    showComments(i);
+                });
+                pageItem.appendChild(pageLink);
+                paginationContainer.appendChild(pageItem);
+            }
+
+            // Nút Next
+            const nextButton = document.createElement('a');
+            nextButton.href = '#';
+            nextButton.className = 'page-link';
+            nextButton.textContent = 'Next';
+            nextButton.addEventListener('click', function () {
+                showNextPage();
+            });
+            paginationContainer.appendChild(nextButton);
+
+            // Hiển thị các bình luận cho trang đầu tiên khi trang được tải
+            showComments(currentPage, comments);
+        });
+       
+        // Hàm để tạo các nút phân trang
+       
+        // Hàm để hiển thị trang trước đó
+        function showPreviousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                showComments(currentPage);
+            }
         }
-        
 
-        // Hiển thị các bình luận cho trang đầu tiên khi trang được tải
-        showComments(1);
+        // Hàm để hiển thị trang kế tiếp
+        function showNextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                showComments(currentPage);
+            }
+        }
 
+       
+
+       
+
+       
         // Hàm hiển thị các bình luận cho một trang cụ thể
-        function showComments(page) {
+        function showComments(page, comments) {
             const commentsContainer = document.getElementById('commentsContainer');
-
+            
             // Xóa các bình luận hiện tại
             commentsContainer.innerHTML = '';
 
             // Tính chỉ số bắt đầu và kết thúc của các bình luận trên trang hiện tại
             const startIndex = (page - 1) * commentsPerPage;
             const endIndex = startIndex + commentsPerPage;
-
+           
             // Lặp qua các bình luận trên trang hiện tại và hiển thị chúng
             for (let i = startIndex; i < endIndex; i++) {
                 // Kiểm tra xem vị trí bình luận có hợp lệ hay không
-                if (i < totalComments) {
+                if (i < Object.keys(comments).length) {
                     // Tạo phần tử bình luận sử dụng hàm createCommentElement
                     const commentElement = createCommentElement(comments[i]);
-
                     // Thêm phần tử bình luận vào commentsContainer
                     commentsContainer.appendChild(commentElement);
                 }
             }
         }
         function createCommentElement(comment) {
+            // Tổng số bình luận
+
             // Tạo phần tử bình luận chính
             const commentElement = document.createElement('div');
             commentElement.className = 'comment';
@@ -766,21 +833,26 @@
             commentContainer.style.border = '1px solid #ccc';
             commentContainer.style.borderRadius = '5px';
             commentContainer.style.backgroundColor = '#f5f5f5';
+            commentContainer.style.marginTop = '10px';
 
             // Tạo phần tử chứa avatar
             const avatarContainer = document.createElement('div');
             avatarContainer.style.marginRight = '30px';
 
-            // Tạo phần tử avatar (img)
-            const avatar = document.createElement('img');
-            avatar.src = comment.avatarSrc;
-            avatar.alt = 'Avatar';
-            avatar.style.width = '50px';
-            avatar.style.height = '50px';
-            avatar.style.borderRadius = '50%';
+            getUserInfo(comment.userId, function (user){
+                
+                // Tạo phần tử avatar (img)
+                const avatar = document.createElement('img');
+                avatar.src = '/upload/images/avatars/customer/' + user.avatar;
+                avatar.alt = 'Avatar';
+                avatar.style.width = '50px';
+                avatar.style.height = '50px';
+                avatar.style.borderRadius = '50%';
 
-            // Thêm avatar vào container
-            avatarContainer.appendChild(avatar);
+                // Thêm avatar vào container
+                avatarContainer.appendChild(avatar);
+            })
+           
 
             // Tạo phần tử chứa nội dung bình luận
             const contentContainer = document.createElement('div');
@@ -812,7 +884,7 @@
             rating.style.marginLeft = '5px';
             rating.style.fontSize = '14px';
             rating.style.color = '#ff9800';
-            rating.textContent = comment.rating;
+            rating.textContent = comment.rate;
 
             // Thêm các phần tử đánh giá vào container
             ratingContainer.appendChild(ratingLabel);
@@ -853,7 +925,7 @@
         <div class="chat_header">
             <div class="chat_option">
                 <div class="header_img">
-                    <img src="~/AdminAssets/img/avatars/avatar.jpg" style="border-radius:5px; max-height:50px; max-width: 50px; margin-top:-5px" />
+                    <img src="/AdminAssets/img/avatars/avatar.jpg" style="border-radius:5px; max-height:50px; max-width: 50px; margin-top:-5px" />
                 </div>
                 <span id="chat_head">@Model.Seller.UserName</span>
                 <span id="chat_fullscreen_loader" class="chat_fullscreen_loader"><i class="fullscreen zmdi zmdi-window-maximize"></i></span>
