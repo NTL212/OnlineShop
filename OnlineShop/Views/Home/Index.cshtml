@@ -62,45 +62,45 @@
                     {
 
                         
-                                                            <div class="@class_name">
-                                                                <div class="product-item">
-                                                                    <div class="product-img img-zoom-effect">
-                                                                        <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
-                                                                            <img class="img-full" src="~/upload/images/product/@Model.productList[i].Image" alt="Product Images">
-                                                                        </a>
-                                                                        <div class="product-add-action">
-                                                                            <ul>
-                                                                                <li>
-                                                                                    <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
-                                                                                        <i class="pe-7s-wallet"></i>
-                                                                                    </a>
-                                                                                </li>
-                                                                                <li>
-                                                                                    <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
-                                                                                        <i class="pe-7s-cart"></i>
-                                                                                    </a>
-                                                                                </li>
-                                                                            </ul>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="product-content">
-                                                                       
-                                                                        @if(Model.productList[i].ProductName.Length < 20)
+                                                                    <div class="@class_name">
+                                                                        <div class="product-item">
+                                                                            <div class="product-img img-zoom-effect">
+                                                                                <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
+                                                                                    <img class="img-full" src="~/upload/images/product/@Model.productList[i].Image" alt="Product Images">
+                                                                                </a>
+                                                                                <div class="product-add-action">
+                                                                                    <ul>
+                                                                                        <li>
+                                                                                            <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
+                                                                                                <i class="pe-7s-wallet"></i>
+                                                                                            </a>
+                                                                                        </li>
+                                                                                        <li>
+                                                                                            <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">
+                                                                                                <i class="pe-7s-cart"></i>
+                                                                                            </a>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="product-content">
+                                                                               
+                                                                                @if(Model.productList[i].ProductName.Length < 20)
                                     {
-                                                                            <a class="product-name" asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">@Model.productList[i].ProductName </a>
-                                                                            <br />
+                                                                                    <a class="product-name" asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">@Model.productList[i].ProductName </a>
+                                                                                    <br />
                                     }
                                     else
                                     {
-                                                                            <a class="product-name" asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">@Model.productList[i].ProductName</a>
+                                                                                    <a class="product-name" asp-controller="Product" asp-action="Detail" asp-route-id="@Model.productList[i].ProductId">@Model.productList[i].ProductName</a>
                                     }
 
-                                                                        <div class="price-box pb-1">
-                                                                            <span class="new-price">@Model.productList[i].PromotionalPrice.ToString("#,##0") VNĐ</span>
+                                                                                <div class="price-box pb-1">
+                                                                                    <span class="new-price">@Model.productList[i].PromotionalPrice.ToString("#,##0") VNĐ</span>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            </div>
                     }
                }
 
@@ -204,20 +204,20 @@
         <input type="hidden" id="userId" value="@HttpContextAccessor.HttpContext.Session.GetString("userId")" />
         <!-- Button để mở modal -->
         <button id="openModalBtn" onclick="openModal()">Mở Modal</button>
-
+        <input id="callId" />
         <!-- Modal -->
         <div id="myModal" class="modal" style="display: none;">
             <!-- Nội dung modal -->
             <div class="modal-content">
                 <span class="close" onclick="closeModal()">&times;</span>
                 <h2>PeerJS Video Call Example</h2>
-               <input id="callId"/>
+               
 
                 <div class="video-container">
                     <video id="remoteVideo" autoplay playsinline class="remoteVideo"></video>
                     <video id="localVideo" autoplay playsinline class="localVideo"></video>
                     <button onclick="startCall()">Call</button>
-                    <button onclick="endCall()">End Call</button>
+                    <button onclick="endCall(true)">End Call</button>
 
                 </div>
             </div>
@@ -226,12 +226,23 @@
     </div>
     @section scripts{
         <script src="https://cdn.jsdelivr.net/npm/peerjs@1.3.2/dist/peerjs.min.js"></script>
+        <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+        <script>
+            var connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
 
+            connection.start().then(function () {
+                console.log("SignalR connected");
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+        </script>
         <script>
             // Mở modal
             function openModal() {
                 var modal = document.getElementById("myModal");
                 modal.style.display = "block";
+                startCall();
             }
 
             // Đóng modal
@@ -284,7 +295,7 @@
         <script>
             const peer = new Peer();
             let localStream;
-            let call;
+            let globalCall;
             var userId = document.getElementById('userId').value;
             // Hiển thị peer ID của người dùng
             peer.on('open', function (id) {               
@@ -293,12 +304,9 @@
                 }
                
             });
-
             // Xử lý sự kiện nhấn nút Call
             function startCall() {
-                
                 var callId = document.getElementById('callId').value;
-
                 // Lấy stream từ camera và microphone của người dùng
                 navigator.mediaDevices.getUserMedia({ video: true, audio: true })
                     .then(function (stream) {
@@ -313,23 +321,30 @@
                         };
                         getPeerId(callId, function (peerId) {
                             // Bắt đầu cuộc gọi
-                            call = peer.call(peerId, localStream);
-                            call.on('stream', function (remoteStream) {
+                            globalCall = peer.call(peerId, localStream);
+                            globalCall.on('stream', function (remoteStream) {
                                 document.getElementById('remoteVideo').srcObject = remoteStream;
                             });
-                        })
-                        
+                            globalCall.on('close', function () {
+                                console.log('Close call');
+                                endCall();
+                            });
+                        });
                     })
                     .catch(function (err) {
                         console.error('Error accessing media devices:', err);
                     });
             }
 
+
             // Xử lý sự kiện nhấn nút End Call
-            function endCall() {
-                // Đóng kết nối
-                if (call) {
-                    call.close();
+            function endCall(sendClose=false) {
+
+                if (sendClose == true) {
+                    closeCallToUser(document.getElementById('callId').value)
+                }
+                if (globalCall) {
+                    globalCall.close();
                 }
 
                 // Tắt video local và remote
@@ -353,30 +368,32 @@
                             localStream = stream;
                             var localVideo = document.getElementById('localVideo');
                             localVideo.srcObject = localStream;
-                            if (!localVideo.paused && !localVideo.ended) {
-                                localVideo.classList.add('local-video-border'); // Thêm viền màu đỏ
-                            }
+                            localVideo.classList.add('local-video-border');
                             incomingCall.answer(localStream);
                             incomingCall.on('stream', function (remoteStream) {
                                 let remoteVideo = document.getElementById('remoteVideo');
                                 let checkTimeout;
                                 remoteVideo.srcObject = remoteStream;
-
                             });
+                            incomingCall.on('close', function () {
+                                endCall();
+                            });
+                            // Gán incomingCall cho globalIncomingCall
+                            globalCall = incomingCall;
                         })
                         .catch(function (err) {
                             console.error('Error accessing media devices:', err);
                         });
                 }
+
                 // Hàm xử lý khi nhấn nút "Hủy bỏ"
                 function cancelAction() {
                     // Từ chối cuộc gọi
                     incomingCall.close();
                     removeButtons();
                 }
+
                 createButtons(confirmAction, cancelAction);
-                
-               
             });
 
             // Hàm để xóa phần tử div có class là 'modal-buttons'
@@ -421,6 +438,18 @@
                         console.error('Request failed. Status:', status);
                     }
                 });
+            }
+
+         
+
+            // Xử lý tín hiệu khi cuộc gọi kết thúc
+            connection.on("CallEnded", () => {
+                endCall();
+            });
+
+            // Gửi tín hiệu close call từ user1 cho user2
+            function closeCallToUser(userId) {
+                connection.invoke("CloseCallToUser", userId).catch(err => console.error(err));
             }
         </script>
     }

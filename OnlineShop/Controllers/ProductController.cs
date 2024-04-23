@@ -96,7 +96,7 @@ namespace OnlineShop.Controllers
             ViewBag.Sort = new List<String> { "Mới nhất", "Giá lớn nhất", "Giá thấp nhất" };
             return View("Index", productVM);
         }
-        public IActionResult Detail(int id, string mess)
+        public IActionResult Detail(int id, string mess, bool flagComment = false)
         {
             if(mess != null)
             {
@@ -104,16 +104,7 @@ namespace OnlineShop.Controllers
             }
             int userId;
             bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
-            var order = _context.Orders.Where(o => o.UserId == userId && o.Status.StatusName.Equals("Đã nhận")).FirstOrDefault();
-            if (order != null)
-            {
-
-                ViewBag.flagComment = true;
-            }
-            else
-            {
-                ViewBag.flagComment = false;
-            }
+            ViewBag.flagComment = flagComment;
             if (isNum)
             {
                 string roleName = HttpContext.Session.GetString("roleName");
