@@ -89,14 +89,21 @@ namespace OnlineShop.Hubs
                 // (Cần cơ chế lưu trữ và gửi lại tin nhắn khi người dùng kết nối trở lại)
             }
         }
-		public async Task NotifyIncomingCall(string userId)
+		public async Task NotifyIncomingCall(string userId, string senderId=null)
 
 		{
             if (_connections.ContainsKey(userId))
             {
                 var connectionId = _connections[userId];
-
-                await Clients.Client(connectionId).SendAsync("IncomingCall");
+                if (senderId == null)
+                {
+					await Clients.Client(connectionId).SendAsync("IncomingCall");
+                }
+                else
+                {
+					await Clients.Client(connectionId).SendAsync("IncomingCall", senderId);
+				}
+                
             }
            
 		}

@@ -1014,7 +1014,8 @@
                         console.log(peerId);
                         // Bắt đầu cuộc gọi
                         globalCall = peer.call(peerId, localStream);
-                        notifyIncomingCall(callId);
+                        notifyIncomingCall(callId, userId);
+                        document.getElementById('endCall').style = "display:block"
                         globalCall.on('stream', function (remoteStream) {
                             document.getElementById('remoteVideo').srcObject = remoteStream;
                         });
@@ -1062,6 +1063,7 @@
                         var localVideo = document.getElementById('localVideo');
                         localVideo.srcObject = localStream;
                         localVideo.classList.add('local-video-border');
+                        document.getElementById('endCall').style = "display:block"
                         incomingCall.answer(localStream);
                         incomingCall.on('stream', function (remoteStream) {
                             let remoteVideo = document.getElementById('remoteVideo');
@@ -1136,8 +1138,8 @@
 
 
         // Hàm để thông báo cuộc gọi đến cho user có userId
-        function notifyIncomingCall(userId) {
-            connection.invoke("NotifyIncomingCall", userId).catch(err => console.error(err));
+        function notifyIncomingCall(userId, senderId) {
+            connection.invoke("NotifyIncomingCall", userId, senderId).catch(err => console.error(err));
         }
 
         // Gửi tín hiệu close call từ user1 cho user2
@@ -1191,15 +1193,12 @@
     <!-- Nội dung modal -->
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
-        <h2>PeerJS Video Call Example</h2>
 
 
         <div class="video-container">
             <video id="remoteVideo" autoplay playsinline class="remoteVideo"></video>
             <video id="localVideo" autoplay playsinline class="localVideo"></video>
-            <button onclick="startCall(true)">Call</button>
-            <button onclick="endCall(true)">End Call</button>
-
+            <button id="endCall" class="btn btn-danger" style="display:none" onclick="endCall(true)">Kết thúc cuộc gọi</button>
         </div>
     </div>
 </div>
