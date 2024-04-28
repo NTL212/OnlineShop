@@ -72,5 +72,41 @@ namespace OnlineShop.Hubs
 				// (Cần cơ chế lưu trữ và gửi lại tin nhắn khi người dùng kết nối trở lại)
 			}
 		}
+
+        public async Task CloseCallToUser(string userId)
+        {
+            if (_connections.ContainsKey(userId))
+            {
+                var connectionId = _connections[userId];
+
+                await Clients.Client(connectionId).SendAsync("CallEnded");
+
+            }
+            else
+            {
+                // Lưu trữ tin nhắn nếu người dùng không trực tiếp kết nối
+                // và gửi khi họ kết nối trở lại
+                // (Cần cơ chế lưu trữ và gửi lại tin nhắn khi người dùng kết nối trở lại)
+            }
+        }
+		public async Task NotifyIncomingCall(string userId, string senderId=null)
+
+		{
+            if (_connections.ContainsKey(userId))
+            {
+                var connectionId = _connections[userId];
+                if (senderId == null)
+                {
+					await Clients.Client(connectionId).SendAsync("IncomingCall");
+                }
+                else
+                {
+					await Clients.Client(connectionId).SendAsync("IncomingCall", senderId);
+				}
+                
+            }
+           
+		}
+
 	}
 }

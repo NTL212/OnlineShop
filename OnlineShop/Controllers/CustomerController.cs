@@ -475,6 +475,7 @@ namespace OnlineShop.Controllers
                             select new OrderCartViewModel
                             {
                                 ProductName = s1.Product.ProductName,
+                                ProductId = s1.Product.ProductId,
                                 Count = s1.Count,
                                 Total = (decimal)s1.Product.PromotionalPrice * s1.Count
                             };

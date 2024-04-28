@@ -27,15 +27,20 @@ namespace OnlineShop.Controllers
 		{
 			_client = new FirebaseClient(config);
 		}
-        public class MessageModel
-        {
-            public string UserId { get; set; }
-            public string SellerId { get; set; }
-            public string Message { get; set; }
-            public string SenderId { get; set; }
-        }
+		public class MessageModel
+		{
+			public string UserId { get; set; }
+			public string SellerId { get; set; }
+			public string Message { get; set; }
+			public string SenderId { get; set; }
+		}
+            public class PeerModel
+            {
+                public string UserId { get; set; }
+                public string PeerId { get; set; }
+            }
 
-        [HttpPost("SetMessage")]
+            [HttpPost("SetMessage")]
         public async Task<IActionResult> SetMessageToFirebase([FromBody] MessageModel messageModel)
         {
             if (!ModelState.IsValid)
@@ -187,7 +192,57 @@ namespace OnlineShop.Controllers
 				return StatusCode(500, "Internal server error: " + ex.Message);
 			}
 		}
-		private string ExtractUserId(string inputString)
+        [HttpPost("SetPeerId")]
+        public async Task<IActionResult> SetPeerIdToFirebase([FromBody] PeerModel peerModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                string nodePeer = $"peer/userId_{peerModel.UserId}/peerId";
+                SetResponse response = await _client.SetAsync(nodePeer, peerModel.PeerId);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return Ok("peerId created successfully");
+                }
+                else
+                {
+                    return BadRequest("Failed to create chat. Status code: " + response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+        [HttpGet("GetPeerId/{userId}")]
+        public async Task<IActionResult> GetPeerIdFromFirebase(int userId)
+        {
+            try
+            {
+                string nodePeer = $"peer/userId_{userId}/peerId";
+                var snapshot = await _client.GetAsync(nodePeer);
+
+                if (snapshot.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var peerId = snapshot.Body.ToString();
+                    string normalizedPeerId = peerId.Replace("\\", "").Replace("\"", "");
+                    return Ok(normalizedPeerId);
+                }
+                else
+                {
+                    return NotFound("PeerId not found for userId: " + userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+        private string ExtractUserId(string inputString)
 		{
 			string[] parts = inputString.Split('_');
 			return parts[parts.Length - 1];
