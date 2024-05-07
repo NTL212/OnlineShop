@@ -13,5 +13,7 @@ namespace OnlineShop.ViewModels
         public decimal Total { get; set; }
 
         public int ProductId { get; set; }
+        public int StyleId { get; set; }
+        public string StyleName { get; set; }
     }
 }

@@ -33,7 +33,7 @@ namespace OnlineShop.Areas.Shipper.Controllers
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
             var user = _context.Users.FirstOrDefault(n => n.UserId == userId);
-            var orderList = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => o.StatusId == 1).OrderByDescending(o => o.Date);
+            var orderList = _context.Orders.Include(o => o.Status).Include(o => o.User).Where(o => o.StatusId == 7).OrderByDescending(o => o.Date);
             foreach (var order in orderList)
             {
                 foreach (var orderItem in order.OrderItems)

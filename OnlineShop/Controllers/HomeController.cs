@@ -45,7 +45,8 @@ namespace OnlineShop.Controllers
                                 PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
                                 ProductName = s2.Product.ProductName,
                                 Count = s2.Count,
-                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+                                StyleName = s2.Style.StyleName
                             };
                 List<OrderCartViewModel> lst = query.ToList();
                 ViewBag.quantity = lst.Count;

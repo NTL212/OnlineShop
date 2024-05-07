@@ -30,7 +30,7 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="">
-                            <img class="img-full" src="~/upload/images/product/@Model.Image" alt="Product Image">
+                            <img class="img-full" name="productImage" id="productImage" src="~/upload/images/product/@Model.Image" alt="Product Image">
                         </div>
                     </div>
                     <div class="col-lg-6">
@@ -63,9 +63,9 @@
                                                 </li>
                                                 @{
                                                     var i = Model.Rating;
-                                                                                                                            @while (i > 0)
+                                                                                                                                        @while (i > 0)
                                                     {
-                                                                                                                                <li><i class="pe-7s-star"></i></li>
+                                                                                                                                            <li><i class="pe-7s-star"></i></li>
                                                         i--;
                                                     }
                                                 }
@@ -78,6 +78,31 @@
                                     <br />
 
                                     <form asp-action="OrderProduct" method="get">
+                                        <ul class="quantity-with-btn pb-7">
+                                            <li class="quantity" style="display:flex;">
+                                                <input name="styleId" id="styleIdOrder" type="hidden" value="@ViewBag.Styles[0].StyleId">
+                                                <b style="margin-right: 20px; margin-top:6px;">Loại: </b>
+                                                <select class="form-select" onchange="redirectToSelectedStyle(this)">
+				                                    <option class="option" hidden>@ViewBag.Styles[0].StyleName</option>
+				                                    @foreach (var style in ViewBag.Styles)
+				                                    {
+					                                    <option class="option" value="@style" 
+                                                            data-styleid="@style.StyleId" data-imageurl="@style.Image">@style.StyleName</option>
+				                                    }
+			                                    </select>
+                                                <script>
+                                                    function redirectToSelectedStyle(selectElement) {
+                                                        var selectedOption = selectElement.options[selectElement.selectedIndex];
+                                                        var selectedStyleId = selectedOption.getAttribute('data-styleid');
+                                                        var selectedImageUrl = selectedOption.getAttribute('data-imageurl');
+
+                                                        document.getElementById('styleIdOrder').value = selectedStyleId;
+                                                        document.getElementById('styleIdCart').value = selectedStyleId;
+                                                        document.getElementById('productImage').src = '/upload/images/product/' + selectedImageUrl;
+                                                    }
+                                                </script>
+                                            </li>
+                                        </ul>
                                         <ul class="quantity-with-btn pb-7">
                                             <li class="quantity" style="display:inline">
                                                 <input name="productId" id="productId" type="hidden" value="@Model.ProductId">
@@ -98,7 +123,7 @@
                                             <form asp-controller="ShoppingCart" asp-action="AddToCart" id="addToCart" method="post">
                                                 <input name="productId" value="@Model.ProductId" type="hidden" />
                                                 <input name="count" id="count" value="" type="hidden" />
-
+                                                <input name="styleId" id="styleIdCart" type="hidden" value="@ViewBag.Styles[0].StyleId">
                                                 <button class="btn btn-custom-size lg-size btn-primary btn-secondary-hover rounded-0" type="submit">Thêm vào giỏ hàng</button>
                                             </form>
                                         </li>

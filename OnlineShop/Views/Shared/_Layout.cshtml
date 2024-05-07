@@ -487,13 +487,14 @@
                                         </div>
                                         <div class="product-item_content">
                                             <p class="product-item_title">@item.ProductName</p>
-                                            <span class="product-item_quantity"><h7 style="font-weight:bold;">x @item.Count:</h7> @item.Total.ToString("#,##0") VNĐ</span>
+                                             <span class="product-item_quantity"><h7 style="font-weight:bold;">Loại: </h7> @item.StyleName</span>
+                                             <span class="product-item_quantity"><h7 style="font-weight:bold;">x @item.Count:</h7> @item.Total.ToString("#,##0") VNĐ</span>
                                         </div>
                                     </li>
                                 }
                             </ul>
                     </div>
-                    <div class="minicart-item_total">
+                    <div class="minicart-item_total" style="font-weight:bold;">
                         <span>Tổng đơn hàng:</span>
                         <span class="ammount">@ViewBag.totalCartItems.ToString("#,##0") VNĐ</span>
                     </div>

@@ -17,5 +17,6 @@ namespace OnlineShop.Models
 
         public virtual Cart Cart { get; set; }
         public virtual Product Product { get; set; }
+        public virtual Style Style { get; set; }
     }
 }

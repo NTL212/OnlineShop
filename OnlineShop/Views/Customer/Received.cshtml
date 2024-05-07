@@ -1,8 +1,9 @@
 ﻿@model OnlineShop.Models.Order
 @{
-    ViewData["Title"] = "Orders";
+    ViewData["Title"] = "Received";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 <h1>@ViewBag.id</h1>
 <br/>
 <div class="main-wrapper">
@@ -13,7 +14,7 @@
             <div class="row">
                 <div class="col-lg-9">
                     <div class="myaccount-orders">
-                        <h4 class="small-title">Chi tiết đơn hàng</h4>
+                        <h4 class="small-title">Đã nhận đơn hàng</h4>
                         <div>
                             <hr />
                             <table class="table table-bordered table-hover">
@@ -54,7 +55,7 @@
                                                             word-break: break-all; word-wrap: break-word;
                                                             white-space: normal;">@item.ProductName</p>
                                                     </div>
-                                                    <div><span class="amount" style="padding-left:10px; font-weight:bold; white-space:nowrap;">@item.StyleName x @item.Count: </span></div>
+                                                    <div><span class="amount" style="padding-left:10px; font-weight:bold; white-space:nowrap;">x @item.Count: </span></div>
                                                     <div><span class="amount" style="padding-left:10px;">@item.Total.ToString("#,##0") VNĐ</span></div>
                                                     @if(Model.Status.StatusName=="Đã nhận")
                                                     {
@@ -73,10 +74,17 @@
                             </table>
                             
                         </div>
-                        <div>
+                        <form asp-action="Received">
                             <br/>
-                            <a class="btn btn-primary" asp-action="Orders">Trở về danh sách</a>
-                        </div>
+                            <div> 
+                                <input type="hidden" asp-for="OrderId" />
+                                <input type="submit" value="Đã nhận" class="btn btn-success" style="width: 164px;"/>
+                            </div>
+                            <br/>
+                            <div>
+                                <a class="btn btn-primary" asp-action="Orders">Trở về danh sách</a>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

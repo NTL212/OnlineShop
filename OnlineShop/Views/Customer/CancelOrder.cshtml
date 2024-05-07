@@ -17,85 +17,68 @@
                         <h4 class="small-title">Hủy đơn hàng</h4>
                         <div>
                             <hr />
-                            <dl class="dl-horizontal">
-                                <dt>
-                                    Người nhận
-                                </dt>
-                                <dd>
-                                    @Html.DisplayFor(model => model.Receiver)
-                                </dd>
-                                <dt>
-                                    Địa chỉ
-                                </dt>
-                                <dd>
-                                    @Html.DisplayFor(model => model.Address)
-                                </dd>
-                                <dt>
-                                    SĐT
-                                </dt>
-                                <dd>
-                                    @Html.DisplayFor(model => model.Phone)
-                                </dd>
-                                <dt>
-                                    Tình trạng thanh toán
-                                </dt>
-                                @if (Model.IsPay == 0)
-                                {
-                                    <dd>Chưa thanh toán</dd>
-                                }
-                                @if (Model.IsPay == 1)
-                                {
-                                    <dd>Đã thanh toán</dd>
-                                }
-                                <dt>
-                                    Email
-                                </dt>
-                                <dd>
-                                    @Html.DisplayFor(model => model.Email)
-                                </dd>
-                                <dt>
-                                    Ngày đặt
-                                </dt>
-                                <dd>
-                                    @Html.DisplayFor(model => model.Date)
-                                </dd>
-                                <dt>
-                                    Tình trạng đơn hàng
-                                </dt>
-                                <dd>
-                                    @Html.DisplayFor(model => model.Status.StatusName)
-                                </dd>
-                                <dt>
-                                    Sản phẩm
-                                </dt>
-                                
-                                <dd>
-                                    @foreach (var item in ViewBag.lst)
-                                    {
-                                        <div style="display:flex;">
-                                            <div>
-                                                <p style="display: block;
-                                    width: 202px; height: auto;
-                                    word-break: break-all; word-wrap: break-word;
-                                    white-space: normal;">@item.ProductName</p>
-                                            </div>
-                                            <div><span class="amount" style="padding-left:10px; font-weight:bold;">x @item.Count: </span></div>
-                                            <div><span class="amount" style="padding-left:10px;">@item.Total.ToString("#,##0") VNĐ</span></div>
-                                        </div>
-                                    }
-                                </dd>
-                                <dt>
-                                    Tổng đơn hàng
-                                </dt>
-                                <dd>
-                                    @ViewBag.total.ToString("#,##0") VNĐ
-                                </dd>
-                            </dl>
+                            <table class="table table-bordered table-hover">
+                                <tbody>
+                                    <tr>
+                                        <th>Người nhận</th>
+                                        <th>Địa chỉ</th>
+                                        <th>SĐT</th>
+                                        <th>Tình trạng thanh toán</th>
+                                        <th>Email</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Tình trạng đơn hàng</th>
+                                        <th>Sản phẩm</th>
+                                        <th>Tổng đơn hàng</th>
+                                    </tr>
+                                        <tr>
+                                        <td>@Html.DisplayFor(model => model.Receiver)</td>
+                                        <td>@Html.DisplayFor(model => model.Address)</td>
+                                        <td> @Html.DisplayFor(model => model.Phone)</td>
+                                        @if (Model.IsPay == 0)
+                                        {
+                                            <td>Chưa thanh toán</td>
+                                        }
+                                        @if (Model.IsPay == 1)
+                                        {
+                                            <td>Đã thanh toán</td>
+                                        }
+                                        <td>@Html.DisplayFor(model => model.Email)</td>
+                                        <td>@Html.DisplayFor(model => model.Date)</td>
+                                        <td>@Html.DisplayFor(model => model.Status.StatusName)</td>
+                                        <td>
+                                            @foreach (var item in ViewBag.lst)
+                                            {
+                                                <div style="display:flex;">
+                                                    <div>
+                                                        <p style="display: block;
+                                                            width: 202px; height: auto;
+                                                            word-break: break-all; word-wrap: break-word;
+                                                            white-space: normal;">@item.ProductName</p>
+                                                    </div>
+                                                    <div><span class="amount" style="padding-left:10px; font-weight:bold; white-space:nowrap;">x @item.Count: </span></div>
+                                                    <div><span class="amount" style="padding-left:10px;">@item.Total.ToString("#,##0") VNĐ</span></div>
+                                                    @if(Model.Status.StatusName=="Đã nhận")
+                                                    {
+                                                        <a class="btn btn-info" style="margin:0 10px 10px 10px; white-space:nowrap; align-content:center" asp-controller="Product" asp-action="Detail" asp-route-id="@item.ProductId" asp-route-mess="" asp-route-flagComment="true">Đánh giá</a>
+                                                    }
+                                                    
+                                                </div>
+
+                                               
+                                            }
+                                        </td>
+                                        <td>@ViewBag.total.ToString("#,##0") VNĐ</td>
+                                            
+                                        </tr>
+                                </tbody>
+                            </table>
+                            
                         </div>
                         <form asp-action="CancelOrder">
+                            <br/>
                             <div> 
                                 <input type="hidden" asp-for="OrderId" />
-                                <input type="submit" value="Hủy" class="btn btn-danger" />
+                                <input type="submit" value="Hủy" class="btn btn-danger" style="width: 164px;"/>
                             </div>
                             <br/>
                             <div>

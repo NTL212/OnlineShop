@@ -88,6 +88,7 @@
                                             <thead>
                                                 <tr>
                                                     <th class="cart-product-name" style="padding-right:30px;">Sản phẩm</th>
+                                                    <th class="cart-product-name" style="padding-right:30px;">Loại</th>
                                                     <th class="cart-product-name" style="padding-right:160px;">Số lượng</th>
                                                     <th class="cart-product-total" style="padding-right:80px;">Thành tiền</th>
                                                 </tr>
@@ -98,20 +99,22 @@
                                                                                             width: 202px; height: auto;
                                                                                             word-break: break-all; word-wrap: break-word;
                                                                                             white-space: normal;">@ViewBag.ProductName</p></td>
+                                                    <td class="cart-product-total"><span class="amount" style="padding-left:35px; font-weight:bold;">@ViewBag.Style.StyleName</span></td>
                                                     <td class="cart-product-total"><span class="amount" style="padding-left:5px; font-weight:bold;">x @ViewBag.Count</span></td>
-                                                    <td class="cart-product-total"><span class="amount"  style="padding-left:10px;">@ViewBag.Total.ToString("#,##0") VNĐ</span></td>
+                                                    <td class="cart-product-total"><span class="amount"  style="margin-left:-30px; font-weight:bold;">@ViewBag.Total.ToString("#,##0") VNĐ</span></td>
                                                 </tr>
                                             </tbody>
                                             <tfoot>
                                                 <tr class="order-total">
-                                                    <th>Tổng đơn hàng</th>
-                                                    <td><strong><span class="amount">@ViewBag.Total.ToString("#,##0") VNĐ</span></strong></td>
+                                                    <th>Tổng đơn hàng:</th>
+                                                    <td><strong><span class="amount">@ViewBag.Total.ToString("#,##0")&nbsp;VNĐ</span></strong></td>
                                                 </tr>
                                             </tfoot>
                                         </table>
                                     </div>
                                     <div class="payment-method">
                                         <div class="payment-accordion">
+                                            <input id="styleId" name="styleId" type="hidden" value="@ViewBag.Style.StyleId">
                                             <input id="productId" name="productId" type="hidden" value="@ViewBag.ProductId">
                                             <input id="count" name="count" type="hidden" value="@ViewBag.Count">
                                             <div class="order-button-payment">

@@ -10,6 +10,7 @@ namespace OnlineShop.Models
         public int StyleId { get; set; }
         public int? ProductId { get; set; }
         public string StyleName { get; set; }
+        public string Image { get; set; }
         public int IsDeleted { get; set; }
     }
 }

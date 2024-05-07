@@ -31,7 +31,7 @@ namespace OnlineShop.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult AddToCart(int productId, int count)
+		public IActionResult AddToCart(int productId, int count, int styleId)
 		{
 			if(count <= 0)
             {
@@ -54,7 +54,7 @@ namespace OnlineShop.Controllers
 			ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
 			try
 			{
-				CartItem cartItem = _context.CartItems.FirstOrDefault(n => n.ProductId == productId && n.IsDeleted == 0 && n.Cart.UserId == userId);
+				CartItem cartItem = _context.CartItems.FirstOrDefault(n => n.ProductId == productId && n.IsDeleted == 0 && n.Cart.UserId == userId && n.StyleId == styleId);
 
 				if (cartItem != null)
 				{
@@ -70,6 +70,7 @@ namespace OnlineShop.Controllers
 						ProductId = productId,
 						Count = count,
 						Date = DateTime.Now,
+						StyleId = styleId,
 						IsDeleted = 0
 					};
 					_context.CartItems.Add(cartItem);
@@ -151,6 +152,7 @@ namespace OnlineShop.Controllers
 							Image = s2.Product.Image,
 							PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
 							ProductName = s2.Product.ProductName,
+							StyleName = s2.Style.StyleName,
 							ProductId = s2.Product.ProductId,
 							Count = s2.Count,
 							Total = (decimal)s2.Product.PromotionalPrice * s2.Count
@@ -196,7 +198,8 @@ namespace OnlineShop.Controllers
 							PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
 							ProductName = s2.Product.ProductName,
 							Count = s2.Count,
-							Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+							Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+							StyleName = s2.Style.StyleName
 						};
 			List<OrderCartViewModel> cartItems = query.ToList();
 			User user = _context.Users.Where(n => n.UserId == userId).FirstOrDefault();
@@ -224,7 +227,8 @@ namespace OnlineShop.Controllers
 								PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
 								ProductName = s2.Product.ProductName,
 								Count = s2.Count,
-								Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+								Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+								StyleName = s2.Style.StyleName
 							};
 				List<OrderCartViewModel> cartItems = query.ToList();
 				User user = _context.Users.Where(n => n.UserId == userId).FirstOrDefault();
@@ -263,7 +267,8 @@ namespace OnlineShop.Controllers
                         OrderId = newOrderId,
                         ProductId = item.ProductId,
                         Count = item.Count,
-                    };
+						StyleId = item.StyleId
+					};
                     _context.OrderItems.Add(orderItem);
                     _context.CartItems.Remove(item);
                     await _context.SaveChangesAsync();
@@ -297,8 +302,9 @@ namespace OnlineShop.Controllers
                             PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
                             ProductName = s2.Product.ProductName,
                             Count = s2.Count,
-                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count
-                        };
+                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+							StyleName = s2.Style.StyleName
+						};
             List<OrderCartViewModel> lst = query.ToList();
             ViewBag.quantity = lst.Count;
             ViewBag.cartItems = lst;
@@ -415,8 +421,9 @@ namespace OnlineShop.Controllers
                             PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
                             ProductName = s2.Product.ProductName,
                             Count = s2.Count,
-                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count
-                        };
+                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+							StyleName = s2.Style.StyleName
+						};
             List<OrderCartViewModel> lst = query.ToList();
 
             var totalAmount = Convert.ToDouble(lst.Sum(n => n.Total));

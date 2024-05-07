@@ -169,7 +169,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var order = await _context.Orders.FindAsync(id);
-            order.StatusId = 2;
+            order.StatusId = 7;
             _context.Update(order);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

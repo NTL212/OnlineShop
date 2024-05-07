@@ -51,7 +51,8 @@ namespace OnlineShop.Controllers
                                 PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
                                 ProductName = s2.Product.ProductName,
                                 Count = s2.Count,
-                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+                                StyleName = s2.Style.StyleName
                             };
                 List<OrderCartViewModel> lst = query.ToList();
                 ViewBag.quantity = lst.Count;
@@ -123,7 +124,8 @@ namespace OnlineShop.Controllers
                                 PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
                                 ProductName = s2.Product.ProductName,
                                 Count = s2.Count,
-                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+                                StyleName = s2.Style.StyleName
                             };
                 List<OrderCartViewModel> lst = query.ToList();
                 ViewBag.quantity = lst.Count;
@@ -136,7 +138,8 @@ namespace OnlineShop.Controllers
             {
                 return NotFound(); // Trả về 404 nếu không tìm thấy sản phẩm
             }
-
+            List<Style> styles = _context.Styles.Where(n => n.ProductId == id).ToList();
+            ViewBag.Styles = styles;
             return View(product);
         }
         public IActionResult Privacy()
@@ -149,7 +152,7 @@ namespace OnlineShop.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-		public IActionResult OrderProduct(int productId, int quantity)
+		public IActionResult OrderProduct(int styleId, int productId, int quantity)
 		{
             if (quantity <= 0)
             {
@@ -184,7 +187,8 @@ namespace OnlineShop.Controllers
                             PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
                             ProductName = s2.Product.ProductName,
                             Count = s2.Count,
-                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+                            StyleName = s2.Style.StyleName
                         };
             List<OrderCartViewModel> cartItems = query.ToList();
             ViewBag.quantity = cartItems.Count;
@@ -195,11 +199,12 @@ namespace OnlineShop.Controllers
             ViewBag.ProductName = product.ProductName;
             ViewBag.Count = quantity;
             ViewBag.Total = product.PromotionalPrice * quantity;
+            ViewBag.Style = _context.Styles.FirstOrDefault(n => n.StyleId == styleId);
             return View(user);
 		}
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> OrderProduct(string receiver, string email, string phone, string address, int productId, int count, string paymentOption)
+		public async Task<IActionResult> OrderProduct(string receiver, string email, string phone, string address, int productId, int count, string paymentOption, int styleId)
 		{
             int userId = int.Parse(HttpContext.Session.GetString("userId"));
             if (receiver == null || email == null | phone == null || address == null)
@@ -218,7 +223,8 @@ namespace OnlineShop.Controllers
                                 PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
                                 ProductName = s2.Product.ProductName,
                                 Count = s2.Count,
-                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+                                StyleName = s2.Style.StyleName
                             };
                 List<OrderCartViewModel> cartItems = query.ToList();
                 ViewBag.quantity = cartItems.Count;
@@ -229,6 +235,7 @@ namespace OnlineShop.Controllers
                 ViewBag.ProductName = product.ProductName;
                 ViewBag.Count = count;
                 ViewBag.Total = product.PromotionalPrice * count;
+                ViewBag.Style = _context.Styles.FirstOrDefault(n => n.StyleId == styleId);
                 return View(user);
             }
             Order order = new Order
@@ -250,7 +257,8 @@ namespace OnlineShop.Controllers
             {
                 OrderId = newOrderId,
                 ProductId = productId,
-                Count = count
+                Count = count,
+                StyleId = styleId
             };
             Product product1 = _context.Products.FirstOrDefault(n => n.ProductId == productId);
             product1.Quantity -= count;

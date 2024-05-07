@@ -316,7 +316,8 @@ namespace OnlineShop.Controllers
                             PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
                             ProductName = s2.Product.ProductName,
                             Count = s2.Count,
-                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+                            StyleName = s2.Style.StyleName
                         };
             List<OrderCartViewModel> lst = query.ToList();
             ViewBag.quantity = lst.Count;
@@ -385,7 +386,8 @@ namespace OnlineShop.Controllers
                                                 PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
                                                 ProductName = s2.Product.ProductName,
                                                 Count = s2.Count,
-                                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+                                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+                                                StyleName = s2.Style.StyleName
                                             };
                                 List<OrderCartViewModel> lst = query.ToList();
                                 ViewBag.quantity = lst.Count;
@@ -440,7 +442,8 @@ namespace OnlineShop.Controllers
                             PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
                             ProductName = s2.Product.ProductName,
                             Count = s2.Count,
-                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count
+                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+                            StyleName = s2.Style.StyleName
                         };
             List<OrderCartViewModel> lst = query.ToList();
             ViewBag.quantity = lst.Count;
@@ -477,11 +480,29 @@ namespace OnlineShop.Controllers
                                 ProductName = s1.Product.ProductName,
                                 ProductId = s1.Product.ProductId,
                                 Count = s1.Count,
-                                Total = (decimal)s1.Product.PromotionalPrice * s1.Count
+                                Total = (decimal)s1.Product.PromotionalPrice * s1.Count,
+                                StyleName = s1.Style.StyleName
                             };
                 List<OrderCartViewModel> lst = query.ToList();
                 ViewBag.total = lst.Sum(n => n.Total);
                 ViewBag.lst = lst;
+                int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
+                query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
+                            join s2 in _context.CartItems on s1.CartId equals s2.CartId
+                            select new OrderCartViewModel
+                            {
+                                CartItemId = s2.CartItemId,
+                                Image = s2.Product.Image,
+                                PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
+                                ProductName = s2.Product.ProductName,
+                                Count = s2.Count,
+                                Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+                                StyleName = s2.Style.StyleName
+                            };
+                lst = query.ToList();
+                ViewBag.quantity = lst.Count;
+                ViewBag.cartItems = lst;
+                ViewBag.totalCartItems = lst.Sum(n => n.Total);
                 return View(order);
             }
             catch
@@ -520,6 +541,23 @@ namespace OnlineShop.Controllers
                 List<OrderCartViewModel> lst = query.ToList();
                 ViewBag.total = lst.Sum(n => n.Total);
                 ViewBag.lst = lst;
+                int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
+                query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
+                        join s2 in _context.CartItems on s1.CartId equals s2.CartId
+                        select new OrderCartViewModel
+                        {
+                            CartItemId = s2.CartItemId,
+                            Image = s2.Product.Image,
+                            PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
+                            ProductName = s2.Product.ProductName,
+                            Count = s2.Count,
+                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+                            StyleName = s2.Style.StyleName
+                        };
+                lst = query.ToList();
+                ViewBag.quantity = lst.Count;
+                ViewBag.cartItems = lst;
+                ViewBag.totalCartItems = lst.Sum(n => n.Total);
                 return View(order);
             }
             catch
@@ -534,6 +572,81 @@ namespace OnlineShop.Controllers
         {
             var order = await _context.Orders.FindAsync(id);
             order.StatusId = 4;
+            _context.Update(order);
+            await _context.SaveChangesAsync();
+            List<OrderItem> orderItems = _context.OrderItems.Where(n => n.OrderId == id).ToList();
+            foreach (OrderItem orderItem in orderItems)
+            {
+                Product product = _context.Products.FirstOrDefault(n => n.ProductId == orderItem.ProductId);
+                product.Quantity += orderItem.Count;
+                _context.Products.Update(product);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Orders));
+        }
+
+        public async Task<IActionResult> Received(int id)
+        {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum)
+            {
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Customer")
+            {
+                return RedirectToAction("Index", "Home", new { area = roleName });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+            try
+            {
+                Order order = _context.Orders.Include(o => o.Status).Where(o => o.OrderId == id).FirstOrDefault();
+                if (order.UserId != userId || order == null)
+                {
+                    return RedirectToAction("Orders", "Customer");
+                }
+                var query = from s1 in _context.OrderItems.Where(s1 => s1.OrderId == id)
+                            select new OrderCartViewModel
+                            {
+                                ProductName = s1.Product.ProductName,
+                                Count = s1.Count,
+                                Total = (decimal)s1.Product.PromotionalPrice * s1.Count
+                            };
+                List<OrderCartViewModel> lst = query.ToList();
+                ViewBag.total = lst.Sum(n => n.Total);
+                ViewBag.lst = lst;
+                int cartId = _context.Carts.FirstOrDefault(n => n.UserId == userId).CartId;
+                query = from s1 in _context.Carts.Where(s1 => s1.UserId == userId)
+                        join s2 in _context.CartItems on s1.CartId equals s2.CartId
+                        select new OrderCartViewModel
+                        {
+                            CartItemId = s2.CartItemId,
+                            Image = s2.Product.Image,
+                            PromotionalPrice = (decimal)s2.Product.PromotionalPrice,
+                            ProductName = s2.Product.ProductName,
+                            Count = s2.Count,
+                            Total = (decimal)s2.Product.PromotionalPrice * s2.Count,
+                            StyleName = s2.Style.StyleName
+                        };
+                lst = query.ToList();
+                ViewBag.quantity = lst.Count;
+                ViewBag.cartItems = lst;
+                ViewBag.totalCartItems = lst.Sum(n => n.Total);
+                return View(order);
+            }
+            catch
+            {
+                return RedirectToAction("Orders", "Customer");
+            }
+        }
+
+        [HttpPost, ActionName("Received")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReceivedConfirmed(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            order.StatusId = 3;
             _context.Update(order);
             await _context.SaveChangesAsync();
             List<OrderItem> orderItems = _context.OrderItems.Where(n => n.OrderId == id).ToList();

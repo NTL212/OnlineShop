@@ -189,6 +189,10 @@ namespace OnlineShop.Models
             {
                 entity.ToTable("Style");
 
+                entity.Property(e => e.Image)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.StyleName)
                     .IsRequired()
                     .HasMaxLength(100);

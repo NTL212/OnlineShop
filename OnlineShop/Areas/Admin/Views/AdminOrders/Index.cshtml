@@ -56,23 +56,10 @@
                     <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.OrderId">Hủy</a>
                 </td>
             }
-            @if(item.Status.StatusName == "Đã nhận" || item.Status.StatusName == "Đã hủy"){
+            else{
                 <td>
                     <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a>
                 </td>
-            }
-            @if(item.Status.StatusName == "Đang giao")
-            {
-                <td>
-                    <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a> |
-                    <a class="btn btn-primary" asp-action="Update" asp-route-id="@item.OrderId">Đã giao</a>
-                </td>    
-            }
-            @if(item.Status.StatusName == "Đã nhận")
-            {
-                <td>
-                    <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.OrderId">Chi tiết</a>
-                </td>    
             }
             </tr>
 }
