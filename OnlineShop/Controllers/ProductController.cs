@@ -59,7 +59,7 @@ namespace OnlineShop.Controllers
                 ViewBag.cartItems = lst;
                 ViewBag.totalCartItems = lst.Sum(n => n.Total);
             }
-            var productList = _context.Products.AsQueryable();
+            var productList = _context.Products.Where(n => n.IsDeleted == 0 && n.IsActive == 1).AsQueryable();
             if (categoryName != null)
             {
                 productList = productList.Where(p => p.Category.CategoryName.Contains(categoryName));
@@ -88,7 +88,7 @@ namespace OnlineShop.Controllers
         [HttpPost]
         public IActionResult Search(int? page, string keyword)
         {
-            var results = _context.Products.Include(p => p.Category)
+            var results = _context.Products.Where(n => n.IsDeleted == 0 && n.IsActive == 1).Include(p => p.Category)
             .Where(p => p.ProductName.Contains(keyword)).ToPagedList(page ?? 1, 5);
             //var categoryList = _context.Categories.ToList();
             //ViewData["Categories"] = categoryList;

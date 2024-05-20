@@ -12,6 +12,10 @@
 {
     <h3>Mở khóa sản phẩm</h3>    
 }
+@if (Model.IsDeleted == 2)
+{
+    <h3>Duyệt sản phẩm</h3>    
+}
 <div>
     <hr />
     <dl class="dl-horizontal">
@@ -20,6 +24,12 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.SellerId)
+        </dd>
+        <dt>
+            Tên người bán
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Seller.UserName)
         </dd>
         <dt>
             Tên sản phẩm
@@ -97,6 +107,10 @@
         {
             <dd>Bị khóa</dd>
         }
+        @if (Model.IsDeleted == 2)
+        {
+            <dd>Đợi duyệt</dd>
+        }
         <dt>
             Danh mục
         </dt>
@@ -114,6 +128,10 @@
         @if (Model.IsDeleted == 1)
         {
             <input type="submit" value="Mở khóa" class="btn btn-success" />
+        }
+        @if (Model.IsDeleted == 2)
+        {
+            <input type="submit" value="Duyệt" class="btn btn-success" />
         }
         <a asp-action="Index">Trở về danh sách</a>
     </form>

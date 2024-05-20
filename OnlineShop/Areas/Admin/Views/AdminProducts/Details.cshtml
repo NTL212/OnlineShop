@@ -11,6 +11,18 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
+            Mã người bán
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SellerId)
+        </dd>
+        <dt>
+            Tên người bán
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Seller.UserName)
+        </dd>
+        <dt>
             Tên sản phẩm
         </dt>
         <dd>
@@ -85,6 +97,10 @@
         @if (Model.IsDeleted == 1)
         {
             <dd>Bị khóa</dd>
+        }
+        @if (Model.IsDeleted == 2)
+        {
+            <dd>Đợi duyệt</dd>
         }
         <dt>
             Danh mục

@@ -54,7 +54,7 @@ namespace OnlineShop.Controllers
                 ViewBag.totalCartItems = lst.Sum(n => n.Total);
             }
         
-            var productList = _context.Products.Include(p => p.Category).OrderBy(p=>p.Date).Take(8).ToList();
+            var productList = _context.Products.Where(n => n.IsDeleted == 0 && n.IsActive == 1).Include(p => p.Category).OrderBy(p=>p.Date).Take(8).ToList();
             var categoryList = _context.Categories.ToList();
             var categories = HttpContext.Session.Get("categories");
             if (categories == null)

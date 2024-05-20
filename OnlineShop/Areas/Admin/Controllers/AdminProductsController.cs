@@ -41,7 +41,7 @@ namespace OnlineShop.Areas.Admin.Controllers
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            var onlineShopContext = _context.Products.Include(p => p.Category);
+            var onlineShopContext = _context.Products.OrderByDescending(n => n.IsDeleted).Include(p => p.Category);
             return View(onlineShopContext.ToPagedList(page ?? 1, 5));
         }
 
@@ -67,6 +67,7 @@ namespace OnlineShop.Areas.Admin.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Category)
+                .Include(p => p.Seller)
                 .FirstOrDefaultAsync(m => m.ProductId == id);
             if (product == null)
             {
@@ -199,7 +200,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, IFormFile Image, [Bind("ProductId,SellerId,ProductName,Decription,Price,PromotionalPrice,Quantity,Sold,IsActive,Image,CategoryId,StyleId,Rating,Date,IsDeleted")] Product product)
+        public async Task<IActionResult> Edit(int id, IFormFile Image, [Bind("ProductId, SellerId, ProductName, Decription, Price, PromotionalPrice, Quantity, Sold, IsActive, Image, CategoryId, StyleId, Rating, Date, IsDeleted")] Product product)
         {
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
@@ -261,7 +262,7 @@ namespace OnlineShop.Areas.Admin.Controllers
         }
 
         // GET: Admin/AdminProducts/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, int status)
         {
             int userId;
             string roleName = HttpContext.Session.GetString("roleName");
@@ -282,12 +283,13 @@ namespace OnlineShop.Areas.Admin.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Category)
+                .Include(p => p.Seller)
                 .FirstOrDefaultAsync(m => m.ProductId == id);
             if (product == null)
             {
                 return NotFound();
             }
-
+            ViewBag.status = status;
             return View(product);
         }
 
@@ -301,7 +303,7 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 product.IsDeleted = 1;
             }
-            else if (product.IsDeleted == 1)
+            else if (product.IsDeleted == 1 || product.IsDeleted == 2)
             {
                 product.IsDeleted = 0;
             }

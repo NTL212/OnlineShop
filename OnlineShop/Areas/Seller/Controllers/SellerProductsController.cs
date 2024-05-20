@@ -41,7 +41,7 @@ namespace OnlineShop.Areas.Seller.Controllers
                 return RedirectToAction("Index", "Home", new { area = roleName });
             }
             ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
-            var onlineShopContext = _context.Products.Where(p => p.SellerId == userId).Include(p => p.Category);
+            var onlineShopContext = _context.Products.Where(p => p.SellerId == userId).Include(p => p.Category).OrderBy(n => n.IsActive);
             return View(onlineShopContext.ToPagedList(page ?? 1, 5));
         }
 
@@ -69,6 +69,7 @@ namespace OnlineShop.Areas.Seller.Controllers
                 .Where(p => p.SellerId == userId)
                 .Include(p => p.Category)
                 .FirstOrDefaultAsync(m => m.ProductId == id);
+            ViewBag.style = _context.Styles.Where(n => n.ProductId == product.ProductId).ToList();
             if (product == null)
             {
                 return NotFound();
@@ -310,6 +311,165 @@ namespace OnlineShop.Areas.Seller.Controllers
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult AddStyle(int id)
+        {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum)
+            {
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Seller")
+            {
+                return RedirectToAction("Index", "Home", new { area = roleName });
+            }
+            ViewBag.productId = id;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddStyle(IFormFile Image, [Bind("StyleId,ProductId, StyleName, Image, IsDeleted")] Style style)
+        {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
+            ViewData["StyleId"] = new SelectList(_context.Styles, "StyleId", "StyleName");
+            foreach (PropertyInfo pi in style.GetType().GetProperties())
+            {
+                if (pi.PropertyType == typeof(string))
+                {
+                    string value = (string)pi.GetValue(style);
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        ViewBag.mess = "Vui lòng điển đẩy đủ thông tin";
+                        return View(style);
+                    }
+                }
+            }
+            if (_context.Styles.Where(n => n.StyleName == style.StyleName && n.ProductId == style.ProductId).Count() > 0)
+            {
+                ViewBag.mess = "Loại sản phẩm đã tồn tại";
+                return View(style);
+            }
+            if (ModelState.IsValid)
+            {
+                if (Image != null)
+                {
+                    style.Image = Image.FileName;
+                    var uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "product");
+                    if (!Directory.Exists(uploadDirectory))
+                    {
+                        Directory.CreateDirectory(uploadDirectory);
+                    }
+                    var path = Path.Combine(uploadDirectory, Image.FileName);
+                    using var fileStream = new FileStream(path, FileMode.Create);
+                    await Image.CopyToAsync(fileStream);
+                }
+                _context.Add(style);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", "SellerProducts", new { id = style.ProductId });
+            }
+            return View(style);
+        }
+
+        public async Task<IActionResult> EditStyle(int? id)
+        {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            if (!isNum)
+            {
+                return RedirectToAction("SignIn", "Customer", new { area = "Default" });
+            }
+            if (roleName != "Seller")
+            {
+                return RedirectToAction("Index", "Home", new { area = roleName });
+            }
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var style = await _context.Styles.FindAsync(id);
+            if (style == null)
+            {
+                return NotFound();
+            }
+            return View(style);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditStyle(int id, IFormFile Image, [Bind("StyleId,ProductId, StyleName, Image, IsDeleted")] Style style)
+        {
+            int userId;
+            string roleName = HttpContext.Session.GetString("roleName");
+            bool isNum = int.TryParse(HttpContext.Session.GetString("userId"), out userId);
+            ViewBag.username = _context.Users.Where(n => n.UserId == userId).FirstOrDefault().UserName;
+            foreach (PropertyInfo pi in style.GetType().GetProperties())
+            {
+                if (pi.PropertyType == typeof(string))
+                {
+                    string value = (string)pi.GetValue(style);
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        ViewBag.mess = "Vui lòng điển đẩy đủ thông tin";
+                        return View(style);
+                    }
+                }
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    style.Image = _context.Styles.AsNoTracking().FirstOrDefault(n => n.StyleId == id).Image;
+                    if (Image != null)
+                    {
+                        style.Image = Image.FileName;
+                        var uploadDirectory = Path.Combine(_environment.WebRootPath, "upload", "images", "product");
+                        if (!Directory.Exists(uploadDirectory))
+                        {
+                            Directory.CreateDirectory(uploadDirectory);
+                        }
+                        var path = Path.Combine(uploadDirectory, Image.FileName);
+                        using var fileStream = new FileStream(path, FileMode.Create);
+                        await Image.CopyToAsync(fileStream);
+                    }
+                    _context.Update(style);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException) 
+                { 
+                
+                        return NotFound();
+                }
+                return RedirectToAction("Details", "SellerProducts", new { id = style.ProductId });
+            }
+            return RedirectToAction("Details", "SellerProducts", new { id = style.ProductId });
+        }
+
+        public async Task<IActionResult> Confirm(int id)
+        {
+            var style = await _context.Styles.FindAsync(id);
+            if (style.IsDeleted == 0)
+            {
+                style.IsDeleted = 1;
+            }
+            else if (style.IsDeleted == 1)
+            {
+                style.IsDeleted = 0;
+            }
+            _context.Styles.Update(style);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Details", "SellerProducts", new { id = style.ProductId });
         }
 
         private bool ProductExists(int id)

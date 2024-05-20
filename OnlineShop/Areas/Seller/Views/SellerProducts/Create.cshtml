@@ -89,14 +89,7 @@
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
             <br />
-            <div class="form-group">
-                <label class="control-label">Khả dụng</label>
-                <select asp-for="IsDeleted" class="form-control">
-                    <option value = "0">Khả dụng</option>
-                    <option value = "1">Bị cấm</option>
-                </select>
-                <span asp-validation-for="IsDeleted" class="text-danger"></span>
-            </div>
+            <input asp-for="IsDeleted" class="form-control" type="hidden" value="2"/>
             <br />
             <div class="form-group">
                 <input type="submit" value="Thêm" class="btn btn-primary" />
