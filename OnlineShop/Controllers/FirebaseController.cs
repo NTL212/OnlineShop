@@ -158,14 +158,11 @@ namespace OnlineShop.Controllers
 
 								if (sortedMessages.Any())
 								{
-									if(sortedMessages.First()["senderId"].ToString() == sellerId)
+									if (sortedMessages.First()["senderId"].ToString() == sellerId)
 									{
-										lastMessage = sortedMessages.ElementAt(1).ToString();
+										lastMessage = sortedMessages.ElementAt(0).ToString();
 									}
-									else
-									{
-										lastMessage = sortedMessages.First().ToString();
-									}
+									
 									var mess = new
 									{
 										userId = ExtractUserId(pair.Key),

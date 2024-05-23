@@ -12,7 +12,7 @@
 	<div class="row no-gutters">
 		<div id="customer-panel" class="col-md-4 border-right">
 			<div class="settings-tray">
-				<img class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/filip.jpg" alt="Profile img">
+				@* <img class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/filip.jpg" alt="Profile img"> *@
 			</div>
 			<div class="search-box">
 				<div class="input-wrapper">
@@ -21,7 +21,7 @@
 				</div>
 			</div>
 			<hr>
-			<div class="friend-drawer friend-drawer--onhover">
+			<div class="friend-drawer friend-drawer--onhover" hidden>
 				<img class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/optimus-prime.jpeg" alt="">
 				<div class="text">
 					<h6>Optimus</h6>
@@ -33,7 +33,7 @@
 		</div>
 		<div class="col-md-8">
 			<div class="settings-tray">
-				<div class="friend-drawer no-gutters friend-drawer--grey">
+				<div class="friend-drawer no-gutters friend-drawer--grey" hidden>
 					<img id="img-selected" class="profile-image" src="https://www.clarity-enhanced.net/wp-content/uploads/2020/06/robocop.jpg" alt="">
 					<div class="text">
 						<h6 id="username-selected">Robo Cop</h6>
@@ -159,6 +159,24 @@
 				}
 			});
 		}
+
+		function initCSKN(userId, sellerId){
+			var friendDrawer = document.getElementById( "friend-drawer-unique-userId-" + userId + "-sellerId-" + sellerId); // Đặt ID riêng cho phần tử
+			if (friendDrawer.getAttribute('isloaded') == 'false') {
+				getMessageFromFirebase(userId, sellerId);
+				friendDrawer.setAttribute("isloaded", true);
+			}
+			$('.chat-panel').hide();
+			$('#chat-panel-userId-' + userId).show();
+			$('#chat-panel-userId-' + userId).scrollTop = $('#chat-panel-userId-' + userId).scrollHeight;
+			document.getElementById('senderId').value = userId;
+			getUser(userId, function (user) {
+				document.getElementById('img-selected').src = "/upload/images/avatars/customer/" + user.avatar;
+				document.getElementById('username-selected').innerText = user.userName
+			});
+
+		}
+
 		function getChats(sellerId) {
 			$.ajax({
 				url: '/api/Firebase/GetChatsBySellerId',
@@ -167,11 +185,15 @@
 					sellerId: sellerId
 				},
 				success: function (data) {
+					let isFirst = true;
 					data.forEach(function (item) {
-						var messageObj = JSON.parse(item.message);
-
+						var messageObj = JSON.parse(item.message);									
 						createCustomer(item.userId, sellerId, messageObj.content, messageObj.timeSend);
 						createChatPanel(item.userId, '')
+						if (isFirst) {
+							initCSKN(item.userId, sellerId);
+							isFirst = false;
+						}
 					});
 
 				},
@@ -250,7 +272,7 @@
 						};
 						loadImageData(file)
 							.then((imageData) => {
-								displayMessage("You", message);
+								displayMessage("You", imageData);
 								pushMessageToFirebase(userId, senderId, imageData, senderId);
 								// Gửi dữ liệu hình ảnh lên server
 								connection.invoke("SendImage", userId, senderId, imageData)
@@ -287,8 +309,11 @@
 			if (imageData) {
 				const imageElement = document.createElement("img");
 				imageElement.src = imageData;
-				imageElement.style.width = "100px"; // Đặt chiều rộng là 200px
-				imageElement.style.height = "100px"; // Đặt chiều cao là 150px
+				imageElement.style.marginTop = "20px";
+				imageElement.style.border = "2px solid black";
+				imageElement.style.objectFit = "fill";
+				imageElement.style.width = "200px"; // Đặt chiều rộng là 200px
+				imageElement.style.height = "200px"; // Đặt chiều cao là 150px
 				bubbleContainer.appendChild(imageElement);
 			}
 
@@ -308,8 +333,7 @@
 			// Tạo phần tử div chứa bubble tin nhắn
 			var bubbleContainer = document.createElement("div");
 			bubbleContainer.className = "col-md-3 offset-md-9";
-		
-			if(isBase64(message)){
+			if(!isBase64(message)){
 				// Tạo bubble tin nhắn
 				var chatBubble = document.createElement("div");
 				chatBubble.className = "chat-bubble chat-bubble--right";
@@ -320,9 +344,12 @@
 			}
 			else {
 				const imageElement = document.createElement("img");
-				imageElement.src = imageData;
-				imageElement.style.width = "100px"; // Đặt chiều rộng là 200px
-				imageElement.style.height = "100px"; // Đặt chiều cao là 150px
+				imageElement.src = message;
+				imageElement.style.marginTop = "20px";
+				imageElement.style.border = "2px solid black";
+				imageElement.style.objectFit = "fill";
+				imageElement.style.width = "200px"; // Đặt chiều rộng là 200px
+				imageElement.style.height = "200px"; // Đặt chiều cao là 150px
 				bubbleContainer.appendChild(imageElement);
 			}
 			
@@ -452,7 +479,11 @@
 				var paragraph = document.createElement("p");
 				paragraph.className = "text-muted";
 				paragraph.id = "paragraph-userId-" + userId;
-				paragraph.textContent = message;
+				if(isBase64(message)){
+					paragraph.textContent = "Hình ảnh";
+				}else{
+					paragraph.textContent = message;
+				}
 
 				// Tạo phần tử thời gian
 				var timeSpan = document.createElement("span");
@@ -514,8 +545,11 @@
 				if (isBase64(message)) {
 					const imageElement = document.createElement("img");
 					imageElement.src = message;
-					imageElement.style.width = "100px"; // Đặt chiều rộng là 200px
-					imageElement.style.height = "100px"; // Đặt chiều cao là 150px
+					imageElement.style.marginTop= "20px";
+					imageElement.style.border = "2px solid black";
+					imageElement.style.objectFit = "fill";
+					imageElement.style.width = "200px"; // Đặt chiều rộng là 200px
+					imageElement.style.height = "200px"; // Đặt chiều cao là 150px
 					bubbleContainer.appendChild(imageElement);
 				} else {								
 					chatBubble.innerHTML = message;
